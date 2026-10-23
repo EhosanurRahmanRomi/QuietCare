@@ -1,4 +1,0 @@
-PASS Isolated install: payload SHA-256, desktop and Start shortcuts, registration
-PASS Reinstall replaces only the product files
-PASS Existing unrelated desktop shortcut is preserved
-PASS Isolated uninstall removes product files and registration, preserves other data

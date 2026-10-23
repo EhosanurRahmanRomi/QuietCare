@@ -1,0 +1,25 @@
+name: Windows validation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.402
+      - name: Restore locked application dependencies
+        run: dotnet restore src/Cleaner.App/Cleaner.App.csproj --locked-mode
+      - name: Build
+        run: dotnet build src/Cleaner.App/Cleaner.App.csproj -c Release --no-restore -warnaserror
+      - name: Restore locked fixture dependencies
+        run: dotnet restore tests/QuietCare.Regression/QuietCare.Regression.csproj --locked-mode
+      - name: Run core fixtures
+        run: dotnet run --project tests/QuietCare.Regression -c Release --no-restore -- ${{ runner.temp }}/quietcare-core-fixtures
+      - name: Audit dependency advisories
+        run: dotnet list src/Cleaner.App/Cleaner.App.csproj package --vulnerable --include-transitive

@@ -1,0 +1,3 @@
+<Project><PropertyGroup><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile><NuGetAudit>true</NuGetAudit><NuGetAuditMode>all</NuGetAuditMode>
+<NuGetLockFilePath Condition="'$(PublishSingleFile)'=='true'">$(MSBuildProjectDirectory)/packages.portable.lock.json</NuGetLockFilePath>
+</PropertyGroup></Project>

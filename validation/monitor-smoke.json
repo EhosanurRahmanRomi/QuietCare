@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-23T18:11:24.6830733+00:00",
+  "scope": "Live compact monitor plus startup watch, main UI unopened, no Boost invoked; short local sample, not a benchmark",
+  "startupWatchStatus": "Watching startup entries. Registry/folder checks every 30 seconds; tasks/services every 5 minutes.",
+  "measurements": [
+    {
+      "phase": "First 20 seconds including startup initialization",
+      "seconds": 20.5682178,
+      "cpuPercentOfMachine": 5.042286906876463,
+      "workingSetBytes": 238419968,
+      "privateBytes": 107630592
+    },
+    {
+      "refreshMs": 1000,
+      "seconds": 12.0059322,
+      "samples": 12,
+      "cpuPercentOfMachine": 0.4717715909729135,
+      "samplingCpuMs": 78.125,
+      "samplingWallMs": 49.71160000000009,
+      "workingSetBytes": 238112768,
+      "privateBytes": 106094592,
+      "latest": {
+        "Time": "2026-10-24T00:11:03.6132481+06:00",
+        "Cpu": 49.43181818181818,
+        "Gpu": 17.82695471290682,
+        "DiskRead": null,
+        "DiskWrite": null,
+        "Ram": 85,
+        "Total": 17006391296,
+        "Available": 2539405312,
+        "Download": null,
+        "Upload": null,
+        "GpuStatus": "Busiest GPU engine across adapters"
+      },
+      "mainWindowCreated": false
+    },
+    {
+      "refreshMs": 250,
+      "seconds": 12.0118748,
+      "samples": 47,
+      "cpuPercentOfMachine": 0.8455168442897928,
+      "samplingCpuMs": 171.875,
+      "samplingWallMs": 140.87589999999955,
+      "workingSetBytes": 239378432,
+      "privateBytes": 106504192,
+      "latest": {
+        "Time": "2026-10-24T00:11:17.510109+06:00",
+        "Cpu": 63.23529411764706,
+        "Gpu": 18.293218665084524,
+        "DiskRead": null,
+        "DiskWrite": null,
+        "Ram": 86,
+        "Total": 17006391296,
+        "Available": 2355126272,
+        "Download": null,
+        "Upload": null,
+        "GpuStatus": "Busiest GPU engine across adapters"
+      },
+      "mainWindowCreated": false
+    },
+    {
+      "phase": "Monitor hidden",
+      "seconds": 6.0149744,
+      "cpuPercentOfMachine": 0,
+      "workingSetBytes": 238817280
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Cleaner.App</RootNamespace>
+    <AssemblyName>QuietCare.Next</AssemblyName>
+    <Product>QuietCare Next</Product>
+    <AssemblyTitle>QuietCare Next</AssemblyTitle>
+    <Company>QuietCare contributors; derived from fgilde PowerClean</Company>
+    <Description>Windows cleanup, disk analysis and system maintenance</Description>
+
+    <!-- Version wird bei CI per /p:Version=x.y.z überschrieben -->
+    <Version>0.5.0-preview.1</Version>
+    <FileVersion>0.5.0.0</FileVersion>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
+
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\PowerClean.ico</ApplicationIcon>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <LegacyCorruptedStateExceptionsPolicy>true</LegacyCorruptedStateExceptionsPolicy>
+    <StartupObject>Cleaner.App.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Runtime.legacyCorruptedStateExceptionsPolicy" Value="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- UseWindowsForms fügt sonst ein implizites "global using System.Windows.Forms" hinzu,
+         das mit WPF-Typen (Application, UserControl, ...) kollidiert. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <!-- Eingebetteter Browser für die gilde-Connect-Widgets (Kontakt/Support im About) -->
+
+
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cleaner.Core\Cleaner.Core.csproj" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Icon auch als Resource einbetten — fürs FluentWindow.Icon Binding -->
+    <Resource Include="Assets\PowerClean.ico" />
+    <!-- Großes PNG für die About-Seite (ICO-Decode liefert sonst einen kleinen Frame) -->
+    <Resource Include="Assets\PowerClean.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../QuietCare.Monitor/QuietCare.Monitor.csproj" />
+  </ItemGroup>
+</Project>
