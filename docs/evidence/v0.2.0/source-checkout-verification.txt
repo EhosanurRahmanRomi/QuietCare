@@ -1,0 +1,33 @@
+QUIETCARE SHOWCASE SOURCE CHECK — 23 OCTOBER 2026
+
+The sanitized showcase checkout was built and tested independently before
+publication. Its src/, tests/ and installer/ text matches the locally validated
+v0.2.0 project. Documentation and CI were added without changing app behavior.
+
+Commands in Windows PowerShell from the checkout root:
+  .\scripts\check-repository.ps1
+  .\package.ps1
+  .\test.ps1
+  .\test-ui.ps1
+  .\test-installer.ps1
+
+Results:
+  Build/package: optimized x64, warnings treated as errors, succeeded.
+  Core: RESULT 42 passed / 0 failed.
+  UI: UI RESULT 20 passed / 0 failed.
+  Installer: 4 PASS entries, 0 failures.
+  Live dedicated helper: all 96 MB verified after working-set trim.
+  No user application was trimmed by that test.
+  Local Markdown links and SVG XML validated.
+  No detected high-signal credential strings or private absolute user paths.
+  Generated binaries, user state, recordings and fixture folders excluded.
+
+This build's hashes (metadata can differ from the original preview binaries):
+  QuietCare.exe
+    D662954FDF5D92A7B52864B2586C21E0DBBF370EB81B7406CC5CBA0EB5065298
+  QuietCare-Setup.exe
+    9CF2FB21B5FA30FF0F5BA42ED84C3476FBEF86F828863AD9FAFE2F77A835A3FF
+
+Release assets retain the original locally reviewed preview binaries whose
+hashes are recorded in VALIDATION-v0.2.0.txt and the release checksum manifest.
+The Framework build is not configured to produce deterministic binary hashes.

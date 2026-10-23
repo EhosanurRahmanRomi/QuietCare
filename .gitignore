@@ -1,0 +1,32 @@
+# Generated binaries and isolated test data
+/build/
+/test-runs/
+/dist/
+/release-assets/
+*.exe
+*.dll
+*.pdb
+*.zip
+*.log
+
+# Local app state must never be published
+settings.xml
+activity.log
+Recovery/
+StartupBackups/
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
+*.key
+.private/
+
+# Editor/OS state
+.vs/
+.vscode/
+*.user
+*.suo
+Thumbs.db
+Desktop.ini
+__pycache__/

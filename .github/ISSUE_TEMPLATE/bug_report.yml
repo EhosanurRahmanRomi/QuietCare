@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible QuietCare issue without private data.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "For vulnerabilities, use private reporting from SECURITY.md. Do not paste credentials, personal app command lines, recovery files, or unrelated logs."
+  - type: input
+    id: version
+    attributes:
+      label: QuietCare version or commit
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Windows version, display scaling and relevant hardware
+      description: Include GPU/driver details only if relevant; omit personal identifiers.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Use a small synthetic example where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Optional screenshot or a short reviewed log excerpt. Remove private data.

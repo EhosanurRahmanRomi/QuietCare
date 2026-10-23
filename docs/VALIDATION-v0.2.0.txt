@@ -1,0 +1,142 @@
+QUIETCARE 0.2.0 — VALIDATION, 23 OCTOBER 2026
+
+RESULT
+42 core checks + 20 UI checks + 4 isolated installer lifecycle checks passed.
+Release executables compiled optimized x64 with warnings treated as errors.
+No NuGet/npm restore or downloaded runtime is required.
+
+Binary SHA-256:
+QuietCare.exe        8262081CC1BAAEAE5E5BAED9327D36F66C0BE59E21F5E93D1731007C8342A305
+QuietCare-Setup.exe  B6DEA8192BB7FC63755A9911B58FB2C72F0716AC7AEFB45C286ACC577BF0FCE7
+Both binaries are unsigned (Authenticode status NotSigned).
+
+NATIVE REVIEW
+The actual WPF application was reviewed on this PC, not only in a mockup.
+The separate title strip is removed; transparent caption controls share the
+page canvas. Branding and compact navigation are in the sidebar. Native
+maximize/restore was clicked and verified. Main preview: 1000 x 670 pixels.
+Floating strip: 205 x 28 pixels in the saved preview, CPU → GPU → RAM.
+Screenshot assets: QuietCare-preview.png and QuietCare-monitor.png.
+Single-instance check: Second launch exited: True; matching processes: 1
+
+SMART BOOST EVIDENCE AND LIMITS
+Policy checks cover active app families, project/terminal/trading/Office tools,
+busy/new/small/visible/Windows processes, inactive browser renderers, controller
+and extension exclusions, media uncertainty, custom exclusions, identity
+changes, cooldown, capped work, cancellation and exited candidates.
+The UI check invokes the real WPF floating-button event with an injected scoped
+host and verifies that no main UI or chooser opens. That is UI wiring evidence,
+not live user-app optimization proof. The real native trim test uses only a
+separate 96 MB helper and verifies every allocated byte afterward. No user app
+was trimmed by the test. Read-only Core Audio enumeration also ran on this PC.
+These tests do not prove compatibility with every app/tab/project. Trimming a
+working set does not deallocate app data and can cause later paging latency.
+
+RESOURCE MEASUREMENTS — FINAL UI REVISION
+Host: Windows build 26200, Intel i5-8350U, 8 logical CPUs, Intel UHD 620, 16 GB RAM.
+Production MainWindow/Widget/Telemetry code; five-second warmup then about
+20 seconds per case; cold tray start, no forced garbage collection. Percentage
+is process CPU seconds / elapsed seconds / logical CPU count * 100.
+   1000 ms: 0.146% total CPU, 96.9 MB working set (20.02 seconds)
+    250 ms: 0.703% total CPU, 97.7 MB working set (20.01 seconds)
+    100 ms: 1.601% total CPU, 99.8 MB working set (20.01 seconds)
+Fully hidden: 0.000% CPU, 52.8 MB working set,
+pollingEnabled=false.
+No compact-only rates excluded from this final matrix.
+Earlier candidate runs with a constructed main UI were excluded from compact
+comparisons and were not used as floating-only evidence. Faster refresh costs
+more CPU. These are short local observations under other active workloads,
+not guaranteed upper bounds, zero-CPU claims or long-duration/battery testing.
+Annotated raw final results are in validation/benchmark-report.json.
+
+SECURITY AND COVERAGE LIMITS
+No independent security audit, signing, broad hardware matrix, all-scaling,
+all-browser, installer upgrade-migration or prolonged soak test was performed.
+This is an unsigned local preview, not a one-for-one Advanced SystemCare clone.
+Windows integrations are distinguished from implemented features in the map.
+There is no malware engine, temperature driver or independent driver updater.
+No network listener, ads, telemetry uploads, downloaded code or background
+service is implemented. These design choices do not establish complete security.
+
+Core tests use isolated files and synthetic startup entries. Installer tests
+compile fixture paths/registry keys into a separate test executable; they do
+not install over the normal user application directory. The production
+installer has no environment-variable test-root override. Unrelated shortcuts
+and unowned fixture data survived reinstall/uninstall.
+
+CORE TEST OUTPUT
+PASS Boundary rejects sibling prefix and traversal
+PASS Only old allowed temp extensions
+PASS Linked directory never traversed
+PASS Hard-linked file excluded
+PASS Changed file rejected
+PASS Locked file rejected
+PASS Handle-based quarantine and restore preserves bytes
+PASS Restore refuses overwrite
+PASS Permanent removal affects selected quarantine only
+PASS Forged outside cleanup path rejected
+PASS Cancellation interrupts scans
+PASS Settings round trip and refresh clamp
+PASS Variable refresh persists and rejects out-of-range polling
+PASS XML external entities rejected
+PASS GPU engine grouping sums same engine, not distinct engines
+  LIVE CPU=68% RAM=67 GPU=19% Disk=79970.1992772183
+PASS Live Windows telemetry produces plausible samples
+PASS Process inventory includes this test process
+PASS Selected own-process RAM trim uses the documented API
+PASS Unknown Windows tools and power modes rejected
+PASS SHA-256 duplicate finder finds identical files
+PASS Startup backup, disable, conflict rejection, restore
+PASS Idle polling stops for hidden or minimized main window
+PASS Compact sampling leaves disk and network uncollected
+PASS GPU aggregation rejects malformed, null and non-finite values
+PASS Non-finite settings recover to visible defaults
+PASS Smart Boost exclusions persist literally
+PASS Changed quarantine content cannot be purged or restored
+PASS Recovery metadata changes invalidate stale selection
+PASS Duplicate hashing detects changed size, cancellation and deadline
+PASS Idle background process qualifies without user selection
+PASS Foreground process and application family are protected
+PASS Project, terminal, trading and office tools are excluded
+PASS Busy, new and small processes are protected
+PASS Visible applications and changed identities are protected
+PASS Inactive browser renderer qualifies, controllers and extensions do not
+PASS Audio activity or uncertain media state protects apps
+PASS Custom app exclusions and Windows paths are protected
+  AUDIO activity enumeration verified; no audio content captured.
+PASS Core Audio activity can be read without recording audio
+PASS Smart Boost trims qualifying processes and enforces cooldown
+PASS Smart Boost protects entire browser family playing audio
+PASS Boost caps work, tolerates exited processes and supports cancellation
+  LIVE fixture working set 110.3 MB -> 0 B; all 96 MB of data preserved. No user app was trimmed by this test.
+PASS Live isolated Boost preserves all allocated project data
+RESULT 42 passed / 0 failed
+
+UI TEST OUTPUT
+PASS Cold monitor/tray launch does not construct the main UI
+PASS Floating Boost runs directly without opening any chooser
+PASS Transparent widget stays compact at maximum values
+PASS Unknown GPU values render a dash and no bogus zero
+PASS Layout and controls: Overview
+PASS Layout and controls: Speed Up
+PASS Layout and controls: Protect
+PASS Layout and controls: Updates
+PASS Layout and controls: Processes & RAM
+PASS Layout and controls: Startup manager
+PASS Layout and controls: Cleanup
+PASS Layout and controls: File tools
+PASS Layout and controls: Installed apps
+PASS Layout and controls: Toolbox
+PASS Layout and controls: System information
+PASS Layout and controls: Recovery
+PASS Layout and controls: Settings
+PASS Title strip removed; transparent caption controls preserve page space
+PASS All pages fit the minimum supported window width
+PASS Data tables sort memory by byte count and expose tooltips
+UI RESULT 20 passed / 0 failed
+
+INSTALLER TEST OUTPUT
+PASS Isolated install: payload SHA-256, desktop and Start shortcuts, registration
+PASS Reinstall replaces only the product files
+PASS Existing unrelated desktop shortcut is preserved
+PASS Isolated uninstall removes product files and registration, preserves other data
