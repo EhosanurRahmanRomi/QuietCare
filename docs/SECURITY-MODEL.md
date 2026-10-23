@@ -4,9 +4,9 @@ QuietCare reduces its attack surface through a local single-process design. This
 
 ## Network and execution
 
-The application implements no listening socket, remote-control endpoint, account service, analytics upload, plugin loader, downloaded script runner or automatic updater. Windows tool launchers use a fixed allowlist and trusted Windows paths. App inventory does not execute registry-discovered uninstall strings. The application and installer request normal user privileges.
+The application implements no listening socket, remote-control endpoint, account service, analytics upload, plugin loader, downloaded script runner or silent updater. Optional release checks and installer downloads contact fixed GitHub/project endpoints. See [UPDATES.md](UPDATES.md) for URL/redirect/size/hash/cache/launch boundaries, Internet marking and trust limitations. Windows tool launchers use a fixed allowlist and trusted Windows paths. App inventory does not execute registry-discovered uninstall strings. The application and installer request normal user privileges.
 
-The local named mutex/reveal event coordinates instances; it is not a network listener. Source/release retrieval and CI are GitHub project infrastructure, separate from application runtime behavior.
+The local named mutex/reveal event coordinates instances; it is not a network listener. GitHub checks include the app version in a User-Agent and ordinary connection metadata. No hardware inventory, app list, files, credentials or telemetry are sent. Startup checks are off by default.
 
 ## Files and state
 

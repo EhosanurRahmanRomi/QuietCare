@@ -22,6 +22,9 @@ flowchart LR
 | --- | --- |
 | `src/Program.cs` | Entry point, per-user single-instance mutex, local reveal signal and application lifetime. |
 | `src/UI.cs` | Theme, navigation, integrated window controls, scan UI, transparent monitor, sampling scheduling and direct Boost wiring. |
+| `src/UI.Care.cs`, `src/CareScan.cs` | Live read-only multi-category scanning, progress, cancellation and result review. |
+| `src/UI.Boost.cs` | Last Boost measurements, protected/failed outcomes and result review. |
+| `src/UI.Updates.cs`, `src/Updates.cs` | User-controlled app updates, release policy, verified bounded downloads and guarded installer launch. |
 | `src/Telemetry.cs` | CPU/system memory sampling, GPU engine aggregation and demand-only disk/network counters. |
 | `src/SmartBoost.cs` | Candidate model, protection policy, host abstraction, foreground history, capped asynchronous Boost orchestration. |
 | `src/AudioActivity.cs` | Read-only Core Audio session/process enumeration and COM lifetime management. |
@@ -47,7 +50,7 @@ Startup backups preserve literal command strings and registry types before remov
 
 ## Boundaries
 
-No remote server, listening socket, plugin loader, driver, background service, downloaded script runner or automatic updater is implemented. Windows tool launches are fixed and use trusted system paths. Registry-discovered app uninstall commands are displayed as inventory, not executed. See the [security model](SECURITY-MODEL.md) for limits.
+No remote server, listening socket, plugin loader, driver, background service or downloaded script runner is implemented. User-controlled HTTPS release checks/downloads are documented in [UPDATES.md](UPDATES.md); they have no silent installation. Windows tool launches are fixed and use trusted system paths. Registry-discovered app uninstall commands are displayed as inventory, not executed. See the [security model](SECURITY-MODEL.md) for limits.
 
 ## Test harnesses
 

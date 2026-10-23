@@ -1,0 +1,18 @@
+PASS Semantic versions compare numbers, previews and build metadata
+PASS Invalid and path-shaped version tags are rejected
+PASS Release parsing sorts and filters drafts and preview channels
+PASS Malformed, oversized and invalid-shaped feeds fail closed
+PASS Untrusted release pages and asset URLs cannot become downloads
+PASS Missing digests and implausible installers remain release-page only
+PASS Weekly startup checks are opt-in, bounded and recover from future dates
+PASS Update and Care preferences preserve legacy settings and round-trip
+PASS Manual preview check uses only the fixed GitHub API endpoint
+PASS Stable channel handles no published stable release
+PASS A rate-limited API falls back only to the fixed project feed
+PASS Rate limits, API redirects and cancellation do not report up-to-date
+PASS Valid installer is hashed, Internet-marked and reverified before launch
+PASS A same-size changed cached installer is never launched
+PASS Wrong hashes and truncated downloads leave no executable or partial file
+PASS Only approved HTTPS GitHub asset redirects are followed
+PASS Redirect loops are bounded and missing Internet marks prevent launch
+UPDATE RESULT 17 passed / 0 failed

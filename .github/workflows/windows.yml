@@ -31,6 +31,10 @@ jobs:
         run: .\package.ps1
       - name: Check WPF control layout and direct Boost wiring
         run: .\test-ui.ps1
+      - name: Check release selection and verified download guards
+        run: .\test-updates.ps1
+      - name: Check live-scan orchestration with isolated fixtures
+        run: .\test-care.ps1
       - name: Check isolated installer lifecycle
         run: .\test-installer.ps1
       - name: Retain unsigned build and test artifacts
@@ -43,5 +47,7 @@ jobs:
             build/QuietCare-Setup.exe
             build/ui-test-results.txt
             build/installer-test-results.txt
+            build/update-test-results.txt
+            build/care-test-results.txt
           if-no-files-found: warn
           retention-days: 14

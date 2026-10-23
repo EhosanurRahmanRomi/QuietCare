@@ -2,7 +2,19 @@
 
 The design goal is a useful small monitor with bounded sampling work. Faster polling costs CPU; it is a user choice rather than a claim of identical resource use at every setting.
 
-## Local v0.2.0 observation
+## Local v0.3.0 observation
+
+20 seconds per case after 5-second warmup, same i5-8350U / Intel UHD 620 / 16 GB / 8 logical CPU reference PC. Other workloads were active.
+
+| Refresh | Total CPU | Working set |
+| --- | ---: | ---: |
+| 1000 ms | 0.185% | 97.3 MB |
+| 250 ms | 0.722% | 98.6 MB |
+| 100 ms | 1.749% | 100.5 MB |
+
+Fully hidden: 0.0% observed CPU; polling disabled; main UI unconstructed in every case. Raw [0.3.0 JSON](evidence/v0.3.0/benchmark-results.json).
+
+## Historical v0.2.0 observation
 
 Reference machine: Windows build 26200, Intel i5-8350U, 8 logical CPUs, Intel UHD 620, 16 GB RAM. The production main-window/widget/telemetry code was compiled with a separate benchmark entry point, started in tray mode, warmed for five seconds, then measured for about 20 seconds. No forced garbage collection was used. Other workloads were active.
 

@@ -22,7 +22,7 @@ Do not upload settings, recovery files, recordings, credentials, private logs, r
 - Keep the compact monitor inexpensive. Measure resource changes under stated conditions.
 - Do not call a lower working set a speed improvement without evidence.
 - Distinguish pure/mocked policy tests, WPF layout checks, CI compilation and native hardware review.
-- Keep Windows launchers fixed/allowlisted. Do not execute inventory-provided commands or download code at runtime.
+- Keep Windows launchers fixed/allowlisted. Do not execute inventory-provided commands or downloaded scripts/plugins. Release-installer downloads must preserve the fixed URL, hash, size, Internet-zone and user-confirmed launch guards described in docs/UPDATES.md.
 - Make changes compatible with the Windows-bundled Framework compiler unless the build system is deliberately migrated.
 - Avoid unrelated mass formatting; the preview source has compact legacy formatting that can be improved in focused follow-ups.
 

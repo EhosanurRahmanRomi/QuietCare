@@ -1,190 +1,108 @@
-QUIETCARE 0.2.0 — LOCAL WINDOWS PREVIEW
-Built 23 October 2026
+QUIETCARE 0.3.0 - WINDOWS PREVIEW
+23 October 2026
 
 GET STARTED
+QuietCare-Setup.exe installs for your Windows user with shortcuts/uninstaller.
+QuietCare.exe is portable. Windows 10/11 x64 and .NET Framework 4.8+ are required.
+The preview is unsigned; normal use requests no administrator access. No other
+utility is automatically removed. Integrated transparent window controls share
+the page background. Drag the sidebar branding or empty top edge to move;
+double-click to maximize/restore. Close hides to tray by default. Choose Exit
+in the notification icon or monitor menu to stop the app. Relaunch reveals it.
 
-Run QuietCare-Setup.exe to install for your Windows user, create Start menu
-shortcuts, and optionally create a desktop shortcut. Administrator access is
-not requested. QuietCare.exe also runs as a portable executable.
-Requires Windows 10/11 x64 with .NET Framework 4.8 or later.
+LIVE CARE SCAN
+Choose categories beside SCAN. The six actual read-only checks cover temporary
+files, startup entries, memory, fixed-drive space, desktop apps and Defender
+status. Watch the category/item, elapsed time and completed-category count.
+Skip affects one step; Stop retains finished results. Windows calls can take
+time to respond to cancellation. Expand observations and choose a review action.
+No fixes are applied. Partial/unavailable does not mean clean. Registrations
+are not automatically startup problems. Inventory is not a vulnerability or
+outdated-version scan; Defender status is not malware scanning. No health score
+is invented.
 
-WHAT CHANGED
+FLOATING MONITOR
+The tiny transparent strip shows CPU, GPU, RAM. Drag its readings to move;
+double-click or use the arrow to expand disk/network details. Right-click for
+refresh, Boost results, settings, hide and exit. Settings provides 100-10,000 ms
+refresh, topmost mode and transparency. Source counters may update less often
+than the requested cadence. Faster polling uses more CPU. Compact mode collects
+CPU/GPU/RAM only, main UI is lazy, and disk/network is demand-only. Hidden or
+suspended monitoring stops; a minimized main window without a widget also stops.
+Short local benchmarks are not universal CPU/battery limits.
 
-The full-width title strip is removed. Transparent window controls share the
-page background, and branding and navigation live in the sidebar. Drag the
-sidebar branding or the empty top edge to move the window; double-click there
-to maximize/restore. The top-right controls provide settings, minimize,
-maximize/restore, and close. The interface uses static navy, cyan, violet and
-mint graphics rather than a continuous animated background.
+SMART RAM BOOST
+Click the lightning button for direct Boost, without a chooser. Its 12-second
+popup has an optional View Boost results link. Results distinguish accepted
+requests from measured resident decreases, show per-process and physical-RAM
+before/after values where accessible, and explain protected/skipped or declined
+requests. Missing measurements are unavailable, never invented savings.
 
-The floating strip shows CPU → GPU → RAM with content-sized width. The native
-preview measured 205 x 28 pixels; its width changes slightly with the readings.
-Drag its readings to move it. Use the arrow or double-click readings to expand.
-Click the left lightning button for DIRECT SMART RAM BOOST. It checks eligible
-background processes and shows the result beside the monitor; no chooser opens.
-The monitor stays non-activating so clicking Boost does not take focus from your
-current app. Right-click for Boost, refresh speed, settings, hide, and exit.
+Boost uses EmptyWorkingSet. It never kills/suspends/restarts apps, discards or
+reloads tabs, purges standby memory, fills RAM or changes browser settings.
+Foreground processes, audio/calls, Windows and common project tools are protected.
+Busy, young, small, inaccessible or identity-changed processes are skipped.
+Unknown media state prevents changes. Work is capped to 12 accepted requests,
+a five-second trim-loop budget and a 30-second cooldown. Native calls add time.
 
-REFRESH SPEED AND RESOURCE USE
+Settings > Include OS-background browser renderers allows idle/below-normal
+priority renderers inside an active browser, with repeated/fresh checks. It is
+on by default; switch it off to protect the entire active browser family.
+Controllers, extensions and browser families playing audio remain protected.
+Background priority is not knowledge of tab contents. Add chrome.exe (or your
+browser name) to protected processes to protect all background web projects.
+Pages can return immediately with latency. Committed allocations are not freed;
+accepted requests/lower RAM do not guarantee faster apps. Other workload changes
+the physical-RAM reading. Manual selected-app trimming remains optional with
+confirmation. See RAM-BOOST.md for the exact policy and limits.
 
-Settings provides 100, 250, 500, 1,000, 2,000, 5,000 and 10,000 ms presets and a
-custom slider. Changes apply immediately and persist. Faster polling uses more
-CPU. A read is skipped while the previous sensor read is still running. Windows
-and drivers may update source counters less frequently than your chosen rate.
+APP UPDATES
+Use Updates > Check for updates or the notification icon's check action. Review
+version/result/plain-text notes, download the verified installer, then choose
+Open installer when ready. Preview/stable choice and the optional weekly startup
+check are in Settings. Startup checks default off. No recurring timer, automatic
+download or silent installation runs. Failed/canceled checks are not up to date;
+attempts count toward the weekly interval. Manual checks have a one-minute
+per-session cooldown. Size, exact project URL, SHA-256 and Internet marking are
+validated; the hash is rechecked before user-confirmed installer opening. Normal
+Setup still requires your choice. Windows warnings are not bypassed. GitHub
+receives ordinary network metadata/app version, not inventory/files/credentials.
+SHA-256 is byte integrity, not publisher identity. See UPDATES.md.
 
-The compact mode collects CPU/GPU/RAM only. Disk/network collection starts when
-you expand the monitor. Network rates are calculated at most once per second;
-adapter discovery is cached for 30 seconds. Main summary and tray text update
-at most once per second. Numeric widget labels update only when values change.
-The main interface is constructed only when opened and released on close to
-tray. Sampling stops when both the main window and monitor are hidden, when
-only a minimized main window remains, and during system suspension.
-
-Local 20-second monitor-only observations on this 8-logical-CPU PC:
-   1000 ms: 0.146% total CPU, 96.9 MB working set (20.02 seconds)
-    250 ms: 0.703% total CPU, 97.7 MB working set (20.01 seconds)
-    100 ms: 1.601% total CPU, 99.8 MB working set (20.01 seconds)
-Fully hidden: 0.000% observed CPU, 52.8 MB working set; polling disabled.
-No compact-only rates excluded from this final matrix.
-These short local readings are not a universal limit or a battery/long-duration
-benchmark. Other workloads were active. See VALIDATION-v0.2.0.txt for scope and raw data.
-
-SMART RAM BOOST: WHAT IT DOES
-
-Boost uses Microsoft's documented EmptyWorkingSet API to ask Windows to trim
-resident pages from qualifying idle background processes. It does not kill,
-suspend or restart apps, discard/reload tabs, purge the standby list, clear app
-data, or change browser settings. There is no periodic automatic RAM cleaning.
-
-The current application family, active browser family, active audio/calls,
-Windows processes, visible unminimized applications, and common editor,
-terminal, build, Office, trading, VM and media tools are excluded. Additional
-protected process names can be added in Settings. Candidate identity is checked
-again by the native trim routine. Busy, very new, small or inaccessible
-processes are skipped. Media activity is queried without recording audio.
-If media activity cannot be verified, no candidate apps are changed.
-
-Browser candidates are limited to idle renderers in an INACTIVE browser with
-verified media activity. Browser controllers, GPU/utility processes, extensions
-and an entire browser family playing audio are excluded. Windows cannot tell
-QuietCare which individual tab contains your project or a form. Consequently,
-it protects the whole active browser family rather than promising selective
-cleanup of inactive tabs inside that browser. Chrome/Edge Memory Saver is the
-appropriate browser-managed option for tab-level memory management; it can
-reload discarded inactive tabs, whereas QuietCare does not request tab discard.
-
-Boost observes CPU twice, excludes candidates using more than 20 ms CPU between
-snapshots, and trims at most 12 successful candidates with a five-second trim
-loop budget. Observation and Windows calls add time around that loop. A 30-second
-cooldown prevents repeated trims. Results report available physical RAM before
-and after, not a misleading sum of process working-set sizes.
-
-Working-set trimming does not free an application's allocated data. Pages may
-be loaded back as soon as the app needs them, with page faults and possible
-latency. Lower displayed RAM use is not a guaranteed performance improvement.
-The advanced process page remains available for optional manual selection.
-
-OTHER FEATURES
-
-* Startup inventory and disable/restore of current-user Run entries, with
-  literal command and registry-type backups and restore collision protection.
-* Optional QuietCare launch at Windows sign-in, using the installed/portable
-  executable's current location. Enable this after putting it in its final path.
-* Preview of old user-temp files, handle-based quarantine, recovery and confirmed
-  permanent deletion of individually selected quarantined files.
-* Read-only large-file and SHA-256 duplicate-content finders.
-* Desktop-app inventory with name/publisher filtering.
-* 37 fixed Windows maintenance tool entry points.
-* Local hardware/Windows information and latest-900-sample CSV export.
-* Power-plan selection with backup and restoration of the original plan.
-
-STARTUP AND WINDOWS INTEGRATIONS
-
-Speed Up > Startup Optimizer directly manages current-user Run entries.
-Machine-wide and folder entries are listed read-only; scheduled tasks, Store
-apps and other types use Windows Startup settings and the Windows consoles.
-"Registered" means a Run entry exists; Windows may already have disabled it.
-
-Security, privacy, Windows/driver/Store updates, disk optimization, services,
-tasks, app removal, backup and networking open their named Windows tools.
-Windows handles permissions and the changes you choose there. QuietCare does
-not contain an antivirus, driver database, VPN, browser-history cleaner, general
-registry cleaner, or all modules of Advanced SystemCare Pro.
-
-SCAN previews old temporary files. It does not perform a malware scan or invent
-a health score. See FEATURE-COVERAGE.html for the implementation map.
+STARTUP AND TOOLBOX
+Startup Optimizer searches by name, source or command. Current-user Run entries
+can be backed up, disabled and restored without overwriting collisions. Machine
+and folder entries are read-only. Services/tasks and other types use Windows
+settings/consoles. Registered does not prove effective enabled state; no boot
+impact is guessed. Enable QuietCare startup after choosing its final location.
+The toolbox has 37 fixed Windows entry points. Security, privacy, storage,
+updates/drivers, Store, services/tasks, backup and networking open named Windows
+tools. Local tools include app/hardware inventory, bounded large/duplicate file
+discovery, original power-plan recovery and latest-900-sample CSV export. Missing
+counters stay empty. No independent malware engine, driver database, registry
+cleaner, VPN, browser-history/password cleaner or temperature/fan sensor exists.
 
 CLEANUP AND RECOVERY
+Temp scanning shows examined entries/candidates/bytes and Stop. It checks only
+current-user LocalAppData/Temp: TMP/TEMP/LOG/ETL/DMP/CACHE older than seven days,
+at most 512 MB each, 30,000 entries or 20 seconds total. Limits yield partial
+results. Linked/hard-linked/locked/inaccessible/changed files are excluded.
+Documents, Downloads, browser profiles, cookies/passwords are outside the policy.
+Selected files move to same-drive QuietCare Recovery. Quarantine does not
+reclaim space: review, restore, or confirm permanent removal. Permanent deletion
+cannot be undone. Changed recovery content/stale metadata is rejected; restore
+never overwrites. Duplicate/large-file discovery does not delete files.
 
-The cleaner scans only the current user's LocalAppData\Temp folder. Eligible
-extensions are TMP, TEMP, LOG, ETL, DMP and CACHE; files must be older than seven
-days and no larger than 512 MB. It stops at 30,000 entries or 20 seconds and
-labels partial results. Links, linked folders, hard links, locked/inaccessible
-files, and changed file identities/sizes/timestamps are excluded. Downloads,
-browser profiles, documents, cookies and passwords are outside this policy.
-
-Quarantine moves selected files to LocalAppData\QuietCare\Recovery on the same
-drive. This does not reclaim storage yet. Review Recovery, restore what you
-want, then confirm permanent deletion to reclaim storage. Permanent deletion
-cannot be undone. Changed quarantine content and stale selections are rejected.
-Restoration never overwrites a destination. Legacy recovery entries without a
-verified timestamp can be restored if eligible but cannot be purged by this build.
-
-The duplicate finder examines up to 20,000 entries with a 1 GB hashing budget.
-Hashing is cancellable between 64 KB chunks. Results never delete files.
-
-DATA AND UNINSTALL
-
-Settings, local activity log and recovery live under %LOCALAPPDATA%\QuietCare.
-Application files install under %LOCALAPPDATA%\Programs\QuietCare.
-The X hides the main window to the notification area by default. Right-click
-QuietCare's notification icon or the monitor and choose Exit to stop it.
-Launching QuietCare again reveals the existing instance.
-
-Uninstall through Windows Installed apps or Start > QuietCare > Uninstall
-QuietCare. Restore any startup entries or original power plan you want first.
-Uninstall removes the app and its own shortcuts/registration while retaining
-settings, recovery and startup backups. Unrelated shortcut targets are preserved.
-Its small temporary uninstall helper remains in Temp after it exits.
-
-Advanced SystemCare is not automatically removed. Use its normal uninstaller
-from Windows Installed apps after reviewing the features you depend on.
-
-VALIDATION AND SECURITY SCOPE
-
-42 core checks, 20 UI checks, 4 isolated installer lifecycle checks passed.
-The live Boost data test trims only an isolated helper and verifies every byte
-of its 96 MB allocation afterward. Native UI review includes the redesigned
-Care page, compact monitor and maximize/restore. This does not prove all apps,
-browser versions, Windows versions, hardware, scaling or accessibility settings.
-
-This is an unsigned preview with no independent security audit. It cannot be
-honestly guaranteed 100% bug-free or secure. There are no ads, accounts,
-telemetry uploads, network listeners, automatic updaters, downloaded scripts,
-plugin loaders, bundled drivers or background services. Windows tools use a
-fixed allowlist and trusted system paths. Inventory uninstall strings are not
-executed. These are design choices, not proof of complete security.
-
-GPU uses the busiest engine after summing process instances of each engine.
-CPU is system busy time; readings may differ from Task Manager's CPU utility.
-Missing sensors show unavailable. Temperatures are not supported without a
-hardware sensor implementation/driver and are not fabricated.
-
-BUILD FROM SOURCE
-
-In Windows PowerShell from the extracted source directory:
-  .\build.ps1
-  .\test.ps1
-  .\test-ui.ps1
-  .\package.ps1
-  .\test-installer.ps1
-Optional local resource measurement: .\benchmark.ps1 -Seconds 20
-Do not interact with QuietCare during the benchmark. A result with
-mainUiConstructed=true is not a valid floating-only measurement.
-
-Uses Windows' Framework64 C# compiler; no NuGet/npm restore is required.
-Fixtures stay in test-runs for inspection. Installer test paths are substituted
-at compile time; the production installer has no test-root environment override.
-Source is original and MIT-licensed. No third-party app source or binaries are
-bundled. See UI-RESEARCH.html for GitHub, Microsoft and review references.
-QuietCare is not affiliated with IObit or any referenced project.
+DATA, UNINSTALL AND EVIDENCE
+Settings, local activity log, update cache and backups: %LOCALAPPDATA%/QuietCare.
+Installed app files: %LOCALAPPDATA%/Programs/QuietCare. Local data is not encrypted
+by QuietCare. Uninstall via Windows Installed apps or Start > QuietCare.
+Restore startup/power choices you want first. Uninstall keeps settings/recovery/
+backups and unrelated shortcut targets; a small Temp helper remains.
+The dated test evidence in VALIDATION.md separates core, WPF controls, offline
+updater, live read-only Care and isolated installer checks. Live Boost testing
+uses only a dedicated helper and verifies its 96 MB data; user-app trimming is
+not tested. No all-app/no-bug/security/performance guarantee is made. There is
+no Authenticode signing or independent security audit. Source is MIT licensed.
+BUILDING.md has commands; RELATED-PROJECTS.md and FEATURES.md map whole-app
+professional features, delivered behavior and further implementation work.

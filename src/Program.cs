@@ -8,11 +8,13 @@ using System.Windows;
 [assembly: AssemblyDescription("Local, ad-free Windows monitoring and maintenance")]
 [assembly: AssemblyCompany("QuietCare")]
 [assembly: AssemblyProduct("QuietCare")]
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
+[assembly: AssemblyFileVersion("0.3.0.0")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8")]
 namespace QuietCare {
 internal static class Program {
     [STAThread] static void Main(string[] args) {
+        AppContext.SetSwitch("Switch.System.IO.UseLegacyPathHandling",false);AppContext.SetSwitch("Switch.System.IO.BlockLongPaths",false);
         string identity=System.Security.Principal.WindowsIdentity.GetCurrent().User.Value;bool created;
         using(var mutex=new Mutex(true,@"Local\QuietCare-"+identity,out created))using(var signal=new EventWaitHandle(false,EventResetMode.AutoReset,@"Local\QuietCare-show-"+identity)) {
             if(!created){signal.Set();return;}

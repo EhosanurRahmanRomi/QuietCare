@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2026-10-23
+
+- Real six-stage Care scanning with per-step/current-item feedback, Skip/Stop and result review.
+- Boost accepted-versus-observed measurements, skip/failure reasons and optional OS-background active-browser renderers with fresh protection checks.
+- Searchable startup entries; live temp counts and Stop.
+- GitHub app update checks, preview/stable choice, opt-in weekly startup checks, size/hash-verified user-confirmed installer retrieval.
+- Whole-app professional product and 11-project implementation research, update-feed maintenance docs and offline CI checks.
+- See [validation](docs/VALIDATION.md) for final dated counts and explicit scope.
+
 ## [0.2.0] — 2026-10-23
 
 First public preview release of QuietCare.
@@ -29,3 +38,5 @@ First public preview release of QuietCare.
 42 core, 20 WPF UI and 4 isolated installer checks passed locally. Native layout and maximize/restore were reviewed; the dedicated 96 MB helper retained its data after trimming. The release remains unsigned with limited hardware coverage and no independent security audit. See [validation](docs/VALIDATION.md).
 
 [0.2.0]: https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.2.0
+
+[0.3.0]: https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.3.0

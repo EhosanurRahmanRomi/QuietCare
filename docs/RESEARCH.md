@@ -13,11 +13,13 @@ Reviewed 23 October 2026. This is a record of design/API references, not a claim
 | [Mem Reduct](https://github.com/henrypp/memreduct) and [WinMemoryCleaner](https://github.com/IgorMundstein/WinMemoryCleaner) | Related memory utilities. Their cache/purge options do not establish that aggressive clearing improves ongoing work. |
 | [Advanced SystemCare manual](https://www.iobit.com/product-manuals/asc-help/) | Feature inventory used to distinguish native tools, Windows integrations and unsupported capabilities. |
 
+See the expanded [whole-app professional product and 11-project source review](RELATED-PROJECTS.md) for the 0.3.0 implementation decisions, licenses and future work.
+
 ## Windows and browser behavior
 
 The implementation uses Microsoft's documented [EmptyWorkingSet](https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-emptyworkingset) behavior and [working-set model](https://learn.microsoft.com/en-us/windows/win32/memory/working-set). Smaller resident memory is not the same as freed application allocation or improved responsiveness. The [GPU engine aggregation explanation](https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/) informs the usage counter.
 
-[Chrome's performance guidance](https://support.google.com/chrome/answer/12929150?hl=en-GB) describes browser-managed Memory Saver and protection situations such as active media. QuietCare does not request tab discards/reloads or inspect tab contents. It protects active browser families and uses read-only [Core Audio session process state](https://learn.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessioncontrol2) for media exclusion.
+[Chrome's performance guidance](https://support.google.com/chrome/answer/12929150?hl=en-GB) describes browser-managed Memory Saver and protection situations such as active media. QuietCare does not request tab discards/reloads or inspect tab contents. It protects normal-priority active browser renderers and browser audio families; an explicit setting allows verified OS-background renderers and uses read-only [Core Audio session process state](https://learn.microsoft.com/en-us/windows/win32/api/audiopolicy/nn-audiopolicy-iaudiosessioncontrol2) for media exclusion.
 
 ## Review ratings have limits
 

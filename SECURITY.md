@@ -4,7 +4,7 @@ QuietCare is an unsigned preview and has not received an independent security au
 
 ## Supported version
 
-Security fixes currently target the latest preview source on `main` and the v0.2.x preview line. Older local previews have no separate maintenance commitment.
+Security fixes currently target the latest preview source on `main` and the v0.3.x preview line. Older local previews have no separate maintenance commitment.
 
 ## Report a vulnerability privately
 

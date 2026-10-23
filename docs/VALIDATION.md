@@ -1,35 +1,33 @@
 # Validation and evidence
 
-## Local v0.2.0 result
+## Local 0.3.0 results - 23 October 2026
 
-**42 core + 20 WPF UI + 4 isolated installer lifecycle checks passed** on the reference Windows PC. Both optimized x64 executables compiled with warnings treated as errors. This is scoped verification, not a guarantee of no bugs or complete security.
+**45 core + 27 WPF UI + 17 updater + 9 Care (including one live read-only scan) + 4 isolated installer checks passed.** Optimized x64 app/installer compile with warnings treated as errors. These are scoped checks, not a no-bug, security or performance guarantee.
 
-| Evidence | What it establishes |
+| Evidence | Scope |
 | --- | --- |
-| [Core results](evidence/v0.2.0/test-results.txt) | Path/handle boundaries, linked/locked/changed files, quarantine/recovery, XML rejection, startup fixtures, telemetry, Boost policy and dedicated-helper data preservation. |
-| [WPF UI results](evidence/v0.2.0/ui-test-results.txt) | Real control layout, minimum width, transparent caption/widget properties, CPU/GPU/RAM order, direct Boost event wiring and numeric sorting/tooltips. |
-| [Installer results](evidence/v0.2.0/installer-test-results.txt) | Isolated install integrity, registration/shortcuts, reinstall, unrelated-shortcut preservation and uninstall data retention. |
-| [Single-instance result](evidence/v0.2.0/single-instance-results.txt) | Second launch exited and one matching process remained; the native main window was revealed. |
-| [Benchmark JSON](evidence/v0.2.0/benchmark-report.json) | Short local process resource observations with explicit UI-construction and polling flags. |
-| [Full validation report](VALIDATION-v0.2.0.txt) | Commands' results, binary hashes, methodology, native review and coverage limits. |
-| [Showcase checkout verification](evidence/v0.2.0/source-checkout-verification.txt) | A fresh source copy rebuilt and passed the same 42 core, 20 UI and 4 isolated installer checks before publication. |
+| [Core](evidence/v0.3.0/test-results.txt) | File/identity/recovery boundaries, telemetry, startup fixtures, protection policy, accepted-versus-observed outcomes, cooldown/caps and isolated live memory helper. |
+| [WPF UI](evidence/v0.3.0/ui-test-results.txt) | 15 production routes, minimum width, transparency, direct floating-button event, scan steps/results, manual update host, settings and table sorting. Scan/update/Boost hosts here are fixtures. |
+| [Updater](evidence/v0.3.0/update-test-results.txt) | Fake HTTP with real hash/file/cache/Internet-zone guards, channel/version parsing, tamper/redirect/size/cancel failures and launch callback locking. No installer is executed. |
+| [Care](evidence/v0.3.0/care-live-results.txt) | Eight fixture/orchestration checks and a real six-category read-only Windows scan. Temp scan reached its bound and correctly reported Partial. |
+| [Installer](evidence/v0.3.0/installer-test-results.txt) | Isolated install/hash/registration/shortcuts, reinstall, unrelated-shortcut preservation, uninstall with data retention. |
+| [Boost eligibility audit](evidence/v0.3.0/boost-audit-results.txt) | Read-only current-PC selection/rechecks with aggregate reasons, no saved process names/paths and no user-app trim. |
+| [Benchmark](evidence/v0.3.0/benchmark-results.json) | Four short local runs; cold monitor-only construction and hidden polling flags included. |
 
-## Native UI and memory checks
+## What the live memory test proves
 
-The actual WPF Care window and transparent strip were inspected on the reference PC, and the transparent maximize/restore controls were clicked and verified. The saved screenshots show a 1000 × 670 main window and a 205 × 28 monitor. They are native captures rather than design mockups.
+The test filters native trimming to a dedicated helper PID, observes its working-set decrease, then checks every byte of its 96 MB allocation. User applications are not trimmed by the test. Accepted API requests and lower resident memory do not establish a responsiveness improvement or lasting overall RAM reduction. The current-PC selection audit observed two eligible candidates at that moment; eligibility changes with activity and exclusions.
 
-The direct Boost UI test invokes the floating WPF button with an injected scoped runtime. This proves the wiring and no-chooser behavior, not real user-app optimization. A separate live test filters all trimming to a dedicated memory helper, then checks every byte of its 96 MB allocation. It does not trim user applications. Read-only Core Audio enumeration also ran locally.
+## Visual and runtime scope
 
-## CI scope
+The current Care, live-scan, Boost-results and Updates images are renders of production WPF controls made by the UI harness. The live-scan/Boost examples use explicitly labeled synthetic fixtures; they are not physical-PC scan/optimization evidence. Native automation of the 0.3.0 window could not complete because the computer-use helper reported `foreground window did not report a process id`, including after recovery. Interactive click/scroll/DPI acceptance therefore remains pending. Older 0.2.0 native monitor/window captures and maximize/restore evidence are historical, not current proof.
 
-The repository workflow builds/packages on Windows and runs the layout/isolated-installer checks. Its status is separate from the dated local evidence above. A successful hosted build does not establish physical GPU/audio behavior or a clean installation on every supported Windows configuration.
+Core tests exercise live Windows telemetry/audio and native memory trimming; Care live checks read Windows state. WPF control tests and rendered review are separate from these runtime checks. Offline updater tests do not prove live GitHub retrieval; post-publication live download verification is reported separately with release verification evidence. It never executes the downloaded installer.
 
-## Remaining gaps
+## CI and remaining gaps
 
-- Independent security audit and Authenticode signing.
-- Broader Windows, GPU/driver, multiple-monitor, DPI, high-contrast and accessibility coverage.
-- Long-running, battery and repeated-upgrade/uninstall testing.
-- Compatibility observations across more browsers and project applications.
-- A deterministic/reproducible binary build configuration.
+CI builds/packages and runs WPF, offline updater/Care and isolated installer checks. It does not run the local hardware/audio core suite. A passing hosted build is not physical-device proof.
 
-The source and release notes keep these limits visible. Do not present compile, mocked-policy, layout, hosted CI, and native hardware evidence as interchangeable.
+Remaining: independent security audit, Authenticode/update signatures, wider browser/application compatibility, interactive native UI/scrolling, Windows/GPU/DPI/multi-monitor/high-contrast/accessibility coverage, prolonged resource/battery tests, wider upgrade testing and deterministic builds. The app is not a complete Advanced SystemCare suite or an antivirus.
+
+Historical [0.2.0 evidence](VALIDATION-v0.2.0.txt) remains dated and separate.

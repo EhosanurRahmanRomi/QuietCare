@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 [assembly: AssemblyTitle("QuietCare Setup")]
-[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.3.0.0")]
 namespace QuietCare {
 internal static class SetupProgram {
 #if INSTALLER_TEST
@@ -59,12 +59,12 @@ internal static class SetupProgram {
                 if(File.Exists(Executable))File.Replace(stage,Executable,null);else File.Move(stage,Executable);
                 string setup=Path.Combine(Target,"QuietCare-Setup.exe");
                 string self=Assembly.GetExecutingAssembly().Location;if(!String.Equals(self,setup,StringComparison.OrdinalIgnoreCase))File.Copy(self,setup,true);
-                File.WriteAllText(Path.Combine(Target,"installed.txt"),"QuietCare 0.2.0\r\nPer-user installation. Recovery and settings are stored separately and retained on uninstall.");
+                File.WriteAllText(Path.Combine(Target,"installed.txt"),"QuietCare 0.3.0\r\nPer-user installation. Recovery and settings are stored separately and retained on uninstall.");
             }finally{if(File.Exists(stage))File.Delete(stage);}
         }
         Directory.CreateDirectory(StartFolder);Link(Path.Combine(StartFolder,"QuietCare.lnk"),Executable,"");Link(Path.Combine(StartFolder,"Uninstall QuietCare.lnk"),Path.Combine(Target,"QuietCare-Setup.exe"),"--uninstall");if(desktop)Link(DesktopLink,Executable,"");
         using(var key=Registry.CurrentUser.CreateSubKey(UninstallKey)) {
-            key.SetValue("DisplayName","QuietCare");key.SetValue("DisplayVersion","0.2.0");key.SetValue("Publisher","QuietCare (local preview)");key.SetValue("InstallLocation",Target);
+            key.SetValue("DisplayName","QuietCare");key.SetValue("DisplayVersion","0.3.0");key.SetValue("Publisher","QuietCare (local preview)");key.SetValue("InstallLocation",Target);
             key.SetValue("UninstallString","\""+Path.Combine(Target,"QuietCare-Setup.exe")+"\" --uninstall");key.SetValue("DisplayIcon",Executable);key.SetValue("NoModify",1);key.SetValue("NoRepair",1);key.SetValue("EstimatedSize",(int)(new FileInfo(Executable).Length/1024+500));
         }
         if(launch)Process.Start(new ProcessStartInfo(Executable){UseShellExecute=true});
@@ -118,7 +118,7 @@ internal sealed class SetupForm : Form {
         Controls.Add(new Label{Text="Tiny transparent CPU / GPU / RAM monitor\nOne-click Smart RAM Boost and cleanup with recovery\nNo ads, accounts, telemetry, drivers, or background service",Location=new Point(35,131),Size=new Size(475,85),ForeColor=Color.FromArgb(175,188,219)});
         desktop.Text="Create a desktop shortcut";desktop.Location=new Point(35,229);desktop.Size=new Size(420,25);desktop.Checked=true;Controls.Add(desktop);
         launch.Text="Open QuietCare after installation";launch.Location=new Point(35,260);launch.Size=new Size(420,25);launch.Checked=true;Controls.Add(launch);
-        status.Text="Installs only for your Windows user. No administrator access.\nPreview build 0.2.0 • Windows 10/11 x64 • .NET Framework 4.8";status.Location=new Point(35,303);status.Size=new Size(470,48);status.ForeColor=Color.FromArgb(155,170,205);status.Font=new Font("Segoe UI",9);Controls.Add(status);
+        status.Text="Installs only for your Windows user. No administrator access.\nPreview build 0.3.0 • Windows 10/11 x64 • .NET Framework 4.8";status.Location=new Point(35,303);status.Size=new Size(470,48);status.ForeColor=Color.FromArgb(155,170,205);status.Font=new Font("Segoe UI",9);Controls.Add(status);
         install.Text="Install QuietCare";install.Location=new Point(315,365);install.Size=new Size(190,36);install.BackColor=Color.FromArgb(126,200,255);install.ForeColor=Color.FromArgb(9,11,35);install.FlatStyle=FlatStyle.Flat;install.Click+=(s,e)=>{install.Enabled=false;try{SetupProgram.Install(desktop.Checked,launch.Checked);MessageBox.Show("QuietCare installed. Open it from Start or your desktop.\n\nUse its notification-area menu to exit completely.","QuietCare",MessageBoxButtons.OK,MessageBoxIcon.Information);Close();}catch(Exception ex){status.Text=ex.Message;install.Enabled=true;}};Controls.Add(install);
     }
 }

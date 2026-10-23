@@ -27,6 +27,8 @@ For tray/monitor startup:
 ```powershell
 .\test.ps1
 .\test-ui.ps1
+.\test-updates.ps1
+.\test-care.ps1
 .\package.ps1
 .\test-installer.ps1
 ```
@@ -34,6 +36,8 @@ For tray/monitor startup:
 `test.ps1` builds core tests and the isolated memory helper. The suite includes read-only live hardware/audio checks, filesystem junction/hard-link fixtures, and a trim of its own dedicated helper. It does not trim user apps or modify real user startup entries. Full local results depend on a working Windows desktop/audio environment.
 
 `test-ui.ps1` compiles production WPF controls with a test entry point. It checks layout, minimum-width behavior, transparency, value order, sorting/tooltips and direct Boost wiring with a fake scoped runtime. Automated layout checks are separate from human native visual review.
+
+`test-updates.ps1` uses fake HTTP with real hash/cache/native file guards. Add `-Live` to check real project metadata/download bytes without execution. `test-care.ps1` checks scan orchestration and fixture temp progress; `-Live` adds six real read-only Windows checks.
 
 `test-installer.ps1` embeds the generated payload in a separate fixture-only installer executable. Its install paths and uninstall registry key are selected at compile time. It checks payload hashes, shortcuts/registration, reinstall, unrelated shortcut preservation and uninstall data retention. Run `package.ps1` first so `build/Setup.generated.cs` matches the payload.
 
@@ -52,7 +56,7 @@ Generated binaries and user state are excluded from Git. Official preview binari
 
 ## CI
 
-The Windows workflow builds/packages the app, runs the WPF layout harness and isolated installer checks, validates repository boundaries, and uploads unsigned build artifacts. It uses a read-only token and commit-pinned official actions. CI does not automatically publish releases or run the full hardware/audio-dependent core suite. Local native evidence is separately recorded in [VALIDATION.md](VALIDATION.md).
+The Windows workflow builds/packages the app, runs WPF, offline updater/Care and isolated installer checks, validates repository boundaries, and uploads unsigned build artifacts. It uses a read-only token and commit-pinned official actions. CI does not automatically publish releases or run the full hardware/audio-dependent core suite. Local native evidence is separately recorded in [VALIDATION.md](VALIDATION.md).
 
 ## Benchmarks
 

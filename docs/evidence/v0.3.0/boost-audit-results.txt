@@ -1,0 +1,9 @@
+READ-ONLY BOOST ELIGIBILITY AUDIT. No trim requested; no process names or paths saved.
+137 : protected app / project tool
+53 : small working set
+36 : Windows process
+11 : active application family
+2 : browser controller / GPU / extension
+2 : Eligible at observation
+1 : busy process
+1 : foreground process

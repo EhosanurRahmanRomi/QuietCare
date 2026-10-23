@@ -1,0 +1,46 @@
+[
+  {
+    "mode": "compact_monitor",
+    "refreshMs": 1000,
+    "elapsedSeconds": 20.01,
+    "cpuSeconds": 0.297,
+    "totalCpuPercent": 0.185,
+    "workingSetMB": 97.3,
+    "privateMB": 65.6,
+    "mainUiConstructed": false,
+    "pollingEnabled": true
+  },
+  {
+    "mode": "compact_monitor",
+    "refreshMs": 250,
+    "elapsedSeconds": 20.01,
+    "cpuSeconds": 1.156,
+    "totalCpuPercent": 0.722,
+    "workingSetMB": 98.6,
+    "privateMB": 67.0,
+    "mainUiConstructed": false,
+    "pollingEnabled": true
+  },
+  {
+    "mode": "compact_monitor",
+    "refreshMs": 100,
+    "elapsedSeconds": 19.99,
+    "cpuSeconds": 2.797,
+    "totalCpuPercent": 1.749,
+    "workingSetMB": 100.5,
+    "privateMB": 68.7,
+    "mainUiConstructed": false,
+    "pollingEnabled": true
+  },
+  {
+    "mode": "fully_hidden",
+    "refreshMs": 250,
+    "elapsedSeconds": 20.01,
+    "cpuSeconds": 0.0,
+    "totalCpuPercent": 0.0,
+    "workingSetMB": 53.5,
+    "privateMB": 37.8,
+    "mainUiConstructed": false,
+    "pollingEnabled": false
+  }
+]

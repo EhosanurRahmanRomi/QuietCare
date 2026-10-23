@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/images/banner.svg" alt="QuietCare — PC care without the noise" width="100%"></p>
 
 <p align="center">
-  <a href="https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.2.0"><img alt="Preview release" src="https://img.shields.io/badge/preview-v0.2.0-62ddff?style=flat-square"></a>
+  <a href="https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.3.0"><img alt="Preview release" src="https://img.shields.io/badge/preview-v0.3.0-62ddff?style=flat-square"></a>
   <img alt="Windows 10 and 11, x64" src="https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-467cff?style=flat-square">
   <img alt=".NET Framework 4.8" src="https://img.shields.io/badge/runtime-.NET%20Framework%204.8-ba9aff?style=flat-square">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-64e5b7?style=flat-square"></a>
@@ -13,15 +13,21 @@
 
 QuietCare is an original, ad-free Windows desktop utility built with C# and WPF. It combines a transparent CPU/GPU/RAM monitor, guarded one-click working-set trimming, startup management, and recoverable cleanup in a local-first interface. There are no accounts, advertisements, telemetry uploads, bundled drivers, or background services.
 
-> **Preview status:** v0.2.0 is unsigned and has limited hardware coverage. It has not received an independent security audit. Some tools open Windows' own settings and consoles; QuietCare is not an antivirus or a complete Advanced SystemCare Pro replacement.
+> **Preview status:** v0.3.0 is unsigned and has limited hardware coverage. It has not received an independent security audit. Some tools open Windows' own settings and consoles; QuietCare is not an antivirus or a complete Advanced SystemCare Pro replacement.
 
 ## A clearer desktop
 
-![Native QuietCare main window with integrated transparent controls](docs/images/QuietCare-preview.png)
+![QuietCare 0.3 Care layout rendered from production WPF controls](docs/images/Care-home-render.png)
 
-The main interface uses a continuous navy canvas, transparent window controls, compact sidebar navigation, and focused action cards. The screenshot is the running native application, not a concept render.
+The main interface uses a continuous navy canvas, transparent window controls, compact navigation and focused actions. This 0.3.0 image is a production WPF control render from the test harness; its sensor/Boost state is a fixture.
+
+![Live scan layout with labeled synthetic data](docs/images/Care-live-fixture.png)
+
+The live queue, current-item display and Skip/Stop controls use labeled test data in this image. The real backend was tested separately against Windows. [Validation scope](docs/VALIDATION.md).
 
 ### The monitor stays small
+
+Historical 0.2.0 native capture (the compact layout is retained):
 
 ![Native transparent CPU, GPU and RAM strip](docs/images/QuietCare-monitor.png)
 
@@ -32,6 +38,8 @@ The captured strip is **205 × 28 px**. Its width follows its contents. Readings
 | Capability | Behavior |
 | --- | --- |
 | Transparent monitor | Adjustable 100–10,000 ms refresh, transparency, topmost mode, expandable details, and sign-in startup. |
+| Live Care scan | Six read-only checks with current-step/item feedback, Skip/Stop, partial/unavailable states and expandable observations. |
+| App updates | Manual GitHub checks, preview/stable choice, optional weekly startup check, verified installer and support links. |
 | Direct Smart RAM Boost | The floating lightning button checks qualifying idle background processes and trims their working sets without opening a chooser. |
 | Startup manager | Review startup entries; back up, disable, and restore current-user Run entries without overwriting restore collisions. |
 | Recoverable temp cleanup | Preview eligible old user-temp files, quarantine selected files, restore them, or confirm permanent deletion. |
@@ -42,14 +50,14 @@ See the [feature matrix](docs/FEATURES.md) for the distinction between implement
 
 ## Download
 
-**[Get the v0.2.0 Windows preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.2.0)**
+**[Get the v0.3.0 Windows preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.3.0)**
 
 | Asset | Use |
 | --- | --- |
-| [QuietCare-Setup.exe](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.2.0/QuietCare-Setup.exe) | Per-user installer with Start menu shortcuts and an uninstaller. |
-| [QuietCare.exe](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.2.0/QuietCare.exe) | Portable application. Put it in its final location before enabling startup. |
-| [QuietCare-source-v0.2.0.zip](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.2.0/QuietCare-source-v0.2.0.zip) | The tagged source, documentation, tests, and images. |
-| [SHA256SUMS.txt](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.2.0/SHA256SUMS.txt) | File integrity checksums; these do not replace a code signature. |
+| [QuietCare-Setup.exe](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.3.0/QuietCare-Setup.exe) | Per-user installer with Start menu shortcuts and an uninstaller. |
+| [QuietCare.exe](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.3.0/QuietCare.exe) | Portable application. Put it in its final location before enabling startup. |
+| [QuietCare-source-v0.3.0.zip](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.3.0/QuietCare-source-v0.3.0.zip) | The tagged source, documentation, tests, and images. |
+| [SHA256SUMS.txt](https://github.com/EhosanurRahmanRomi/QuietCare/releases/download/v0.3.0/SHA256SUMS.txt) | File integrity checksums; these do not replace a code signature. |
 
 Requires **Windows 10/11 x64** and **.NET Framework 4.8 or later**. Installation and normal use do not request administrator access. Windows may show an unsigned-application warning; review the source and provenance before deciding whether to run it. QuietCare does not automatically uninstall another product.
 
@@ -57,21 +65,25 @@ Requires **Windows 10/11 x64** and **.NET Framework 4.8 or later**. Installation
 
 Boost uses Microsoft's documented `EmptyWorkingSet` API. It asks Windows to reduce resident pages in eligible idle background processes; it does not terminate, suspend, or restart applications or discard/reload browser tabs.
 
-The current application family, active browser family, active audio/calls, Windows processes, visible applications, and common developer, trading, Office, terminal, VM, and media tools are excluded. Add your own protected process names in Settings. If media activity cannot be verified, Boost leaves candidates unchanged. Work is capped, with a 30-second cooldown.
+Foreground processes, active audio/calls, Windows processes and common project tools are protected. Settings also controls whether idle renderers with Windows background priority may qualify inside an active browser. Browser controllers and extensions remain excluded. Add browser process names to protect all background web projects. Unknown media state prevents trimming; work is capped with a 30-second cooldown.
 
-Working-set trimming does not deallocate an application's data. Pages can return when needed and can cause paging latency. Lower displayed RAM use is **not a guaranteed speed improvement**. QuietCare cannot identify the contents of individual browser tabs, so it protects the whole active browser family. [Read the policy and limits](docs/RAM-BOOST.md).
+Boost results distinguish Windows-accepted requests from measured resident decreases, show physical RAM before/after, and explain skip/failure reasons. Working-set trimming does not free committed allocations; pages may return with latency. Lower displayed RAM use is **not a guaranteed speed improvement**. [Policy and limits](docs/RAM-BOOST.md).
+
+## App updates and support
+
+Open **Updates > Check for updates**. Review notes, download the size/SHA-256-verified installer, then explicitly choose whether to open it. Preview/stable channels and an opt-in weekly startup check are in Settings. There is no silent installation. Network use is limited to GitHub/project release infrastructure when you check or download. [Update design and maintainer procedure](docs/UPDATES.md).
 
 ## Built to stay quiet
 
 Compact mode collects CPU/GPU/RAM only; disk and network discovery starts with the expanded monitor. The main UI is built when opened and released on close to tray. Sampling pauses when both windows are hidden, when only a minimized main window remains, and during suspension.
 
-Local measurements on one i5-8350U / Intel UHD 620 / 16 GB PC, with about 20 seconds per case after a 5-second warmup:
+v0.3.0 local measurements on one i5-8350U / Intel UHD 620 / 16 GB PC, with about 20 seconds per case after a 5-second warmup:
 
 | Refresh | Total CPU | Working set |
 | --- | ---: | ---: |
-| 1,000 ms | 0.146% | 96.9 MB |
-| 250 ms | 0.703% | 97.7 MB |
-| 100 ms | 1.601% | 99.8 MB |
+| 1,000 ms | 0.185% | 97.3 MB |
+| 250 ms | 0.722% | 98.6 MB |
+| 100 ms | 1.749% | 100.5 MB |
 
 The main UI stayed unconstructed in these runs. Fully hidden polling was disabled. These are short local observations under other active workloads, not guaranteed bounds or long-duration/battery results. [Method, raw data, and limits](docs/PERFORMANCE.md).
 
@@ -83,13 +95,15 @@ No NuGet/npm restore or separate SDK is required. In **Windows PowerShell**, fro
 .\build.ps1
 .\test.ps1
 .\test-ui.ps1
+.\test-updates.ps1
+.\test-care.ps1
 .\package.ps1
 .\test-installer.ps1
 ```
 
 The scripts use Windows' bundled .NET Framework 64-bit C# compiler. Binaries are written to `build/`; isolated fixtures stay in `test-runs/`, which is ignored by Git. See [BUILDING.md](docs/BUILDING.md) for prerequisites, expected output, CI coverage, and benchmark instructions.
 
-The v0.2.0 local suite passed **42 core + 20 UI + 4 installer checks**. A live memory test trims only a dedicated helper process and verifies all 96 MB of its data afterward. The native UI was reviewed on the reference PC. These are scoped checks, not a claim that every app, GPU, browser, or Windows configuration is verified. [Evidence and test scope](docs/VALIDATION.md).
+The v0.3.0 checks include core/process protection, WPF controls, updater guards, Care orchestration and isolated installer lifecycle. A live helper test verifies its 96 MB allocation after trimming; the Care live test performs read-only Windows checks. Tests do not establish all-app compatibility or guaranteed performance gains. [Dated results and scope](docs/VALIDATION.md).
 
 ## For developers
 
@@ -98,7 +112,8 @@ src/                 WPF shell, telemetry, maintenance services and native inter
 installer/           Per-user installer and uninstaller
 tests/               Core, WPF layout, installer and benchmark harnesses
 docs/                Guides, design notes, screenshots and sanitized evidence
-scripts/             Repository hygiene checks
+scripts/             Repository hygiene and release-feed generation
+updates/             Fixed stable/preview fallback release metadata
 .github/             Windows CI and contribution templates
 ```
 
@@ -106,7 +121,7 @@ Start with the [architecture](docs/ARCHITECTURE.md), [security model](docs/SECUR
 
 ## Inspiration and license
 
-The user's UI reference informed the circular scan and tiny transparent monitor. Research included [TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor), [TaskbarStats](https://github.com/ericbruggema/TaskbarStats), [DevToys](https://github.com/DevToys-app/DevToys), [Microsoft PC Manager](https://pcmanager.microsoft.com/en-us), and documented Windows APIs. See [research and design decisions](docs/RESEARCH.md) for details and review-rating limitations.
+The UI reference informed the circular scan and tiny transparent monitor. The whole-app review covers Advanced SystemCare, Microsoft PC Manager, Glary Utilities, Wise Care and BleachBit, plus 11 related GitHub projects including PowerClean, WinMemoryCleaner, Mem Reduct, TrafficMonitor and update frameworks. [Specific sources, licenses and implementation decisions](docs/RELATED-PROJECTS.md) distinguish actual source review from product documentation.
 
 QuietCare's code, branding, and vector interface are original. No referenced application's code or binaries are bundled. It is not affiliated with IObit, Microsoft, or the referenced projects.
 

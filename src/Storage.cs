@@ -35,18 +35,18 @@ public static class State {
     }
 }
 public sealed class Settings {
-    public bool ShowWidget=true, Topmost=true, CloseToTray=true; public int Interval=2,RefreshMs=1000; public double WidgetX=-1,WidgetY=-1,WidgetOpacity=0.48;public string BoostExclusions="";
+    public bool ShowWidget=true, Topmost=true, CloseToTray=true; public int Interval=2,RefreshMs=1000; public double WidgetX=-1,WidgetY=-1,WidgetOpacity=0.48;public string BoostExclusions="";public bool BoostBackgroundBrowsers=true;public bool CheckUpdatesWeekly=false,IncludePreviewUpdates=true;public DateTime LastUpdateAttemptUtc=DateTime.MinValue;public string ScanCategories="temp,startup,memory,storage,apps,protection";
     public string[] ProtectedApps {get{return (BoostExclusions??"").Split(new[]{'\r','\n',',',';'},StringSplitOptions.RemoveEmptyEntries);}}
     public static Settings Load(){try{
         var root=State.Read(State.FilePath("settings.xml")).Root;var s=new Settings();
         s.ShowWidget=(bool?)root.Attribute("widget")??true;s.Topmost=(bool?)root.Attribute("topmost")??true;s.CloseToTray=(bool?)root.Attribute("tray")??true;
         s.Interval=(int?)root.Attribute("interval")??2;if(s.Interval!=1 && s.Interval!=2 && s.Interval!=5)s.Interval=2;
         s.RefreshMs=Math.Max(100,Math.Min(10000,(int?)root.Attribute("refreshMs")??s.Interval*1000));
-        s.WidgetX=Position((double?)root.Attribute("x")??-1);s.WidgetY=Position((double?)root.Attribute("y")??-1);s.WidgetOpacity=Opacity((double?)root.Attribute("opacity")??0.48);s.BoostExclusions=(string)root.Element("boostExclusions")??"";return s;
+        s.WidgetX=Position((double?)root.Attribute("x")??-1);s.WidgetY=Position((double?)root.Attribute("y")??-1);s.WidgetOpacity=Opacity((double?)root.Attribute("opacity")??0.48);s.BoostExclusions=(string)root.Element("boostExclusions")??"";s.BoostBackgroundBrowsers=(bool?)root.Attribute("backgroundBrowsers")??true;s.CheckUpdatesWeekly=(bool?)root.Attribute("weeklyUpdates")??false;s.IncludePreviewUpdates=(bool?)root.Attribute("previewUpdates")??true;DateTime attempt;if(DateTime.TryParse((string)root.Attribute("lastUpdateAttempt"),System.Globalization.CultureInfo.InvariantCulture,System.Globalization.DateTimeStyles.RoundtripKind,out attempt))s.LastUpdateAttemptUtc=attempt.ToUniversalTime();s.ScanCategories=(string)root.Element("scanCategories")??s.ScanCategories;return s;
     }catch(Exception){return new Settings();}}
     internal static double Position(double value){return double.IsNaN(value)||double.IsInfinity(value)?-1:value;}
     internal static double Opacity(double value){return double.IsNaN(value)||double.IsInfinity(value)?0.48:Math.Max(0.15,Math.Min(1,value));}
-    public void Save(){State.Save(State.FilePath("settings.xml"),new XDocument(new XElement("settings",new XAttribute("widget",ShowWidget),new XAttribute("topmost",Topmost),new XAttribute("tray",CloseToTray),new XAttribute("interval",Interval),new XAttribute("refreshMs",RefreshMs),new XAttribute("x",WidgetX),new XAttribute("y",WidgetY),new XAttribute("opacity",WidgetOpacity),new XElement("boostExclusions",BoostExclusions??""))));}
+    public void Save(){State.Save(State.FilePath("settings.xml"),new XDocument(new XElement("settings",new XAttribute("widget",ShowWidget),new XAttribute("topmost",Topmost),new XAttribute("tray",CloseToTray),new XAttribute("interval",Interval),new XAttribute("refreshMs",RefreshMs),new XAttribute("x",WidgetX),new XAttribute("y",WidgetY),new XAttribute("opacity",WidgetOpacity),new XAttribute("backgroundBrowsers",BoostBackgroundBrowsers),new XAttribute("weeklyUpdates",CheckUpdatesWeekly),new XAttribute("previewUpdates",IncludePreviewUpdates),new XAttribute("lastUpdateAttempt",LastUpdateAttemptUtc.ToString("o")),new XElement("scanCategories",ScanCategories??""),new XElement("boostExclusions",BoostExclusions??""))));}
 }
 internal sealed class DirectoryLocks : IDisposable {
     internal List<SafeFileHandle> Handles=new List<SafeFileHandle>();
@@ -92,6 +92,9 @@ public sealed class TempItem {
 public sealed class ScanResult {
     public List<TempItem> Items=new List<TempItem>(); public int Skipped; public bool Limited; public long Bytes {get{return Items.Sum(x=>x.Bytes);}}
 }
+public sealed class ScanFileProgress {
+    public int Examined,Candidates;public string Path;public long Bytes;
+}
 public sealed class RecoveryItem {
     public string Id {get;set;} public string Original {get;set;} public string Stored {get;set;} public string Size {get;set;} public string When {get;set;}
     public string Identity {get;set;} public long Bytes {get;set;}public ulong Written {get;set;}
@@ -102,15 +105,16 @@ public sealed class Cleaner {
     internal Cleaner(string root,string recovery){Root=Path.GetFullPath(root);Recovery=Path.GetFullPath(recovery);}
     static readonly HashSet<string> Extensions=new HashSet<string>(new[]{".tmp",".temp",".log",".etl",".dmp",".cache"},StringComparer.OrdinalIgnoreCase);
     internal static bool Eligible(string path,DateTime modified){return Extensions.Contains(Path.GetExtension(path)) && modified<DateTime.UtcNow.AddDays(-7);}
-    public ScanResult Scan(CancellationToken cancel) {
+    public ScanResult Scan(CancellationToken cancel,Action<ScanFileProgress> progress=null) {
         var result=new ScanResult();if(!Directory.Exists(Root))return result;
-        var watch=System.Diagnostics.Stopwatch.StartNew();var dirs=new Stack<string>();dirs.Push(Root);int visited=0;
+        var watch=System.Diagnostics.Stopwatch.StartNew();var dirs=new Stack<string>();dirs.Push(Root);int visited=0;long nextReport=0,foundBytes=0;string current=Root;
         while(dirs.Count>0) {
             cancel.ThrowIfCancellationRequested();if(visited>30000 || watch.Elapsed.TotalSeconds>20){result.Limited=true;break;}
             string dir=dirs.Pop();
             try {using(var locks=SafePaths.LockParents(Path.Combine(dir,"probe"))) {
                 foreach(string p in Directory.EnumerateFileSystemEntries(dir)) {
                     cancel.ThrowIfCancellationRequested();if(++visited>30000 || watch.Elapsed.TotalSeconds>20){result.Limited=true;break;}
+                    current=p;if(progress!=null&&watch.ElapsedMilliseconds>=nextReport){progress(new ScanFileProgress{Examined=visited,Candidates=result.Items.Count,Bytes=foundBytes,Path=current});nextReport=watch.ElapsedMilliseconds+120;}
                     try {
                         var attr=File.GetAttributes(p);if((attr&FileAttributes.ReparsePoint)!=0){result.Skipped++;continue;}
                         if((attr&FileAttributes.Directory)!=0){dirs.Push(p);continue;}
@@ -118,12 +122,13 @@ public sealed class Cleaner {
                         using(var h=SafePaths.Open(p,false)) {
                             var info=SafePaths.Inspect(h,p);if(!Eligible(p,DateTime.FromFileTimeUtc((long)info.Written.Value)))continue;if(info.Size>512UL*1024*1024){result.Skipped++;continue;}
                             result.Items.Add(new TempItem {Path=p,Bytes=(long)info.Size,Size=Format.Bytes(info.Size),Modified=DateTime.FromFileTimeUtc((long)info.Written.Value).ToLocalTime().ToString("g"),Identity=info.Identity,Written=info.Written.Value});
+                            foundBytes+=(long)info.Size;
                         }
                     }catch(IOException){result.Skipped++;}catch(UnauthorizedAccessException){result.Skipped++;}catch(Win32Exception){result.Skipped++;}
                 }
             }}catch(IOException){result.Skipped++;}catch(UnauthorizedAccessException){result.Skipped++;}catch(Win32Exception){result.Skipped++;}
         }
-        return result;
+        if(progress!=null)progress(new ScanFileProgress{Examined=visited,Candidates=result.Items.Count,Bytes=foundBytes,Path=current});return result;
     }
     public RecoveryItem Quarantine(TempItem item) {
         if(!SafePaths.Within(Root,item.Path) || !Eligible(item.Path,DateTime.FromFileTimeUtc((long)item.Written))) throw new IOException("The file is outside the cleanup policy.");
