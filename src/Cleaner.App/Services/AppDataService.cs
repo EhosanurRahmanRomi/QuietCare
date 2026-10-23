@@ -16,18 +16,22 @@ public sealed class AppDataService
         PropertyNameCaseInsensitive = true,
     };
 
-    public AppDataService()
+    public AppDataService(string? root=null)
     {
-        RootDir = Path.Combine(
+        RootDir = root is not null?Path.GetFullPath(root):Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "PowerClean");
+            "QuietCareNext");
         try { Directory.CreateDirectory(RootDir); } catch { /* best effort */ }
     }
 
     /// <summary>Basis-Ordner für alle persistierten Daten.</summary>
     public string RootDir { get; }
 
-    public string PathFor(string fileName) => Path.Combine(RootDir, fileName);
+    public string PathFor(string fileName)
+    {
+        if(string.IsNullOrWhiteSpace(fileName)||Path.GetFileName(fileName)!=fileName)throw new ArgumentException("A local data file name is required.",nameof(fileName));
+        return Path.Combine(RootDir,fileName);
+    }
 
     /// <summary>Lädt eine JSON-Datei. Bei Fehler/fehlend wird der Fallback erzeugt.</summary>
     public T Load<T>(string fileName, Func<T> fallback)
@@ -38,7 +42,8 @@ public sealed class AppDataService
             if (!File.Exists(path)) return fallback();
             var json = File.ReadAllText(path);
             if (string.IsNullOrWhiteSpace(json)) return fallback();
-            return JsonSerializer.Deserialize<T>(json, Json) ?? fallback();
+            var info=StartupJsonContext.Default.GetTypeInfo(typeof(T)) as System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>;
+            return (info is null?JsonSerializer.Deserialize<T>(json,Json):JsonSerializer.Deserialize(json,info))??fallback();
         }
         catch (Exception ex)
         {
@@ -50,14 +55,20 @@ public sealed class AppDataService
     /// <summary>Speichert ein Objekt als JSON. Fehler werden geloggt, nie geworfen.</summary>
     public void Save<T>(string fileName, T value)
     {
+        string? temporary=null;
         try
         {
-            var json = JsonSerializer.Serialize(value, Json);
-            File.WriteAllText(PathFor(fileName), json);
+            var info=StartupJsonContext.Default.GetTypeInfo(typeof(T)) as System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>;
+            var json=info is null?JsonSerializer.Serialize(value,Json):JsonSerializer.Serialize(value,info);
+            var destination=PathFor(fileName);temporary=destination+"."+Guid.NewGuid().ToString("N")+".tmp";
+            using(var stream=new FileStream(temporary,FileMode.CreateNew,FileAccess.Write,FileShare.None))
+            {var bytes=System.Text.Encoding.UTF8.GetBytes(json);stream.Write(bytes);stream.Flush(true);}
+            File.Move(temporary,destination,true);temporary=null;
         }
         catch (Exception ex)
         {
             Cleaner.App.App.LogException("AppData.Save:" + fileName, ex);
         }
+        finally{if(temporary is not null)try{File.Delete(temporary);}catch{}}
     }
 }

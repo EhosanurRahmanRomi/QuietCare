@@ -8,9 +8,8 @@ public sealed class UserTempCleaner : CleanupTargetBase
     public UserTempCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "system.user-temp";
-    public override string Name => "Benutzer-Temp-Dateien";
-    public override string Description =>
-        "Temporäre Dateien aus %TEMP%. Wird ständig neu befüllt, Löschen ist sicher.";
+    public override string Name => "User temporary files";
+    public override string Description => "Old temporary files in your local Temp folder. Open, changed and linked files are skipped.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.WindowsSystem;
     public override SafetyLevel SafetyLevel => SafetyLevel.Safe;
@@ -20,6 +19,6 @@ public sealed class UserTempCleaner : CleanupTargetBase
 
     protected override IEnumerable<string> EnumerateCleanupRoots()
     {
-        yield return Path.GetTempPath();
+        yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp");
     }
 }

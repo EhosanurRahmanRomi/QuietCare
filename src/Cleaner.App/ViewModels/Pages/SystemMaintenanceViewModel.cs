@@ -18,7 +18,7 @@ public sealed partial class SystemMaintenanceViewModel : ObservableObject
 
     public ObservableCollection<RestorePoint> RestorePoints { get; } = new();
 
-    [ObservableProperty] private string _log = "Bereit. Klicke eine Aktion an.\n";
+    [ObservableProperty] private string _log = "Ready. Choose an action.\n";
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private bool _hibernationEnabled;
     [ObservableProperty] private long _hibernationFileSize;
@@ -29,8 +29,7 @@ public sealed partial class SystemMaintenanceViewModel : ObservableObject
     {
         var ts = DateTime.Now.ToString("HH:mm:ss");
         var indented = string.Join("\n", line.Split('\n').Select(l => "    " + l));
-        _log = $"[{ts}] {line.Split('\n')[0]}\n" + (line.Contains('\n') ? indented + "\n" : "") + _log;
-        OnPropertyChanged(nameof(Log));
+        Log = $"[{ts}] {line.Split('\n')[0]}\n" + (line.Contains('\n') ? indented + "\n" : "") + Log;
     }
 
     public void RefreshStatus()
@@ -144,93 +143,29 @@ public sealed partial class SystemMaintenanceViewModel : ObservableObject
     [RelayCommand]
     public async Task DeleteOldRestorePointsAsync()
     {
-        if (MessageBox.Show(
-                "ALLE Wiederherstellungspunkte (außer dem neuesten) werden gelöscht.\n\n" +
-                "Spart oft mehrere GB. Benötigt Admin.\n\nFortfahren?",
-                "Restore Points", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-            return;
-
-        IsBusy = true;
-        Append("vssadmin delete shadows /for=C: /oldest /quiet (mehrfach)...");
-        try
-        {
-            // VSSAdmin kann nur "oldest" oder alle löschen. Wir wollen "alle außer neuester" —
-            // also vssadmin delete shadows /all + neuer wird beim nächsten Boot erstellt.
-            // Sicherer: nur ältere löschen — wir nutzen /for /oldest in einer Schleife.
-            for (int i = 0; i < 100; i++)
-            {
-                var (rc, output) = await _svc.RunAsync("vssadmin.exe",
-                    "delete shadows /for=C: /oldest /quiet", elevate: true, CancellationToken.None);
-                if (rc != 0) break;
-            }
-            Append("Restore-Points-Cleanup abgeschlossen.");
-            await LoadRestorePointsAsync();
-        }
-        finally { IsBusy = false; }
+        Append("Unavailable in preview: this destructive action has not passed validation.");
+        await Task.CompletedTask;
     }
 
     [RelayCommand]
     public async Task DeleteAllRestorePointsAsync()
     {
-        if (MessageBox.Show(
-                "ALLE Wiederherstellungspunkte werden gelöscht!\n\n" +
-                "Du kannst danach nicht mehr auf einen früheren Stand zurück.\n" +
-                "Spart oft 10+ GB. Benötigt Admin.\n\n" +
-                "Wirklich fortfahren?",
-                "Alle Restore Points löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-            return;
-
-        IsBusy = true;
-        Append("vssadmin delete shadows /all /quiet ...");
-        try
-        {
-            var (rc, output) = await _svc.RunAsync("vssadmin.exe",
-                "delete shadows /all /quiet", elevate: true, CancellationToken.None);
-            Append(output);
-            await LoadRestorePointsAsync();
-        }
-        finally { IsBusy = false; }
+        Append("Unavailable in preview: this destructive action has not passed validation.");
+        await Task.CompletedTask;
     }
 
     [RelayCommand]
     public async Task FlushPrintQueueAsync()
     {
-        if (MessageBox.Show("Druckwarteschlange leeren?\n\nStoppt den Print-Spooler-Dienst, " +
-                            "löscht alle Druckjobs und startet den Spooler neu. Admin nötig.",
-                "Druckwarteschlange", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
-            return;
-
-        IsBusy = true;
-        try
-        {
-            Append("Stoppe Spooler...");
-            await _svc.RunAsync("net.exe", "stop spooler", elevate: true, CancellationToken.None);
-            Append("Lösche %SystemRoot%\\System32\\spool\\PRINTERS\\* ...");
-            var spoolDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "spool", "PRINTERS");
-            if (System.IO.Directory.Exists(spoolDir))
-            {
-                foreach (var f in System.IO.Directory.EnumerateFiles(spoolDir))
-                { try { System.IO.File.Delete(f); } catch { } }
-            }
-            Append("Starte Spooler...");
-            await _svc.RunAsync("net.exe", "start spooler", elevate: true, CancellationToken.None);
-            Append("Fertig.");
-        }
-        catch (Exception ex) { Append("Fehler: " + ex.Message); }
-        finally { IsBusy = false; }
+        Append("Unavailable in preview: use Windows printer settings to manage the print queue.");
+        await Task.CompletedTask;
     }
 
     [RelayCommand]
     public async Task EmptyRecycleBinAsync()
     {
-        IsBusy = true;
-        Append("Papierkorb leeren...");
-        try
-        {
-            var (rc, output) = await _svc.RunAsync("cmd.exe", "/c rd /s /q C:\\$Recycle.Bin", elevate: true, CancellationToken.None);
-            Append("Papierkorb geleert.");
-        }
-        finally { IsBusy = false; }
+        Append("Unavailable in preview: this destructive action has not passed validation.");
+        await Task.CompletedTask;
     }
 
     [RelayCommand]

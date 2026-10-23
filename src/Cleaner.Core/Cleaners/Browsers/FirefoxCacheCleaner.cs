@@ -9,8 +9,8 @@ public sealed class FirefoxCacheCleaner : CleanupTargetBase
     public FirefoxCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "browser.firefox-cache";
-    public override string Name => "Firefox Cache";
-    public override string Description => "cache2-Ordner aller Firefox-Profile.";
+    public override string Name => "Firefox cache";
+    public override string Description => "Old cache2 and startup-cache files. Cache rebuilding can slow the first reload.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Browsers;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;

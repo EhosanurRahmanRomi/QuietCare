@@ -17,8 +17,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<Cleaner.App.Services.CleanupHistoryService>();
         services.AddSingleton<Cleaner.App.Services.RecycleBinService>();
         services.AddSingleton<Cleaner.App.Services.ProfileService>();
-        services.AddSingleton<Cleaner.App.Services.KillProfileService>();
-        services.AddSingleton<Cleaner.App.Services.KillHotkeyService>();
         services.AddSingleton<Cleaner.App.Services.ToastService>();
         services.AddSingleton<Cleaner.App.Services.GridViewService>();
         services.AddSingleton<AppSettings>();
@@ -37,24 +35,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IOrphanUserDataScanner, OrphanUserDataScanner>();
         services.AddSingleton<IServiceScanner, ServiceScanner>();
         services.AddSingleton<IProcessMonitor, ProcessMonitorService>();
-        services.AddSingleton<IProcessKiller, ProcessKillerService>();
+
         services.AddSingleton<IRegistryScanner, RegistryScanner>();
         services.AddSingleton<ISystemMaintenanceService, SystemMaintenanceService>();
         services.AddSingleton<Cleaner.App.Services.RunningTaskRegistry>();
-        services.AddSingleton<Cleaner.App.Services.UpdateService>();
 
         // Windows-System cleaners
         services.AddSingleton<ICleanupTarget, UserTempCleaner>();
         services.AddSingleton<ICleanupTarget, WindowsTempCleaner>();
         services.AddSingleton<ICleanupTarget, ThumbnailCacheCleaner>();
         services.AddSingleton<ICleanupTarget, IconCacheCleaner>();
-        services.AddSingleton<ICleanupTarget, WindowsUpdateCacheCleaner>();
         services.AddSingleton<ICleanupTarget, WindowsLogsCleaner>();
-        services.AddSingleton<ICleanupTarget, RecycleBinCleaner>();
-        services.AddSingleton<ICleanupTarget, DeliveryOptimizationCleaner>();
-        services.AddSingleton<ICleanupTarget, PrefetchCleaner>();
-        services.AddSingleton<ICleanupTarget, MemoryDumpCleaner>();
-        services.AddSingleton<ICleanupTarget, WindowsOldCleaner>();
 
         // Browser
         services.AddSingleton<ICleanupTarget, ChromeCacheCleaner>();
@@ -70,7 +61,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ICleanupTarget, NpmCacheCleaner>();
         services.AddSingleton<ICleanupTarget, DotNetBuildArtifactsCleaner>();
         services.AddSingleton<ICleanupTarget, NodeModulesCleaner>();
-        services.AddSingleton<ICleanupTarget, DockerCleaner>();
         services.AddSingleton<ICleanupTarget, PipCacheCleaner>();
         services.AddSingleton<ICleanupTarget, MavenCacheCleaner>();
         services.AddSingleton<ICleanupTarget, GradleCacheCleaner>();

@@ -84,7 +84,7 @@
                                Icon="{ui:SymbolIcon BranchCompare24}"
                                Content="{l:T FolderCompare.Compare}"
                                Command="{Binding ViewModel.CompareCommand}"
-                               IsEnabled="{Binding ViewModel.IsComparing, Converter={StaticResource InverseBoolToVis}}" />
+                               IsEnabled="{Binding ViewModel.IsComparing, Converter={StaticResource InverseBool}}" />
                     <ui:Button Appearance="Caution" Margin="8,0,0,0"
                                Icon="{ui:SymbolIcon Dismiss24}"
                                Content="{l:T Cancel}"

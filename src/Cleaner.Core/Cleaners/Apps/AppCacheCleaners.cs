@@ -9,9 +9,8 @@ public sealed class TeamsCacheCleaner : CleanupTargetBase
     public TeamsCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "app.teams-cache";
-    public override string Name => "Microsoft Teams Cache";
-    public override string Description =>
-        "Cache von Teams (klassisch und neu). Chats/Einstellungen bleiben erhalten.";
+    public override string Name => "Teams classic cache";
+    public override string Description => "Old HTTP, code and GPU caches from classic Teams. New Teams profile data is preserved.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Other;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -23,13 +22,13 @@ public sealed class TeamsCacheCleaner : CleanupTargetBase
 
         // Teams Classic
         var classic = Path.Combine(roaming, "Microsoft", "Teams");
-        foreach (var sub in new[] { "Cache", "GPUCache", "Code Cache", "blob_storage", "tmp" })
+        foreach (var sub in new[] { "Cache", "GPUCache", "Code Cache", "tmp" })
             yield return Path.Combine(classic, sub);
 
         // Neues Teams (MSIX-Paket)
         var packages = Path.Combine(local, "Packages");
         var newTeams = Path.Combine(packages, "MSTeams_8wekyb3d8bbwe", "LocalCache");
-        yield return newTeams;
+        // New Teams LocalCache can contain profile data; preserve the entire tree.
     }
 }
 
@@ -39,9 +38,8 @@ public sealed class SlackCacheCleaner : CleanupTargetBase
     public SlackCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "app.slack-cache";
-    public override string Name => "Slack Cache";
-    public override string Description =>
-        "%APPDATA%\\Slack Cache-Ordner. Anmeldung und Einstellungen bleiben erhalten.";
+    public override string Name => "Slack cache";
+    public override string Description => "Old HTTP, code, GPU caches and logs. Offline service-worker data is preserved.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Other;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -50,7 +48,7 @@ public sealed class SlackCacheCleaner : CleanupTargetBase
     {
         var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var slack = Path.Combine(roaming, "Slack");
-        foreach (var sub in new[] { "Cache", "GPUCache", "Code Cache", "Service Worker", "logs" })
+        foreach (var sub in new[] { "Cache", "GPUCache", "Code Cache", "logs" })
             yield return Path.Combine(slack, sub);
     }
 }
@@ -61,9 +59,8 @@ public sealed class DiscordCacheCleaner : CleanupTargetBase
     public DiscordCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "app.discord-cache";
-    public override string Name => "Discord Cache";
-    public override string Description =>
-        "%APPDATA%\\discord Cache-Ordner. Anmeldung und Einstellungen bleiben erhalten.";
+    public override string Name => "Discord cache";
+    public override string Description => "Old HTTP, code and GPU caches. Account settings are preserved.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Other;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -83,9 +80,8 @@ public sealed class SpotifyCacheCleaner : CleanupTargetBase
     public SpotifyCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "app.spotify-cache";
-    public override string Name => "Spotify Cache";
-    public override string Description =>
-        "%LocalAppData%\\Spotify Cache (zwischengespeicherte Songs). Wird neu aufgebaut.";
+    public override string Name => "Spotify browser cache";
+    public override string Description => "Old browser cache only. Offline music, Storage and Data folders are preserved.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Other;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -94,8 +90,8 @@ public sealed class SpotifyCacheCleaner : CleanupTargetBase
     {
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var spotify = Path.Combine(local, "Spotify");
-        yield return Path.Combine(spotify, "Storage");
-        yield return Path.Combine(spotify, "Data");
+
+
         yield return Path.Combine(spotify, "Browser", "Cache");
     }
 }

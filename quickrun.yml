@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://fgilde.github.io/QuickRun/quickrun.schema.json
-name: PowerClean
-description: "The WPF cleaner. Windows only, because of WPF and the Windows App SDK."
+name: QuietCare Next
+description: "QuietCare Next preview. Windows only, because of WPF and the Windows App SDK."
 
 requires:
   - tool: dotnet
@@ -15,8 +15,8 @@ tasks:
   - name: app
     run:
       windows: dotnet run --project src/Cleaner.App
-      linux: echo "PowerClean is a WPF application and runs on Windows only."
-      macos: echo "PowerClean is a WPF application and runs on Windows only."
+      linux: echo "QuietCare Next is a WPF application and runs on Windows only."
+      macos: echo "QuietCare Next is a WPF application and runs on Windows only."
     # A desktop app is up when its window is up, not when dotnet started building it. QuickRun
     # shows the process id and brings that window to the front once it appears.
     readyWhen: {window: true}

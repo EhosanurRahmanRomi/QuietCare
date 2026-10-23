@@ -22,6 +22,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     public AppSettings Settings => _settings;
 
     [RelayCommand]
+    public void MonitorSettings() => App.Monitor?.Reveal("Settings");
+
+    [RelayCommand]
     public void ApplyTheme()
     {
         ApplicationThemeManager.Apply(_settings.UseDarkTheme ? ApplicationTheme.Dark : ApplicationTheme.Light);

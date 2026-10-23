@@ -114,36 +114,7 @@ public sealed class InstalledProgramsScanner : IInstalledProgramsScanner
 
     public bool Uninstall(InstalledProgram program, bool quiet)
     {
-        var cmd = quiet && !string.IsNullOrWhiteSpace(program.QuietUninstallString)
-            ? program.QuietUninstallString
-            : program.UninstallString;
-
-        if (string.IsNullOrWhiteSpace(cmd)) return false;
-
-        try
-        {
-            string file, args;
-            if (cmd.StartsWith("\""))
-            {
-                int closeIdx = cmd.IndexOf('"', 1);
-                if (closeIdx < 0) { file = cmd.Trim('"'); args = ""; }
-                else { file = cmd[1..closeIdx]; args = cmd[(closeIdx + 1)..].Trim(); }
-            }
-            else
-            {
-                int spaceIdx = cmd.IndexOf(' ');
-                if (spaceIdx < 0) { file = cmd; args = ""; }
-                else { file = cmd[..spaceIdx]; args = cmd[(spaceIdx + 1)..]; }
-            }
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = file,
-                Arguments = args,
-                UseShellExecute = true,
-            });
-            return true;
-        }
+        try { Process.Start(new ProcessStartInfo("ms-settings:appsfeatures") { UseShellExecute = true }); return true; }
         catch { return false; }
     }
 }

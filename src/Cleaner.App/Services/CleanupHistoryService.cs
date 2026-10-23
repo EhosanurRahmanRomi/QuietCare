@@ -10,6 +10,7 @@ public sealed class CleanupHistoryEntry
     public string TargetId { get; set; } = string.Empty;
     public string TargetName { get; set; } = string.Empty;
     public long FreedBytes { get; set; }
+    public long QuarantinedBytes { get; set; }
     public int FilesDeleted { get; set; }
     public bool UsedRecycleBin { get; set; }
 
@@ -62,6 +63,7 @@ public sealed class CleanupHistoryService
             TargetId = result.TargetId,
             TargetName = targetName,
             FreedBytes = result.FreedBytes,
+            QuarantinedBytes = result.QuarantinedBytes,
             FilesDeleted = result.FilesDeleted,
             UsedRecycleBin = usedRecycleBin,
             Paths = paths.Take(MaxPathsPerEntry).ToList(),

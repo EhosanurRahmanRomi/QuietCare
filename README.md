@@ -1,225 +1,71 @@
-# PowerClean
+# QuietCare Next
 
-A modern Windows 11 WPF app that combines the best of **CCleaner** (safe cleanup) and **WinDirStat** (visual disk analysis) — with extras like a registry cleaner, autostart manager, services and process monitor, and system maintenance one-clicks.
+A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-[![QuickRun](https://quickrun.org/badge.svg)](https://quickrun.org/run?repo=fgilde/PowerClean)
-[![Release](https://img.shields.io/github/v/release/fgilde/PowerClean?display_name=tag&sort=semver)](https://github.com/fgilde/PowerClean/releases/latest)
-[![Build](https://github.com/fgilde/PowerClean/actions/workflows/release.yml/badge.svg)](https://github.com/fgilde/PowerClean/actions/workflows/release.yml)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+**0.5.0-preview.1 · Windows x64 · unsigned preview**
 
-![PowerClean](screenshot.png)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
-## Features
+![QuietCare care hub](docs/images/care-hub.png)
 
-### Safe cleanup (CCleaner-style)
-4-level safety classification (**Safe · Recommended · Caution · Warning**). Recycle Bin is default — every action is reversible unless you opt-in to permanent delete. Each cleanup entry is **expandable** so you can see every file path it will touch before you click clean.
+The screenshot renders the production controls. The separate monitor preview uses demonstration readings.
 
-- Windows temp folders (user & system)
-- Thumbnail & icon caches
-- Windows update cache (`SoftwareDistribution\Download`)
-- Delivery-Optimization cache (P2P update cache)
-- Logs, prefetch, memory dumps
-- Recycle Bin (via Shell API)
-- **Browser caches**: Chrome, Edge, Brave, Firefox — only cache folders, never bookmarks/cookies/history
+## Start using it
 
-### Developer cleaner (for the `%LOCALAPPDATA%\JetBrains`-bloat crowd)
-- **JetBrains IDEs** (Rider, IntelliJ, PyCharm, WebStorm, GoLand, PhpStorm, CLion, DataGrip): caches, logs, indexes & local history — config preserved
-- **Visual Studio**: ComponentModelCache, ServiceHub logs
-- **NuGet**: HTTP cache and aged global packages
-- **npm / pnpm / yarn** caches
-- **`bin/obj`** folders in your `.NET` projects (only in real project trees)
-- **`node_modules`** folders in your workspaces
-- **Docker**: `docker system prune` (never `--volumes`, so no data loss)
+1. Download **QuietCareNext-portable-win-x64.zip** and extract it. The folder contains **QuietCare.Next.exe** plus the licenses and guide from the preview release. It includes the .NET runtime; no separate runtime installation is needed.
+2. Put it in a permanent folder you control, then run it. This preview has separate settings and leaves QuietCare 0.3 installed.
+3. Use the home actions directly. Advanced tools are in the sidebar.
+4. To start the mini monitor when signing in, open **Monitor settings → Start QuietCare Next monitor when I sign in**. Startup is off until you enable it.
 
-### Disk analyzer (WinDirStat-style)
-- Squarified treemap as a custom WPF control — proportional rectangles per file/folder
-- **Live update** during scan — see results growing as the scan runs
-- Parallel scan engine (multi-core, skips junctions/symlinks)
-- Drill-down via tile **double-click** or tree-view
-- Right-click context menu on every tile and tree node: Open in Explorer, Open with default app, Open in terminal, Copy path, Windows properties dialog, Delete
+Keep the executable at that location while startup is enabled. Closing the main window leaves the tray and monitor running. Use **Exit** in the tray menu to stop them.
 
-### Autostart manager (more than Task Manager)
-All Windows autostart sources in one place:
-- HKLM/HKCU `\Run` and `\RunOnce` (+ Wow6432Node variants)
-- User and Common startup folders
-- Scheduled Tasks with logon/boot triggers (Microsoft tasks filtered out)
-- Auto-start services
-- Enable/disable via the same `StartupApproved` registry mechanism Windows uses
+![Compact monitor](docs/images/mini-monitor.png)
 
-### Installed programs
-- Reads from registry (HKLM + HKCU + Wow6432Node)
-- Size, version, publisher, install date
-- Sort by size to find space hogs, by date to find old leftovers
-- Direct uninstall (uses `QuietUninstallString` if available)
-- Right-click: open install folder (with multi-source fallback), search web, jump to registry key
+The lightning button runs RAM Boost immediately. The chevron expands details. Right-click exposes refresh speeds from 100 to 10,000 ms, transparency, startup and the last Boost result.
 
-### Services & recommendations
-- All Windows services with RAM usage (WMI-resolved)
-- Heuristic recommendations for typically deactivatable services (Fax, RemoteRegistry, DiagTrack, MapsBroker, WSearch, Print Spooler if no printer, Xbox, WerSvc, TabletInputService)
-- Start / Stop / Set startup type (Auto / Manual / Disabled) — requires admin
-- Direct jump to `services.msc`
+## What works in this preview
 
-### Process monitor
-- Top processes by RAM / CPU / threads / handles
-- Updates every 2 seconds (toggleable)
-- Per-process: open file location, properties, search web, kill process
+| Area | Behavior |
+| --- | --- |
+| Performance monitor | CPU, GPU and RAM readings; transparent native compact view, expanded detail view, adjustable speed, position and opacity |
+| RAM Boost | Selects eligible idle background processes; protects foreground work, audio, system and excluded processes; reports individual outcomes |
+| Safe junk cleanup | One click scans, revalidates and permanently removes eligible old temporary files and closed-browser disposable caches; live status and result counts |
+| Advanced cleanup | Category previews with approved-file identity checks and recoverable quarantine; restore and explicit permanent deletion in Recovery |
+| Virus checking | Starts the installed Microsoft Defender quick or full scanner through Windows UAC; displays actual exit status and links to Protection history |
+| Disk optimization | Runs the Microsoft-signed Windows optimizer with `/O`, letting Windows choose the media-appropriate operation |
+| Startup manager | Registry, startup folders, logon/boot tasks and automatic-service inventory; reversible current-user sign-in toggles with backups |
+| Startup alerts | Persisted baseline and change history; registry/folders every 30 seconds, tasks/services every 5 minutes while running; Windows tray notifications |
+| Services | State, startup type, executable and host-memory inventory; privileged changes use the Windows Services console |
+| Installed apps | Inventory and Windows Installed Apps management; registry uninstall commands are not executed automatically |
+| File tools | Disk tree/treemap, SHA-256 duplicates, large files, log finder and folder comparison |
+| Maintenance | Restricted DNS-cache flush and Windows component cleanup; registry inspection is read-only |
+| Updates | Manual GitHub release check and release notes; downloads and replacement remain manual |
 
-### Registry cleaner
-- 7 categories scanned in parallel:
-  - App Paths pointing to deleted exes
-  - Dead autostart entries
-  - Dead uninstaller entries
-  - Obsolete MUI cache
-  - OpenWith entries for deleted apps
-  - SharedDLL references
-  - File-extension ProgIDs that don't exist
-- Every clean operation creates a **`.reg` backup** in `%LOCALAPPDATA%\PowerClean\RegistryBackups\` — restore by double-click
+## Limits that matter
 
-### System maintenance (one-click)
-- Hibernation toggle (often saves several GB)
-- Pagefile info + jump to Windows settings
-- Restore points: list, delete oldest, delete all
-- **DISM component cleanup** (often 5–10 GB)
-- DISM /ResetBase (permanent, irreversible)
-- DNS cache flush
-- Print queue clear
-- Recycle Bin force-empty
+- RAM Boost trims eligible **resident working sets**. It does not close tabs or free their allocations. Memory can return when an app uses it; a reduction is not guaranteed.
+- Automatic cleanup has a seven-day age floor, skips running browsers and excludes session/offline data. It targets disposable caches, not documents or installed programs. Advanced developer-cache removal can require downloads or rebuilds.
+- Automatic cleanup permanently deletes its own approved junk. Advanced cleanup moves files to Recovery, which does not reclaim their disk space until you explicitly delete them there.
+- Defender provides malware detection and remediation. QuietCare does not contain an independent antivirus engine. A successful scanner exit is not a guarantee that a PC is malware-free. Antivirus/optimization progress shows real stages and elapsed time, not an invented percentage.
+- Startup alerts cover the enumerated locations, not every persistence mechanism. Changes are checked while the app runs, not continuously while it is closed. First scans establish a quiet baseline. Windows notification settings can suppress balloons; history is retained locally.
+- Service, scheduled-task and system-wide startup changes use Windows tools. Current-user sign-in items can be toggled in the app. No blanket service disabling, driver installation, registry repair or global memory-list purge is performed.
+- Disk analysis is bounded to 250,000 tree items per scan and reports a partial-tree limit. Cleanup previews stop at 200,000 candidates before authorizing changes.
+- This is an unsigned preview. It has fixture, render and short live-monitor evidence; broad hardware coverage and full native interaction acceptance remain incomplete. See [validation scope](docs/VALIDATION.md).
 
-### Other
-- **Background task overview**: status strip at the bottom shows running scans/cleans; click for a popup with progress and cancel button
-- **Split-button** for cleanup actions: explicit choice between recycle bin and permanent delete every time
-- **Localization**: German and English, with live switch in Settings (defaults to your Windows UI language)
-- **Native Win11 look**: WPF-UI Fluent design, Mica backdrop, your Windows accent color picked up from the registry
-- **Auto-update**: checks GitHub releases on startup, prompts to install (via Velopack)
+## Source, build and test
 
-## Tech stack
-
-| Area              | Technology                                       |
-|-------------------|--------------------------------------------------|
-| Framework         | .NET 9 (`net9.0-windows10.0.19041.0`) + WPF      |
-| UI library        | [WPF-UI](https://wpfui.lepo.co) (Fluent / Mica)  |
-| MVVM              | CommunityToolkit.Mvvm                            |
-| DI / Hosting      | Microsoft.Extensions.Hosting                     |
-| Installer/updater | [Velopack](https://github.com/velopack/velopack) |
-| Architecture      | `Cleaner.Core` (logic) + `Cleaner.App` (UI)      |
-
-## Install
-
-Grab the latest installer from [Releases](https://github.com/fgilde/PowerClean/releases/latest):
-
-```
-PowerClean-Setup.exe
-```
-
-Double-click to install. The app installs to `%LOCALAPPDATA%\PowerClean` (no admin needed) and self-updates from GitHub on subsequent runs.
-
-## Build from source
-
-Prerequisite: **.NET 9 SDK**.
+Requires the **.NET SDK 10.0.402** on Windows. Dependencies are locked to NuGet.org and signed-package verification is required.
 
 ```powershell
-git clone https://github.com/fgilde/PowerClean.git
-cd PowerClean
-dotnet build
-dotnet run --project src/Cleaner.App
+dotnet restore src/Cleaner.App/Cleaner.App.csproj --locked-mode
+dotnet build src/Cleaner.App/Cleaner.App.csproj -c Release --no-restore
+# Use a fresh empty directory for each fixture run:
+dotnet run --project tests/QuietCare.Regression -c Release -- ./work/core-fixtures
+dotnet run --project tests/QuietCare.BoostRegression -c Release -- ./work/boost-fixtures
 ```
 
-The output binary is `PowerClean.exe` under `src/Cleaner.App/bin/Debug/net9.0-windows10.0.19041.0/`.
+[`build.ps1`](build.ps1) publishes the self-contained executable. Runtime extraction on first launch needs additional disk space; download size and runtime memory are different measurements. The executable is larger than the previous .NET Framework app because it includes .NET 10 and WPF, not because of padding.
 
-### Self-contained publish
+The starting application is an attributed [PowerClean](https://github.com/fgilde/PowerClean) derivative. BCUninstaller startup-state handling is adapted with its Apache-2.0 notice. The other reviewed repositories informed design and policy choices; their engines were not combined or silently bundled. See the [seven-source comparison](docs/SOURCE-REVIEW.md).
 
-```powershell
-dotnet publish src/Cleaner.App -c Release -r win-x64 --self-contained `
-  -p:PublishSingleFile=true -p:Version=0.1.0
-```
-
-### Packing a Velopack installer (locally)
-
-```powershell
-dotnet tool install --global vpk
-dotnet publish src/Cleaner.App -c Release -r win-x64 --self-contained -o publish
-vpk pack --packId PowerClean --packVersion 0.1.0 `
-         --packDir publish --mainExe PowerClean.exe `
-         --outputDir releases
-```
-
-This produces `releases\PowerClean-Setup.exe` plus delta packages.
-
-## Project structure
-
-```
-PowerClean/
-├── src/
-│   ├── Cleaner.Core/                        # Headless logic (no UI refs)
-│   │   ├── Models/                          # SafetyLevel, ScanResult, FileSystemNode, ...
-│   │   ├── Cleaners/
-│   │   │   ├── Windows/                     # 10× system cleaners
-│   │   │   ├── Browsers/                    # Chrome, Edge, Brave, Firefox
-│   │   │   └── Developer/                   # JetBrains, VS, NuGet, npm, Docker, ...
-│   │   └── Services/
-│   │       ├── DiskScanner.cs               # Parallel recursive scan
-│   │       ├── DuplicateFinder.cs           # SHA-256 + size pre-filter
-│   │       ├── RegistryScanner.cs           # 7-category scan with .reg backup
-│   │       ├── AutostartScanner.cs          # Registry + scheduled tasks + services
-│   │       ├── InstalledProgramsScanner.cs
-│   │       ├── ServiceScanner.cs            # WMI-resolved RAM per service
-│   │       ├── ProcessMonitorService.cs
-│   │       ├── SystemMaintenanceService.cs  # DISM, hibernation, restore points, ...
-│   │       └── FileSystemOperations.cs      # SHFileOperation for recycle bin
-│   └── Cleaner.App/                         # WPF frontend
-│       ├── App.xaml(.cs) / Program.cs       # Velopack entry, DI host
-│       ├── MainWindow.xaml(.cs)             # FluentWindow + NavigationView + tasks strip
-│       ├── Localization/                    # DE + EN dictionary, live-switching markup ext
-│       ├── Views/Pages/                     # 12 pages
-│       ├── ViewModels/Pages/                # Per-page VMs
-│       ├── Controls/
-│       │   ├── TreemapControl.cs            # Custom squarified treemap
-│       │   ├── CleanerPanelView.xaml(.cs)
-│       │   └── RunningTasksPanel.xaml(.cs)
-│       ├── Services/
-│       │   ├── RunningTaskRegistry.cs       # Background task overview
-│       │   └── UpdateService.cs             # Velopack GitHub update check
-│       ├── Helpers/
-│       │   ├── PathOpener.cs                # Shell verb wrapper
-│       │   └── WindowsUserHelper.cs         # GetUserNameEx
-│       └── Converters/                      # Bytes→Size, SafetyLevel→Brush, ...
-└── .github/workflows/release.yml            # Build + Velopack pack + GitHub release
-```
-
-## Safety
-
-PowerClean is **safe-by-default**:
-- 4-step safety classification per cleaner with color badges
-- Only `Safe` and `Recommended` pre-selected
-- Recycle Bin is default; split-button lets you pick permanent delete per action
-- Browser cleaners only touch `Cache`, `Code Cache`, `GPUCache`, `Service Worker` — never bookmarks/cookies/history
-- Confirmation dialog before every clean
-- Docker `system prune` never includes `--volumes`
-- Junctions/symlinks skipped during disk scan (no double-counting, no loops)
-- Registry cleaner always creates a restorable `.reg` backup before deleting
-- NuGet global-packages: only entries older than 180 days suggested
-- Temp folders: files younger than 1 hour are skipped (might be in use)
-
-## Releases
-
-Tagging a commit `v0.2.0` (etc.) triggers the GitHub Action that builds, packs with Velopack, and publishes:
-
-- `PowerClean-Setup.exe` (full installer)
-- `*-delta.nupkg` (incremental update packages)
-- `RELEASES` index file
-
-Installed clients auto-update from these on next launch.
-
-## Contributing
-
-Issues and PRs welcome — especially new cleaners. To add one:
-
-1. Extend `CleanupTargetBase` in `Cleaner.Core/Cleaners/`
-2. Override `Id`, `Name`, `Description`, `Category`, `SafetyLevel`, `EnumerateCleanupRoots()`
-3. Register it in `Cleaner.App/Helpers/ServiceCollectionExtensions.cs`
-
-Done — it shows up in the matching page automatically.
-
-## License
-
-MIT
+Application settings, local startup commands, logs and recovery metadata are stored under `%LOCALAPPDATA%\QuietCareNext`. They stay on the PC. The optional release check contacts GitHub only when clicked. [Privacy and security details](SECURITY.md).

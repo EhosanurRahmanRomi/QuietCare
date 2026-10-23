@@ -66,6 +66,12 @@ public sealed class SystemMaintenanceService : ISystemMaintenanceService
 
     public async Task<(int ExitCode, string Output)> RunAsync(string fileName, string args, bool elevate, CancellationToken ct)
     {
+        var name = Path.GetFileName(fileName).ToLowerInvariant();
+        if (!name.EndsWith(".exe")) name += ".exe";
+        bool allowed = (name == "ipconfig.exe" && args.Equals("/flushdns", StringComparison.OrdinalIgnoreCase))
+            || (name == "dism.exe" && args.Equals("/Online /Cleanup-Image /StartComponentCleanup", StringComparison.OrdinalIgnoreCase));
+        if (!allowed) return (-1, "Unavailable in this preview: this operation has not passed safety validation.");
+        fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), name);
         if (elevate)
         {
             // Bei runas dürfen wir kein RedirectStandardOutput nutzen — UAC schreibt nicht zurück.

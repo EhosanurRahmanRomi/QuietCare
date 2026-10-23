@@ -74,7 +74,7 @@
                            Icon="{ui:SymbolIcon Search24}"
                            Content="{l:T Cleaner.ScanStart}"
                            Command="{Binding ViewModel.ScanCommand}"
-                           IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBoolToVis}}" />
+                           IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBool}}" />
 
                 <ui:Button Grid.Column="4" Appearance="Caution" Margin="8,0,0,0"
                            Icon="{ui:SymbolIcon Dismiss24}"

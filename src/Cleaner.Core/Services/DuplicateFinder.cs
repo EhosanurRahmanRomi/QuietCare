@@ -30,6 +30,7 @@ public sealed class DuplicateFinder : IDuplicateFinder
         IProgress<ScanProgress>? progress = null,
         CancellationToken ct = default)
     {
+        if (searchRoots.Count == 0) return Array.Empty<DuplicateGroup>();
         // Schritt 1: Alle Dateien sammeln, grouped by size — pro Such-Root parallel
         var bySize = new ConcurrentDictionary<long, ConcurrentBag<string>>();
         int totalFiles = 0;

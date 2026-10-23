@@ -1,16 +1,8 @@
+using System.Windows.Controls;
 using Cleaner.App.ViewModels.Pages;
-using Wpf.Ui.Controls;
-
 namespace Cleaner.App.Views.Pages;
-
-public partial class CleanupHistoryPage : INavigableView<CleanupHistoryViewModel>
+public partial class CleanupHistoryPage : UserControl
 {
-    public CleanupHistoryViewModel ViewModel { get; }
-
-    public CleanupHistoryPage(CleanupHistoryViewModel viewModel)
-    {
-        ViewModel = viewModel;
-        DataContext = this;
-        InitializeComponent();
-    }
+    public RecoveryViewModel ViewModel { get; } = new();
+    public CleanupHistoryPage() { InitializeComponent(); DataContext = this; Loaded += (_, _) => ViewModel.Refresh(); }
 }

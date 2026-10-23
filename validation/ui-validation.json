@@ -1,0 +1,157 @@
+{
+  "utc": "2026-10-23T18:10:29.1295984+00:00",
+  "scope": "Production control renders; monitor readings are fixtures; no destructive actions invoked",
+  "bindingErrors": [],
+  "pages": [
+    {
+      "page": "DashboardPage",
+      "navigated": false,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "SystemCleanerPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "DeveloperCleanerPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "DiskAnalyzerPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "DuplicatesPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "LargeFilesPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "LogFinderPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "FolderComparePage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "OrphanUserDataPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "CleanupHistoryPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "AutostartPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "InstalledProgramsPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "ServicesPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "ProcessMonitorPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "RegistryCleanerPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "SystemMaintenancePage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "SettingsPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "AboutPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 1051,
+      "height": 679
+    },
+    {
+      "page": "CompactMonitor",
+      "width": 212,
+      "height": 28,
+      "fixture": true
+    }
+  ]
+}

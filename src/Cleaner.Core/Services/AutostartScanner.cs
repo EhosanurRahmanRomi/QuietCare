@@ -29,6 +29,8 @@ public sealed class AutostartEntry
 
     /// <summary>Wo der Eintrag gespeichert ist (Registry-Pfad oder Datei-Pfad). Wird zum Löschen/Disable gebraucht.</summary>
     public required string Location { get; init; }
+    public bool CanToggle=>Source is AutostartSource.HkcuRun or AutostartSource.HkcuRun32 or AutostartSource.StartupFolderUser;
+    public string ManagementHint=>CanToggle?"Enable or disable this sign-in item. A backup is saved before each change.":"Manage this system-wide item in Windows Startup settings, Task Scheduler or Windows Services.";
 
     public string SourceLabel => Source switch
     {
@@ -71,7 +73,9 @@ public interface IAutostartScanner
 
 public sealed class AutostartScanner : IAutostartScanner
 {
-    public async Task<IReadOnlyList<AutostartEntry>> ScanAsync(CancellationToken ct = default)
+    public Task<IReadOnlyList<AutostartEntry>> ScanAsync(CancellationToken ct = default) => ScanInternalAsync(true,ct);
+    public Task<IReadOnlyList<AutostartEntry>> ScanFastAsync(CancellationToken ct = default) => ScanInternalAsync(false,ct);
+    private async Task<IReadOnlyList<AutostartEntry>> ScanInternalAsync(bool extended,CancellationToken ct)
     {
         return await Task.Run(() =>
         {
@@ -100,8 +104,8 @@ public sealed class AutostartScanner : IAutostartScanner
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup),
                 AutostartSource.StartupFolderCommon));
 
-            try { list.AddRange(ScanScheduledTasks(ct)); } catch { /* schtasks evtl. nicht da */ }
-            try { list.AddRange(ScanAutoServices()); } catch { /* fallback */ }
+            try { if(extended) list.AddRange(ScanScheduledTasks(ct)); } catch { /* schtasks evtl. nicht da */ }
+            try { if(extended) list.AddRange(ScanAutoServices()); } catch { /* fallback */ }
 
             return (IReadOnlyList<AutostartEntry>)list
                 .OrderBy(e => e.Source)
@@ -116,8 +120,7 @@ public sealed class AutostartScanner : IAutostartScanner
         if (key is null) yield break;
 
         // Disabled-Tracking: korrespondierender ApprovedKey
-        var approvedPath = subPath.Replace(@"CurrentVersion\Run", @"CurrentVersion\Explorer\StartupApproved\Run", StringComparison.OrdinalIgnoreCase)
-                                  .Replace(@"CurrentVersion\RunOnce", @"CurrentVersion\Explorer\StartupApproved\RunOnce", StringComparison.OrdinalIgnoreCase);
+        var approvedPath = StartupApprovalPolicy.SubKey(source);
         using var approved = root.OpenSubKey(approvedPath, writable: false);
 
         foreach (var name in key.GetValueNames())
@@ -125,7 +128,7 @@ public sealed class AutostartScanner : IAutostartScanner
             string command = key.GetValue(name)?.ToString() ?? "";
             bool enabled = true;
             if (approved?.GetValue(name) is byte[] data && data.Length > 0)
-                enabled = data[0] == 0x02; // 0x02 enabled, 0x03 disabled
+                enabled = StartupApprovalPolicy.IsEnabled(data); // 0x02 enabled, 0x03 disabled
 
             yield return new AutostartEntry
             {
@@ -141,14 +144,15 @@ public sealed class AutostartScanner : IAutostartScanner
     private static IEnumerable<AutostartEntry> ScanStartupFolder(string path, AutostartSource source)
     {
         if (!Directory.Exists(path)) yield break;
-        foreach (var file in Directory.EnumerateFiles(path))
+        using var approved=(source==AutostartSource.StartupFolderCommon?Registry.LocalMachine:Registry.CurrentUser).OpenSubKey(StartupApprovalPolicy.SubKey(source));
+        foreach (var file in Utils.SafeEnumerator.EnumerateFiles(path))
         {
             yield return new AutostartEntry
             {
                 Name = Path.GetFileNameWithoutExtension(file),
                 Command = file,
                 Source = source,
-                IsEnabled = true,
+                IsEnabled = StartupApprovalPolicy.IsEnabled(approved?.GetValue(Path.GetFileName(file)) as byte[]),
                 Location = file,
             };
         }
@@ -158,7 +162,7 @@ public sealed class AutostartScanner : IAutostartScanner
     {
         // schtasks /query /fo csv /v gibt alle Tasks aus, inkl. Trigger.
         // Wir filtern auf "logon"/"boot"-Trigger und Tasks die nicht von MS sind.
-        var psi = new ProcessStartInfo("schtasks.exe", "/query /fo csv /v")
+        var psi = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "schtasks.exe"), "/query /fo csv /v")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -170,10 +174,15 @@ public sealed class AutostartScanner : IAutostartScanner
         using var p = Process.Start(psi);
         if (p is null) yield break;
 
+        using var timeout=CancellationTokenSource.CreateLinkedTokenSource(ct);timeout.CancelAfter(TimeSpan.FromSeconds(30));
+        using var cancelRegistration=timeout.Token.Register(()=>{try{if(!p.HasExited)p.Kill();}catch{}});
+        var output=p.StandardOutput.ReadToEndAsync(timeout.Token).GetAwaiter().GetResult();
+        if(!p.WaitForExit(5000)||p.ExitCode!=0)yield break;
+        using var reader=new StringReader(output);
         string? line;
         string[]? headers = null;
         var entries = new List<AutostartEntry>();
-        while ((line = p.StandardOutput.ReadLine()) != null)
+        while ((line = reader.ReadLine()) != null)
         {
             if (ct.IsCancellationRequested) break;
             var cols = ParseCsvLine(line);
@@ -258,59 +267,33 @@ public sealed class AutostartScanner : IAutostartScanner
 
     public bool ToggleEnabled(AutostartEntry entry, bool enabled)
     {
+        if(!entry.CanToggle)return false;
         try
         {
-            switch (entry.Source)
+            var allUsers=entry.Source is AutostartSource.HklmRun or AutostartSource.HklmRunOnce or AutostartSource.HklmRun32 or AutostartSource.StartupFolderCommon;
+            var root=allUsers?Registry.LocalMachine:Registry.CurrentUser;
+            bool folder=entry.Source is AutostartSource.StartupFolderUser or AutostartSource.StartupFolderCommon;
+            string name=folder?Path.GetFileName(entry.Location):entry.Name;
+            if(!folder)
             {
-                case AutostartSource.HklmRun: return ToggleRegistry(Registry.LocalMachine, @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run", entry.Name, enabled);
-                case AutostartSource.HkcuRun: return ToggleRegistry(Registry.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run", entry.Name, enabled);
-                case AutostartSource.HklmRunOnce: return ToggleRegistry(Registry.LocalMachine, @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\RunOnce", entry.Name, enabled);
-                case AutostartSource.HkcuRunOnce: return ToggleRegistry(Registry.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\RunOnce", entry.Name, enabled);
-                case AutostartSource.HklmRun32: return ToggleRegistry(Registry.LocalMachine, @"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run", entry.Name, enabled);
-                case AutostartSource.HkcuRun32: return ToggleRegistry(Registry.CurrentUser, @"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run", entry.Name, enabled);
-                case AutostartSource.ScheduledTask: return RunSchTasks($"/Change /TN \"{entry.Location}\" {(enabled ? "/Enable" : "/Disable")}");
-                default: return false; // Startup-Folder: kein Disable-Konzept, nur Delete
+                using var original=root.OpenSubKey(RegPathFor(entry.Source));
+                if(!string.Equals(original?.GetValue(entry.Name) as string,entry.Command,StringComparison.Ordinal))return false;
             }
+            else if(!File.Exists(entry.Location)||!Utils.SafeEnumerator.IsUnlinked(entry.Location))return false;
+            var subKey=StartupApprovalPolicy.SubKey(entry.Source);
+            using var approved=root.CreateSubKey(subKey,writable:true);
+            var before=approved.GetValue(name) as byte[];
+            var backupRoot=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"QuietCareNext","StartupBackups");
+            Directory.CreateDirectory(backupRoot);
+            var backup=System.Text.Json.JsonSerializer.Serialize(new{Utc=DateTimeOffset.UtcNow,Hive=root.Name,SubKey=subKey,Name=name,Original=before,Command=entry.Command,EnabledBefore=entry.IsEnabled});
+            File.WriteAllText(Path.Combine(backupRoot,Guid.NewGuid().ToString("N")+".json"),backup);
+            approved.SetValue(name,StartupApprovalPolicy.Encode(enabled),RegistryValueKind.Binary);
+            return true;
         }
-        catch { return false; }
+        catch{return false;}
     }
 
-    private static bool ToggleRegistry(RegistryKey root, string approvedPath, string name, bool enabled)
-    {
-        using var key = root.CreateSubKey(approvedPath, writable: true);
-        if (key is null) return false;
-        // 0x02 = enabled, 0x03 = disabled. 11 bytes — Rest sind Zeitstempel die wir auf 0 setzen.
-        var bytes = new byte[12];
-        bytes[0] = enabled ? (byte)0x02 : (byte)0x03;
-        key.SetValue(name, bytes, RegistryValueKind.Binary);
-        return true;
-    }
-
-    public bool Delete(AutostartEntry entry)
-    {
-        try
-        {
-            switch (entry.Source)
-            {
-                case AutostartSource.HklmRun:
-                case AutostartSource.HklmRunOnce:
-                case AutostartSource.HklmRun32:
-                    return DeleteRegValue(Registry.LocalMachine, RegPathFor(entry.Source), entry.Name);
-                case AutostartSource.HkcuRun:
-                case AutostartSource.HkcuRunOnce:
-                case AutostartSource.HkcuRun32:
-                    return DeleteRegValue(Registry.CurrentUser, RegPathFor(entry.Source), entry.Name);
-                case AutostartSource.StartupFolderUser:
-                case AutostartSource.StartupFolderCommon:
-                    File.Delete(entry.Location);
-                    return true;
-                case AutostartSource.ScheduledTask:
-                    return RunSchTasks($"/Delete /TN \"{entry.Location}\" /F");
-                default: return false;
-            }
-        }
-        catch { return false; }
-    }
+    public bool Delete(AutostartEntry entry) => false; // Use reversible enable/disable, not deletion.
 
     private static string RegPathFor(AutostartSource s) => s switch
     {
@@ -330,7 +313,7 @@ public sealed class AutostartScanner : IAutostartScanner
 
     private static bool RunSchTasks(string args)
     {
-        var psi = new ProcessStartInfo("schtasks.exe", args)
+        var psi = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "schtasks.exe"), args)
         {
             UseShellExecute = false, CreateNoWindow = true,
             RedirectStandardOutput = true, RedirectStandardError = true,

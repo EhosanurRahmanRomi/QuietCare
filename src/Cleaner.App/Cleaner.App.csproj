@@ -1,31 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <!-- Nextended.UI (KeyBind-Controls) nutzt WinForms-Typen (Keys/MouseButtons) -->
     <UseWindowsForms>true</UseWindowsForms>
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Cleaner.App</RootNamespace>
-    <AssemblyName>PowerClean</AssemblyName>
-    <Product>PowerClean</Product>
-    <AssemblyTitle>PowerClean</AssemblyTitle>
-    <Company>fgilde</Company>
+    <AssemblyName>QuietCare.Next</AssemblyName>
+    <Product>QuietCare Next</Product>
+    <AssemblyTitle>QuietCare Next</AssemblyTitle>
+    <Company>QuietCare contributors; derived from fgilde PowerClean</Company>
     <Description>Windows cleanup, disk analysis and system maintenance</Description>
 
     <!-- Version wird bei CI per /p:Version=x.y.z überschrieben -->
-    <Version>0.1.0</Version>
-    <FileVersion>0.1.0.0</FileVersion>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <Version>0.5.0-preview.1</Version>
+    <FileVersion>0.5.0.0</FileVersion>
+    <AssemblyVersion>0.5.0.0</AssemblyVersion>
 
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\PowerClean.ico</ApplicationIcon>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <LegacyCorruptedStateExceptionsPolicy>true</LegacyCorruptedStateExceptionsPolicy>
-
-    <!-- Velopack braucht eigenen Main → siehe Program.cs -->
     <StartupObject>Cleaner.App.Program</StartupObject>
   </PropertyGroup>
 
@@ -40,19 +38,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
     <!-- Eingebetteter Browser für die gilde-Connect-Widgets (Kontakt/Support im About) -->
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
-    <PackageReference Include="Velopack" Version="0.0.1298" />
+
+
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cleaner.Core\Cleaner.Core.csproj" />
-    <!-- KeyBind-Controls + globale Hotkeys. Für lokale Nextended-Entwicklung stattdessen
-         die ProjectReference unten einkommentieren. -->
-    <PackageReference Include="Nextended.UI" Version="10.1.14" />
-    <!-- <ProjectReference Include="..\..\..\Nextended\Nextended.UI\Nextended.UI.csproj" /> -->
+
   </ItemGroup>
 
   <ItemGroup>
@@ -60,5 +55,9 @@
     <Resource Include="Assets\PowerClean.ico" />
     <!-- Großes PNG für die About-Seite (ICO-Decode liefert sonst einen kleinen Frame) -->
     <Resource Include="Assets\PowerClean.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../QuietCare.Monitor/QuietCare.Monitor.csproj" />
   </ItemGroup>
 </Project>

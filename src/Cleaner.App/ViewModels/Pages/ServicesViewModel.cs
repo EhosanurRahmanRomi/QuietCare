@@ -57,7 +57,7 @@ public sealed partial class ServicesViewModel : ObservableObject
             ApplyFilter();
             var running = _all.Count(s => s.Status == ServiceControllerStatus.Running);
             var withRec = _all.Count(s => s.Recommendation is not null);
-            StatusText = $"{_all.Count} Dienste · {running} laufen · {withRec} mit Empfehlung";
+            StatusText = $"{_all.Count} services · {running} running. Shared host-process memory may appear against more than one service.";
         }
         catch (Exception ex)
         {
@@ -81,57 +81,6 @@ public sealed partial class ServicesViewModel : ObservableObject
         if (HideMicrosoft) q = q.Where(s => !s.IsMicrosoftService);
 
         foreach (var s in q) Services.Add(s);
-    }
-
-    [RelayCommand]
-    public async Task StopAsync(WindowsService? svc)
-    {
-        if (svc is null) return;
-        var ok = await Task.Run(() => _scanner.Stop(svc.ServiceName));
-        if (ok) await ScanAsync();
-        else MessageBox.Show($"Konnte Dienst '{svc.DisplayName}' nicht stoppen.\n(Admin-Rechte nötig?)",
-            "Cleaner", MessageBoxButton.OK, MessageBoxImage.Warning);
-    }
-
-    [RelayCommand]
-    public async Task StartAsync(WindowsService? svc)
-    {
-        if (svc is null) return;
-        var ok = await Task.Run(() => _scanner.Start(svc.ServiceName));
-        if (ok) await ScanAsync();
-        else MessageBox.Show($"Konnte Dienst '{svc.DisplayName}' nicht starten.\n(Admin-Rechte nötig?)",
-            "Cleaner", MessageBoxButton.OK, MessageBoxImage.Warning);
-    }
-
-    [RelayCommand]
-    public async Task DisableAsync(WindowsService? svc)
-    {
-        if (svc is null) return;
-        if (MessageBox.Show($"Dienst '{svc.DisplayName}' DEAKTIVIEREN?\n\n" +
-                            "Er wird beim nächsten Boot nicht mehr gestartet.\n" +
-                            "(Aktueller Status bleibt unverändert.)",
-                "Bestätigen", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
-            return;
-        var ok = await Task.Run(() => _scanner.SetStartType(svc.ServiceName, ServiceStartMode.Disabled));
-        if (ok) await ScanAsync();
-        else MessageBox.Show($"Konnte Start-Typ nicht ändern.\n(Admin-Rechte nötig)",
-            "Cleaner", MessageBoxButton.OK, MessageBoxImage.Warning);
-    }
-
-    [RelayCommand]
-    public async Task SetManualAsync(WindowsService? svc)
-    {
-        if (svc is null) return;
-        var ok = await Task.Run(() => _scanner.SetStartType(svc.ServiceName, ServiceStartMode.Manual));
-        if (ok) await ScanAsync();
-    }
-
-    [RelayCommand]
-    public async Task SetAutomaticAsync(WindowsService? svc)
-    {
-        if (svc is null) return;
-        var ok = await Task.Run(() => _scanner.SetStartType(svc.ServiceName, ServiceStartMode.Automatic));
-        if (ok) await ScanAsync();
     }
 
     [RelayCommand]
@@ -165,7 +114,7 @@ public sealed partial class ServicesViewModel : ObservableObject
     {
         try
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("services.msc")
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),"services.msc"))
             { UseShellExecute = true });
         }
         catch (Exception ex) { Cleaner.App.App.LogException("OpenServicesMmc", ex); }

@@ -70,7 +70,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
     private bool _isBusy;
 
     [ObservableProperty]
-    private string _statusText = "Bereit. Klicke auf 'Scan starten' um zu sehen, was aufgeräumt werden kann.";
+    private string _statusText = "Ready. Start a scan to inspect eligible files.";
 
     [ObservableProperty]
     private long _totalScannedSize;
@@ -118,7 +118,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
         TotalSelectedSize = Items.Where(i => i.IsSelected).Sum(i => i.ScannedSize);
     }
 
-    /// <summary>Gesamt-"Gefunden"-Wert = Summe der noch nicht aufgeräumten Scan-Größen.</summary>
+    /// <summary>Gesamt-"Gefunden"-Wert = Summe der noch nicht processeden Scan-Größen.</summary>
     private void RecomputeScanned()
     {
         TotalScannedSize = Items.Sum(i => i.ScannedSize);
@@ -162,7 +162,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                         item.ScannedSize = result.SizeBytes;
                         item.ScannedFiles = result.FileCount;
                         item.HasScanResult = true;
-                        item.StatusMessage = $"{result.FileCount} Datei(en)";
+                        item.StatusMessage = $"{result.FileCount} files";
 
                         lock (gate)
                         {
@@ -170,7 +170,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                             done++;
                             ScanProgress = total == 0 ? 0 : (double)done / total * 100;
                             TotalScannedSize = totalSize;
-                            StatusText = $"Scanne {done}/{total} — bisher " +
+                            StatusText = $"Scanning {done}/{total} — so far " +
                                 Cleaner.Core.Utils.ByteFormatter.Format(totalSize);
                             bgTask.Progress = ScanProgress;
                             bgTask.StatusText = $"{done}/{total} · {Cleaner.Core.Utils.ByteFormatter.Format(totalSize)}";
@@ -181,7 +181,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                     catch (OperationCanceledException) { item.StatusMessage = "abgebrochen"; }
                     catch (Exception ex)
                     {
-                        item.StatusMessage = $"Fehler: {ex.Message}";
+                        item.StatusMessage = $"Error: {ex.Message}";
                         Cleaner.App.App.LogException("ScanAll." + item.Id, ex);
                     }
                     finally
@@ -190,9 +190,9 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                     }
                 });
 
-            StatusText = $"Scan abgeschlossen. Aufräumbar: {Cleaner.Core.Utils.ByteFormatter.Format(totalSize)}";
+            StatusText = $"Scan complete. Eligible: {Cleaner.Core.Utils.ByteFormatter.Format(totalSize)}";
         }
-        catch (OperationCanceledException) { StatusText = "Scan abgebrochen."; }
+        catch (OperationCanceledException) { StatusText = "Scan cancelled."; }
         finally
         {
             _taskRegistry.Complete(bgTask);
@@ -228,22 +228,17 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
         if (selected.Count == 0) return;
 
         // Mode entscheidet ob Papierkorb oder endgültig — Override kommt vom Split-Button
-        bool useRecycleBin = mode switch
-        {
-            "recycle" => true,
-            "permanent" => false,
-            _ => _settings.UseRecycleBin,
-        };
+        bool useRecycleBin = true;
 
         var totalSize = selected.Sum(i => i.ScannedSize);
-        var msg = $"Es werden {selected.Count} Kategorie(n) mit insgesamt " +
-                  $"{Cleaner.Core.Utils.ByteFormatter.Format(totalSize)} aufgeräumt.\n\n" +
+        var msg = $"Process {selected.Count} categories totaling " +
+                  $"{Cleaner.Core.Utils.ByteFormatter.Format(totalSize)} processed.\n\n" +
                   (useRecycleBin
-                      ? "Dateien werden in den Papierkorb verschoben."
-                      : "ACHTUNG: Dateien werden ENDGÜLTIG gelöscht.") +
-                  "\n\nFortfahren?";
+                      ? "Files move to recoverable quarantine. This does not free disk space until you permanently delete them from Recovery."
+                      : "Moves to recoverable quarantine.") +
+                  "\n\nContinue?";
 
-        var confirm = MessageBox.Show(msg, "Aufräumen bestätigen",
+        var confirm = MessageBox.Show(msg, "Confirm quarantine",
             MessageBoxButton.YesNo, useRecycleBin ? MessageBoxImage.Question : MessageBoxImage.Warning);
         if (confirm != MessageBoxResult.Yes) return;
 
@@ -256,7 +251,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
 
         var bgTask = _taskRegistry.Start(
             title: $"Aufräumen: {GetType().Name.Replace("ViewModel", "")}",
-            category: useRecycleBin ? "Papierkorb" : "Endgültig löschen",
+            category: useRecycleBin ? "Quarantine" : "Quarantine",
             cts: _cts);
 
         try
@@ -285,20 +280,20 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
 
                         _history.Record(result, item.Name, useRecycleBin, cleanedPaths);
 
-                        item.FreedSize = result.FreedBytes;
+                        item.FreedSize = result.QuarantinedBytes;
                         item.FilesDeleted = result.FilesDeleted;
                         item.ScannedSize = 0;
                         item.ScannedFiles = 0;
                         item.HasScanResult = false;
-                        item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.FreedBytes)} freigegeben";
+                        item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.QuarantinedBytes)} quarantined; {result.Errors.Count} skipped." + (result.Errors.Count > 0 ? " " + result.Errors[0] : "");
 
                         lock (gate)
                         {
-                            freed += result.FreedBytes;
+                            freed += result.QuarantinedBytes;
                             done++;
                             ScanProgress = total == 0 ? 0 : (double)done / total * 100;
                             TotalFreedSize = freed;
-                            StatusText = $"Räume auf {done}/{total} — bisher freigegeben " +
+                            StatusText = $"Processing {done}/{total} — so far quarantined " +
                                 Cleaner.Core.Utils.ByteFormatter.Format(freed);
                             bgTask.Progress = ScanProgress;
                             bgTask.StatusText = $"{done}/{total} · {Cleaner.Core.Utils.ByteFormatter.Format(freed)}";
@@ -309,7 +304,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                     catch (OperationCanceledException) { item.StatusMessage = "abgebrochen"; }
                     catch (Exception ex)
                     {
-                        item.StatusMessage = $"Fehler: {ex.Message}";
+                        item.StatusMessage = $"Error: {ex.Message}";
                         Cleaner.App.App.LogException("CleanSelected." + item.Id, ex);
                     }
                     finally
@@ -318,9 +313,9 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
                     }
                 });
 
-            StatusText = $"Aufräumen abgeschlossen. {Cleaner.Core.Utils.ByteFormatter.Format(freed)} freigegeben.";
+            StatusText = $"Quarantine complete. {Cleaner.Core.Utils.ByteFormatter.Format(freed)} quarantined.";
         }
-        catch (OperationCanceledException) { StatusText = "Aufräumen abgebrochen."; }
+        catch (OperationCanceledException) { StatusText = "Quarantine cancelled."; }
         finally
         {
             _taskRegistry.Complete(bgTask);
@@ -367,7 +362,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
         var selectedIds = Items.Where(i => i.IsSelected).Select(i => i.Id).ToList();
         _profiles.Save(name, selectedIds);
         SelectedProfileName = name;
-        StatusText = $"Profil '{name}' gespeichert ({selectedIds.Count} Kategorie(n)).";
+        StatusText = $"Profil '{name}' gespeichert ({selectedIds.Count} categories).";
     }
 
     [RelayCommand]
@@ -413,7 +408,7 @@ public abstract partial class CleanerPageViewModelBase : ObservableObject
             else
                 ExportCsv(scanned, path);
 
-            StatusText = $"Exportiert nach {path}";
+            StatusText = $"Exported to {path}";
         }
         catch (Exception ex)
         {

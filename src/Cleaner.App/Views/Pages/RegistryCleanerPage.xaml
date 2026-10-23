@@ -19,7 +19,7 @@
 
         <StackPanel>
             <TextBlock Text="{l:T Registry.Title}" Style="{StaticResource PageTitle}" />
-            <TextBlock Text="{l:T Registry.Subtitle}"
+            <TextBlock Text="Read-only registry diagnostics. Repairs are unavailable in this preview while backup safety is being validated."
                        Style="{StaticResource PageSubtitle}" />
         </StackPanel>
 
@@ -36,7 +36,7 @@
                     <ui:Button Appearance="Danger" Margin="8,0,0,0"
                                Icon="{ui:SymbolIcon Delete24}"
                                Content="{l:T Registry.CleanSelected}"
-                               Command="{Binding ViewModel.CleanCommand}" />
+                               IsEnabled="False" Command="{Binding ViewModel.CleanCommand}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <ui:Button Appearance="Secondary" Padding="8,4" Margin="0,0,6,0" FontSize="11"

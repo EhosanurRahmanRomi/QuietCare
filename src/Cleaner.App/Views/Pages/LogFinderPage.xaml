@@ -40,7 +40,7 @@
                     <ui:Button Appearance="Primary" Icon="{ui:SymbolIcon Search24}"
                                Content="{l:T Cleaner.ScanStart}"
                                Command="{Binding ViewModel.FindCommand}"
-                               IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBoolToVis}}" />
+                               IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBool}}" />
                     <ui:Button Appearance="Secondary" Icon="{ui:SymbolIcon FolderAdd24}"
                                Margin="8,0,0,0" Content="{l:T FolderAdd}"
                                Command="{Binding ViewModel.AddSearchRootCommand}" />

@@ -15,7 +15,7 @@ public sealed partial class CleanupTargetItemViewModel : ObservableObject
     {
         Target = target;
         // Default-Selection: Safe + Recommended sind vorausgewählt.
-        IsSelected = target.SafetyLevel <= SafetyLevel.Recommended;
+        IsSelected = false;
     }
 
     public ICleanupTarget Target { get; }

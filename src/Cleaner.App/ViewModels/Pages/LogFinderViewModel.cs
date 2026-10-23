@@ -269,7 +269,7 @@ public sealed partial class LogFinderViewModel : ObservableObject
                     bgTask.StatusText = $"{idx}/{selected.Count} · {Cleaner.Core.Utils.ByteFormatter.Format(bytesDone)}";
                 }
             }, cts.Token);
-            StatusText = $"{deleted} Datei(en) gelöscht ({Cleaner.Core.Utils.ByteFormatter.Format(bytesDone)}).";
+            StatusText = $"{deleted} Datei(en) in Quarantäne verschoben ({Cleaner.Core.Utils.ByteFormatter.Format(bytesDone)}).";
         }
         catch (OperationCanceledException) { StatusText = $"Abgebrochen — {deleted} Datei(en) waren bereits weg."; }
         catch (Exception ex)

@@ -8,9 +8,8 @@ public sealed class NuGetHttpCacheCleaner : CleanupTargetBase
     public NuGetHttpCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.nuget-http-cache";
-    public override string Name => "NuGet HTTP-Cache";
-    public override string Description =>
-        "%LOCALAPPDATA%\\NuGet\\v3-cache. Sicher zu löschen — wird beim nächsten Restore neu gefüllt.";
+    public override string Name => "NuGet HTTP cache";
+    public override string Description => "Downloaded package metadata and HTTP caches. A later restore may download them again.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Safe;
@@ -28,10 +27,8 @@ public sealed class NuGetGlobalPackagesCleaner : CleanupTargetBase
     public NuGetGlobalPackagesCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.nuget-global-packages";
-    public override string Name => "NuGet Global-Packages";
-    public override string Description =>
-        "%USERPROFILE%\\.nuget\\packages. Achtung: Restore aller Solutions schlägt einmalig länger. " +
-        "Nur ältere Versionen (>180 Tage) werden vorgeschlagen.";
+    public override string Name => "NuGet package cache";
+    public override string Description => "Packages last written over 180 days ago. Use only if the required packages can be downloaded again.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Caution;

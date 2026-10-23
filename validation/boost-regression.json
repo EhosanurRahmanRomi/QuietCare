@@ -1,0 +1,50 @@
+{
+  "utc": "2026-10-23T18:13:56.8681945+00:00",
+  "count": 10,
+  "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
+  "beforeBytes": 129060864,
+  "afterBytes": 0,
+  "tests": [
+    {
+      "name": "GPU sums matching engines and chooses the busiest engine",
+      "passed": true
+    },
+    {
+      "name": "Missing GPU readings remain unavailable",
+      "passed": true
+    },
+    {
+      "name": "Only idle fixture qualifies; editor protected",
+      "passed": true
+    },
+    {
+      "name": "Unknown audio state prevents all trimming",
+      "passed": true
+    },
+    {
+      "name": "Foreground app is protected",
+      "passed": true
+    },
+    {
+      "name": "User exclusion prevents trimming",
+      "passed": true
+    },
+    {
+      "name": "Foreground browser renderer without idle priority protected",
+      "passed": true
+    },
+    {
+      "name": "96 MB memory helper initialized",
+      "passed": true
+    },
+    {
+      "name": "Live working-set reduction measured in dedicated helper",
+      "passed": true
+    },
+    {
+      "name": "All 96 MB of allocated helper data preserved",
+      "passed": true
+    }
+  ],
+  "interpretation": "An immediate Windows working-set read returned zero after trim. This does not mean allocations or all physical memory were freed. The helper verified all 96 MB of allocated data."
+}

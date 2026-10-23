@@ -116,6 +116,7 @@ public static class ShellContextMenu
             hMenu = CreatePopupMenu();
             if (hMenu == IntPtr.Zero) { Cleaner.App.App.LogInfo("CreatePopupMenu failed"); return; }
 
+            if (ctxMenu is null) return;
             uint flags = CMF_NORMAL | CMF_CANRENAME;
             if (extendedVerbs) flags |= CMF_EXTENDEDVERBS;
             hr = ctxMenu.QueryContextMenu(hMenu, 0, IdCmdFirst, IdCmdLast, flags);

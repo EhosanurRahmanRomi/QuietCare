@@ -8,9 +8,8 @@ public sealed class VisualStudioCleaner : CleanupTargetBase
     public VisualStudioCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.visual-studio";
-    public override string Name => "Visual Studio Caches";
-    public override string Description =>
-        "Component-Cache, ServiceHub-Logs, ComponentModelCache von Visual Studio. Werden neu erstellt.";
+    public override string Name => "Visual Studio caches";
+    public override string Description => "Old component caches and ServiceHub logs. Close Visual Studio first; setup and repair packages are preserved.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Caution;

@@ -13,10 +13,8 @@ public sealed class NodeModulesCleaner : CleanupTargetBase
     public NodeModulesCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.node-modules";
-    public override string Name => "node_modules-Ordner";
-    public override string Description =>
-        "Sucht node_modules-Ordner in deinen Projekten. npm/pnpm/yarn install stellt sie wieder her. " +
-        "Älter als 30 Tage werden bevorzugt vorgeschlagen.";
+    public override string Name => "Node dependencies";
+    public override string Description => "node_modules files in your project folders. Reinstallation needs the package manager and accessible dependencies.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -49,7 +47,7 @@ public sealed class NodeModulesCleaner : CleanupTargetBase
                 }
             }
 
-            return new ScanResult { TargetId = Id, SizeBytes = total, FileCount = count, Paths = paths };
+            return Seal(new ScanResult { TargetId = Id, SizeBytes = total, FileCount = count, Paths = paths }, ct);
         }, ct);
     }
 
@@ -75,5 +73,5 @@ public sealed class NodeModulesCleaner : CleanupTargetBase
         }
     }
 
-    protected override IEnumerable<string> EnumerateCleanupRoots() => Array.Empty<string>();
+    protected override IEnumerable<string> EnumerateCleanupRoots() => SearchRoots;
 }

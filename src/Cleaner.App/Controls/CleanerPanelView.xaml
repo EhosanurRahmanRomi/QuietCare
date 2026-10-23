@@ -44,7 +44,7 @@
                                Icon="{ui:SymbolIcon Search24}"
                                Content="{l:T Cleaner.ScanStart}"
                                Command="{Binding ScanAllCommand}"
-                               IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolToVis}}"
+                               IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"
                                Margin="0,0,12,0" />
                     <ui:DropDownButton Appearance="Danger"
                                        Icon="{ui:SymbolIcon Delete24}"
@@ -56,11 +56,6 @@
                                           Command="{Binding PlacementTarget.Tag.CleanSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                           CommandParameter="recycle">
                                     <MenuItem.Icon><ui:SymbolIcon Symbol="Delete24" /></MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{l:T Cleaner.DeletePermanent}"
-                                          Command="{Binding PlacementTarget.Tag.CleanSelectedCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                          CommandParameter="permanent">
-                                    <MenuItem.Icon><ui:SymbolIcon Symbol="DeleteOff24" Foreground="{StaticResource WarningBrush}" /></MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
                         </ui:DropDownButton.Flyout>

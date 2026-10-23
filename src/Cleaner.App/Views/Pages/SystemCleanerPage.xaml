@@ -12,6 +12,6 @@
       d:DataContext="{d:DesignInstance Type=vm:SystemCleanerViewModel}"
       >
     <controls:CleanerPanelView Margin="40,24,40,40"
-                               PageTitle="System aufräumen"
-                               PageSubtitle="Temp-Dateien, Caches, Browser-Cache, Windows-Update-Cache und Logs. Sicher voreingestellt — du kontrollierst was gelöscht wird." />
+                               PageTitle="System cleaner"
+                               PageSubtitle="Preview old temporary files, logs and caches. Review the list, then quarantine selected files. Nothing is selected automatically." />
 </UserControl>

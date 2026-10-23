@@ -8,8 +8,8 @@ public sealed class IconCacheCleaner : CleanupTargetBase
     public IconCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "system.icon-cache";
-    public override string Name => "Icon-Cache";
-    public override string Description => "iconcache_*.db Dateien. Wird vom Explorer neu erzeugt.";
+    public override string Name => "Icon cache";
+    public override string Description => "Old Explorer icon cache files. Windows may rebuild icons after cleanup.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.WindowsSystem;
     public override SafetyLevel SafetyLevel => SafetyLevel.Safe;

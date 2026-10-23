@@ -8,9 +8,8 @@ public sealed class ThumbnailCacheCleaner : CleanupTargetBase
     public ThumbnailCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "system.thumbnail-cache";
-    public override string Name => "Thumbnail-Cache";
-    public override string Description =>
-        "Vorschau-Bilder von Dateien (thumbcache_*.db). Windows baut den Cache bei Bedarf neu auf.";
+    public override string Name => "Thumbnail cache";
+    public override string Description => "Old Explorer thumbnail cache files. Windows may rebuild previews after cleanup.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.WindowsSystem;
     public override SafetyLevel SafetyLevel => SafetyLevel.Safe;

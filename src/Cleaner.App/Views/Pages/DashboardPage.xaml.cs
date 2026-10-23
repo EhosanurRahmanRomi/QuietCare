@@ -3,11 +3,11 @@ using Wpf.Ui.Controls;
 
 namespace Cleaner.App.Views.Pages;
 
-public partial class DashboardPage : INavigableView<DashboardViewModel>
+public partial class DashboardPage : INavigableView<CareHubViewModel>
 {
-    public DashboardViewModel ViewModel { get; }
+    public CareHubViewModel ViewModel { get; }
 
-    public DashboardPage(DashboardViewModel viewModel)
+    public DashboardPage(CareHubViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = this;

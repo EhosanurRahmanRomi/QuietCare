@@ -33,8 +33,6 @@ public abstract class ChromiumCacheCleaner : CleanupTargetBase
                 Path.Combine(profile, "Cache"),
                 Path.Combine(profile, "Code Cache"),
                 Path.Combine(profile, "GPUCache"),
-                Path.Combine(profile, "Service Worker", "CacheStorage"),
-                Path.Combine(profile, "Service Worker", "ScriptCache"),
             })
             {
                 if (Directory.Exists(cache)) yield return cache;
@@ -48,8 +46,8 @@ public sealed class ChromeCacheCleaner : ChromiumCacheCleaner
     public ChromeCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "browser.chrome-cache";
-    public override string Name => "Google Chrome Cache";
-    public override string Description => "Cache, GPUCache, Service-Worker-Cache aller Chrome-Profile.";
+    public override string Name => "Google Chrome cache";
+    public override string Description => "Old HTTP, code and GPU caches. Preserves cookies, history, passwords and service-worker offline data.";
     public override string IconGlyph => "";
 
     protected override string UserDataRoot
@@ -67,8 +65,8 @@ public sealed class EdgeCacheCleaner : ChromiumCacheCleaner
     public EdgeCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "browser.edge-cache";
-    public override string Name => "Microsoft Edge Cache";
-    public override string Description => "Cache, GPUCache, Service-Worker-Cache aller Edge-Profile.";
+    public override string Name => "Microsoft Edge cache";
+    public override string Description => "Old HTTP, code and GPU caches. Preserves cookies, history, passwords and service-worker offline data.";
     public override string IconGlyph => "";
 
     protected override string UserDataRoot
@@ -86,8 +84,8 @@ public sealed class BraveCacheCleaner : ChromiumCacheCleaner
     public BraveCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "browser.brave-cache";
-    public override string Name => "Brave Cache";
-    public override string Description => "Cache, GPUCache, Service-Worker-Cache aller Brave-Profile.";
+    public override string Name => "Brave cache";
+    public override string Description => "Old HTTP, code and GPU caches. Preserves cookies, history, passwords and service-worker offline data.";
     public override string IconGlyph => "";
 
     protected override string UserDataRoot

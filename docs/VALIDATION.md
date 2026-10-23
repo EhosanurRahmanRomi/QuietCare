@@ -1,0 +1,33 @@
+# Validation of 0.5.0-preview.1
+
+Validated locally on Windows 11 x64. These are separate evidence levels; rendered pages and fixtures do not prove every native interaction or hardware configuration.
+
+| Evidence | Result | Practical scope |
+| --- | --- | --- |
+| Release compilation/publish | Successful; no compiler warnings in the recorded build | .NET 10.0.402 SDK; self-contained compressed Windows x64 executable |
+| Core regressions | **58 passed** | File identity, exclusions/age, cancellation, changed files, junctions/hard links, recovery conflicts, receipt ownership, one-click deletion, startup-state mapping/diffs, independent disk scans, process identity and Windows-tool trust/resolution |
+| RAM Boost | **10 passed** | Synthetic selection policies plus a dedicated 96 MB helper; all helper bytes remained intact after working-set trimming. User apps were not trimmed. |
+| Production controls | **18 pages loaded + monitor render; zero binding errors** | Real controls rendered by the application's validation harness. Monitor image readings are fixtures. No cleaning, scan or optimization commands were clicked. |
+| Live monitor + startup watch | Completed, main window unopened | Actual CPU/GPU/RAM sampling, startup baseline and a 30-second refresh; no Boost invoked |
+| Packages | See signature report | All downloaded dependency, SDK-tool and runtime archives verified; signatures do not establish absence of malicious behavior |
+| Advisory audit | No known vulnerable packages returned for App, Core or Monitor | Snapshot from the configured NuGet advisory source at validation time |
+| Locked restores | Normal and single-file publish configurations passed | Separate lock files prevent the two build variants from replacing one another's dependency state |
+
+## Short local resource sample
+
+The first 20 seconds, including startup initialization, averaged **5.04% of total machine CPU**. After that warm-up, 12-second samples measured **0.47% at 1,000 ms** and **0.85% at 250 ms**; a six-second hidden-monitor sample measured **0%**. Working set was about **227–228 MiB**, with about **101–102 MiB private bytes**, in this self-contained build with startup monitoring. The host has eight logical processors. These short samples are workload-dependent, not a sustained benchmark or a guarantee. The miniature monitor's screen size is independent of runtime memory use.
+
+## Not yet established
+
+- Full interactive acceptance of every button, keyboard path, monitor drag/expand and UAC outcome.
+- End-to-end Defender scanning, remediation, or actual drive optimization through this release. Tests verified the installed tools, signatures and allowed command construction; they did not run these system operations.
+- Real startup enable/disable or real-user file cleanup on this PC. Mutation tests used dedicated fixtures. Detection-policy tests do not prove every Windows persistence location is covered.
+- Long-duration notification tests, five-minute refresh behavior over days, reboot/startup acceptance, or broad hardware/OS/language coverage.
+- Complete English localization of all inherited advanced-tool status messages.
+- Authenticode signing, independent penetration testing, or a guarantee of bug-free behavior.
+
+## Evidence
+
+Machine-readable reports are in [validation/](../validation/): `regression.json`, `boost-regression.json`, `ui-validation.json`, `monitor-smoke.json`, `package-signatures.json`, and the three advisory reports. Local personal startup inventories and process screenshots are deliberately excluded from publication.
+
+The previously installed QuietCare 0.3 application was not replaced or uninstalled during this work. Preview settings and startup registration use `QuietCareNext`.

@@ -8,9 +8,8 @@ public sealed class WindowsLogsCleaner : CleanupTargetBase
     public WindowsLogsCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "system.windows-logs";
-    public override string Name => "Windows-Logs";
-    public override string Description =>
-        "Setup- und Servicing-Logs in C:\\Windows\\Logs. Älter als 14 Tage werden gefunden.";
+    public override string Name => "Windows diagnostic logs";
+    public override string Description => "Windows servicing and setup logs older than 14 days. Retain these if you are diagnosing an issue.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Logs;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;

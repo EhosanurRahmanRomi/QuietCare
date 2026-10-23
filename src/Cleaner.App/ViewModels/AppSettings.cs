@@ -42,7 +42,7 @@ public sealed partial class AppSettings : ObservableObject
     private int _logFinderMinAgeDays = 7;
 
     [ObservableProperty]
-    private string _language = Localization.Translations.DetectInitialLanguage();
+    private string _language = "en";
 
     /// <summary>
     /// Globale Schutzregeln: Pfade/Substrings (eine pro Zeile), die nie gelöscht werden.
@@ -52,7 +52,7 @@ public sealed partial class AppSettings : ObservableObject
 
     /// <summary>Nur Dateien älter als X Tage aufräumen (0 = kein Filter).</summary>
     [ObservableProperty]
-    private int _cleanMinAgeDays;
+    private int _cleanMinAgeDays = 7;
 
     partial void OnLanguageChanged(string value)
     {
@@ -128,6 +128,6 @@ public sealed class AppSettingsState
     public int LogFinderMinAgeDays { get; set; } = 7;
     public string Language { get; set; } = string.Empty;
     public string ExclusionPatterns { get; set; } = string.Empty;
-    public int CleanMinAgeDays { get; set; }
+    public int CleanMinAgeDays { get; set; } = 7;
     public List<string> CustomScanRoots { get; set; } = new();
 }

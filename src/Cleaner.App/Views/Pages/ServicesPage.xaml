@@ -20,7 +20,7 @@
 
         <StackPanel>
             <TextBlock Text="{l:T Services.Title}" Style="{StaticResource PageTitle}" />
-            <TextBlock Text="{l:T Services.Subtitle}"
+            <TextBlock Text="Inspect service state and memory use here. Open Windows Services to start, stop or change startup type with Windows dependency and permission checks."
                        Style="{StaticResource PageSubtitle}" />
         </StackPanel>
 
@@ -42,7 +42,6 @@
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <CheckBox Content="{l:T Services.OnlyRunning}" IsChecked="{Binding ViewModel.ShowOnlyRunning}" VerticalAlignment="Center" Margin="0,0,12,0" />
-                    <CheckBox Content="{l:T Services.OnlyRecommendations}" IsChecked="{Binding ViewModel.ShowOnlyRecommendations}" VerticalAlignment="Center" Margin="0,0,12,0" />
                     <CheckBox Content="{l:T Services.HideMicrosoft}" IsChecked="{Binding ViewModel.HideMicrosoft}" VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
@@ -68,28 +67,7 @@
                             <MenuItem.Icon><ui:SymbolIcon Symbol="Copy24" /></MenuItem.Icon>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Header="{l:T Services.Start}"
-                                  Command="{Binding Tag.ViewModel.StartCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding}">
-                            <MenuItem.Icon><ui:SymbolIcon Symbol="Play24" /></MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{l:T Services.Stop}"
-                                  Command="{Binding Tag.ViewModel.StopCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding}">
-                            <MenuItem.Icon><ui:SymbolIcon Symbol="Stop24" /></MenuItem.Icon>
-                        </MenuItem>
                         <Separator />
-                        <MenuItem Header="{l:T Services.StartAuto}"
-                                  Command="{Binding Tag.ViewModel.SetAutomaticCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding}" />
-                        <MenuItem Header="{l:T Services.StartManual}"
-                                  Command="{Binding Tag.ViewModel.SetManualCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding}" />
-                        <MenuItem Header="{l:T Services.StartDisabled}"
-                                  Command="{Binding Tag.ViewModel.DisableCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                  CommandParameter="{Binding}">
-                            <MenuItem.Icon><ui:SymbolIcon Symbol="SubtractCircle24" Foreground="{StaticResource WarningBrush}" /></MenuItem.Icon>
-                        </MenuItem>
                     </ContextMenu>
                 </controls:PowerGrid.RowContextMenu>
 
@@ -98,40 +76,6 @@
                 <DataGridTextColumn Header="{l:T Col.Status}" Binding="{Binding Status}" Width="100" />
                 <DataGridTextColumn Header="{l:T Col.StartType}" Binding="{Binding StartType}" Width="100" />
                 <DataGridTextColumn Header="{l:T Sort.RAM}" Binding="{Binding RamBytes, Converter={StaticResource BytesToSize}}" SortMemberPath="RamBytes" Width="80" />
-                <DataGridTemplateColumn Header="{l:T Col.Recommendation}" Width="*" SortMemberPath="Recommendation">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="{x:Type core:WindowsService}">
-                            <TextBlock Text="{Binding Recommendation}"
-                                       Foreground="{StaticResource CautionBrush}"
-                                       FontSize="11" TextWrapping="Wrap" VerticalAlignment="Center" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="" Width="290" CanUserReorder="False">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate DataType="{x:Type core:WindowsService}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <ui:Button Appearance="Secondary" Padding="6,2" FontSize="11"
-                                           Icon="{ui:SymbolIcon Play24}" Content="{l:T Services.Start}"
-                                           Command="{Binding DataContext.ViewModel.StartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           CommandParameter="{Binding}" />
-                                <ui:Button Appearance="Secondary" Padding="6,2" FontSize="11" Margin="4,0,0,0"
-                                           Icon="{ui:SymbolIcon Stop24}" Content="{l:T Stop}"
-                                           Command="{Binding DataContext.ViewModel.StopCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           CommandParameter="{Binding}" />
-                                <ui:Button Appearance="Caution" Padding="6,2" FontSize="11" Margin="4,0,0,0"
-                                           Icon="{ui:SymbolIcon Pause24}" Content="{l:T Services.Manual}"
-                                           ToolTip="Start-Typ auf 'Manuell' (= läuft nicht von selbst)"
-                                           Command="{Binding DataContext.ViewModel.SetManualCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           CommandParameter="{Binding}" />
-                                <ui:Button Appearance="Danger" Padding="6,2" FontSize="11" Margin="4,0,0,0"
-                                           Icon="{ui:SymbolIcon SubtractCircle24}" Content="{l:T Services.Disable}"
-                                           Command="{Binding DataContext.ViewModel.DisableCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           CommandParameter="{Binding}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
             </controls:PowerGrid>
         </Border>
 

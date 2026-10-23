@@ -1,70 +1,32 @@
 namespace Cleaner.Core.Utils;
-
-/// <summary>
-/// Wrapper um Directory.Enumerate* der UnauthorizedAccess- und PathTooLong-Exceptions
-/// schluckt statt das gesamte Scan-Ergebnis zu killen.
-/// </summary>
 public static class SafeEnumerator
 {
+    public static bool IsUnlinked(string path)
+    {
+        try {
+            var full = Path.GetFullPath(path);
+            if (full.StartsWith(@"\\", StringComparison.Ordinal)) return false;
+            for (string? current = full; current != null; current = Path.GetDirectoryName(current))
+                if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) return false;
+            return true;
+        } catch { return false; }
+    }
+    static string[] Entries(string path, string pattern, bool directories)
+    {
+        try {
+            if (!IsUnlinked(path)) return [];
+            return (directories ? Directory.GetDirectories(path, pattern) : Directory.GetFiles(path, pattern)).Where(IsUnlinked).ToArray();
+        } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Security.SecurityException or ArgumentException) { return []; }
+    }
     public static IEnumerable<string> EnumerateFiles(string path, string pattern = "*", bool recursive = false)
     {
-        var stack = new Stack<string>();
-        stack.Push(path);
-
-        while (stack.Count > 0)
-        {
-            string current = stack.Pop();
-
-            IEnumerable<string> files;
-            try
-            {
-                files = Directory.EnumerateFiles(current, pattern, SearchOption.TopDirectoryOnly);
-            }
-            catch (UnauthorizedAccessException) { continue; }
-            catch (DirectoryNotFoundException) { continue; }
-            catch (IOException) { continue; }
-            catch (System.Security.SecurityException) { continue; }
-
-            foreach (var f in files)
-                yield return f;
-
-            if (!recursive) continue;
-
-            IEnumerable<string> subdirs;
-            try
-            {
-                subdirs = Directory.EnumerateDirectories(current);
-            }
-            catch (UnauthorizedAccessException) { continue; }
-            catch (DirectoryNotFoundException) { continue; }
-            catch (IOException) { continue; }
-            catch (System.Security.SecurityException) { continue; }
-
-            foreach (var d in subdirs)
-                stack.Push(d);
+        var stack = new Stack<string>(); stack.Push(path);
+        while (stack.TryPop(out var current)) {
+            foreach (var file in Entries(current, pattern, false)) yield return file;
+            if (recursive) foreach (var directory in Entries(current, "*", true)) stack.Push(directory);
         }
     }
-
-    public static IEnumerable<string> EnumerateDirectories(string path)
-    {
-        try
-        {
-            return Directory.EnumerateDirectories(path);
-        }
-        catch (UnauthorizedAccessException) { return Array.Empty<string>(); }
-        catch (DirectoryNotFoundException) { return Array.Empty<string>(); }
-        catch (IOException) { return Array.Empty<string>(); }
-    }
-
-    public static long TryGetSize(string file)
-    {
-        try { return new FileInfo(file).Length; }
-        catch { return 0; }
-    }
-
-    public static DateTime TryGetLastWrite(string file)
-    {
-        try { return File.GetLastWriteTimeUtc(file); }
-        catch { return DateTime.MinValue; }
-    }
+    public static IEnumerable<string> EnumerateDirectories(string path) => Entries(path, "*", true);
+    public static long TryGetSize(string file) { try { return new FileInfo(file).Length; } catch { return 0; } }
+    public static DateTime TryGetLastWrite(string file) { try { return File.GetLastWriteTimeUtc(file); } catch { return DateTime.MinValue; } }
 }

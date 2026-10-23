@@ -1,0 +1,239 @@
+{
+  "utc": "2026-10-23T18:13:37.87711+00:00",
+  "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
+  "count": 58,
+  "checks": [
+    {
+      "name": "Age and exclusion policy bound preview",
+      "passed": true
+    },
+    {
+      "name": "Scan did not mutate content",
+      "passed": true
+    },
+    {
+      "name": "Changed file rejected after preview",
+      "passed": true
+    },
+    {
+      "name": "Quarantine moves approved file without claiming freed space",
+      "passed": true
+    },
+    {
+      "name": "Recent and excluded files preserved",
+      "passed": true
+    },
+    {
+      "name": "Scan authorization consumed once",
+      "passed": true
+    },
+    {
+      "name": "Recovery metadata survives enumeration",
+      "passed": true
+    },
+    {
+      "name": "Restore refuses to overwrite existing file",
+      "passed": true
+    },
+    {
+      "name": "Restore preserves content and removes completed record",
+      "passed": true
+    },
+    {
+      "name": "Forged scan cannot authorize cleanup",
+      "passed": true
+    },
+    {
+      "name": "New exclusions rechecked before mutation",
+      "passed": true
+    },
+    {
+      "name": "Cancelled cleanup leaves input untouched",
+      "passed": true
+    },
+    {
+      "name": "A different target instance cannot consume an approval",
+      "passed": true
+    },
+    {
+      "name": "Junction fixture created",
+      "passed": true
+    },
+    {
+      "name": "Enumerator refuses junction traversal",
+      "passed": true
+    },
+    {
+      "name": "Linked scan root rejected",
+      "passed": true
+    },
+    {
+      "name": "Hardlink fixture created",
+      "passed": true
+    },
+    {
+      "name": "Multiply linked files excluded from approved preview",
+      "passed": true
+    },
+    {
+      "name": "A second quarantine records recovery data",
+      "passed": true
+    },
+    {
+      "name": "Permanent deletion removes only selected quarantined file",
+      "passed": true
+    },
+    {
+      "name": "Outside sentinel remains intact",
+      "passed": true
+    },
+    {
+      "name": "Maintenance rejects arbitrary shell commands",
+      "passed": true
+    },
+    {
+      "name": "Restore-point destruction blocked before execution",
+      "passed": true
+    },
+    {
+      "name": "Generic recursive directory deletion unavailable",
+      "passed": true
+    },
+    {
+      "name": "Empty duplicate-search roots return no results",
+      "passed": true
+    },
+    {
+      "name": "Duplicate finder compares SHA-256 content",
+      "passed": true
+    },
+    {
+      "name": "Disk analysis reports fixture sizes and counts",
+      "passed": true
+    },
+    {
+      "name": "Process control refuses to terminate QuietCare itself",
+      "passed": true
+    },
+    {
+      "name": "Elevated process termination disabled",
+      "passed": true
+    },
+    {
+      "name": "Process identity mismatch leaves helper alive",
+      "passed": true
+    },
+    {
+      "name": "Confirmed helper termination uses its verified handle",
+      "passed": true
+    },
+    {
+      "name": "One-click cleanup actually deletes its eligible fixture and reports bytes",
+      "passed": true
+    },
+    {
+      "name": "Automatic cleanup preserves recent, non-temp, project and recovery fixtures",
+      "passed": true
+    },
+    {
+      "name": "Automatic cleanup never purges another operation's recovery receipt",
+      "passed": true
+    },
+    {
+      "name": "Automatic browser plan enforces seven-day floor independently of advanced settings",
+      "passed": true
+    },
+    {
+      "name": "Browser plan excludes sessions, offline storage and recent cache",
+      "passed": true
+    },
+    {
+      "name": "Browser becoming active after scan blocks its cache cleanup",
+      "passed": true
+    },
+    {
+      "name": "Running browsers are unavailable to automatic cleanup",
+      "passed": true
+    },
+    {
+      "name": "Closed-browser fixture cleanup removes only old disposable cache",
+      "passed": true
+    },
+    {
+      "name": "Cancelled automatic cleanup never starts a scan",
+      "passed": true
+    },
+    {
+      "name": "32-bit machine startup uses Run32 approval mapping",
+      "passed": true
+    },
+    {
+      "name": "Startup-folder toggles use Windows approval state",
+      "passed": true
+    },
+    {
+      "name": "Startup approval encoding is exactly twelve bytes",
+      "passed": true
+    },
+    {
+      "name": "Startup approval enable/disable round trip",
+      "passed": true
+    },
+    {
+      "name": "Unknown approval state is conservatively treated as enabled",
+      "passed": true
+    },
+    {
+      "name": "First startup scan establishes a quiet baseline",
+      "passed": true
+    },
+    {
+      "name": "Unchanged startup entries generate no alerts",
+      "passed": true
+    },
+    {
+      "name": "A new startup item generates an alert",
+      "passed": true
+    },
+    {
+      "name": "Changed startup commands generate an alert",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled startup entries generate an alert",
+      "passed": true
+    },
+    {
+      "name": "Startup baseline remains case-insensitive after JSON reload",
+      "passed": true
+    },
+    {
+      "name": "An inaccessible or empty source does not erase the last-seen baseline",
+      "passed": true
+    },
+    {
+      "name": "Unsigned executable fixtures fail Windows-tool trust verification",
+      "passed": true
+    },
+    {
+      "name": "Optimization uses the fixed Windows tool and media-appropriate operation",
+      "passed": true
+    },
+    {
+      "name": "Installed Windows optimization tool has a trusted Microsoft signature",
+      "passed": true
+    },
+    {
+      "name": "Defender scan modes resolve to a trusted Microsoft scanner",
+      "passed": true
+    },
+    {
+      "name": "Unknown Windows job is rejected before launch",
+      "passed": true
+    },
+    {
+      "name": "Concurrent disk scans keep independent counts",
+      "passed": true
+    }
+  ]
+}

@@ -8,9 +8,8 @@ public sealed class NpmCacheCleaner : CleanupTargetBase
     public NpmCacheCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.npm-cache";
-    public override string Name => "npm Cache";
-    public override string Description =>
-        "%APPDATA%\\npm-cache und %LOCALAPPDATA%\\npm-cache. Sicher zu löschen, wird neu aufgebaut.";
+    public override string Name => "npm cache";
+    public override string Description => "Old npm download cache files. A later package install may download them again.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Safe;

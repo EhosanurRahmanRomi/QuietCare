@@ -10,6 +10,6 @@
       d:DataContext="{d:DesignInstance Type=vm:DeveloperCleanerViewModel}"
       >
     <controls:CleanerPanelView Margin="40,24,40,40"
-                               PageTitle="Developer-Cleaner"
-                               PageSubtitle="JetBrains-Caches, Visual-Studio-Caches, NuGet, npm, Docker-Prune, bin/obj und node_modules. Achte auf die Sicherheits-Markierungen." />
+                               PageTitle="Developer cleaner"
+                               PageSubtitle="Review build outputs and package caches. Close the relevant tools first. Rebuilding may require downloads; nothing is selected automatically." />
 </UserControl>

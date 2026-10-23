@@ -6,6 +6,7 @@
     <conv:SafetyLevelToTextConverter x:Key="SafetyToText" />
     <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
     <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+    <conv:InverseBooleanConverter x:Key="InverseBool" />
     <conv:NullToVisibilityConverter x:Key="NullToVis" />
     <conv:PercentToWidthConverter x:Key="PercentToWidth" />
     <conv:StringToBrushConverter x:Key="StringToBrush" />

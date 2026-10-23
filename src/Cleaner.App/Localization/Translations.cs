@@ -11,7 +11,7 @@ public static class Translations
         ["en"] = new()
         {
             // App
-            ["AppTitle"] = "PowerClean — Windows Cleanup & Analysis",
+            ["AppTitle"] = "QuietCare Next — Windows Cleanup & Analysis",
 
             // Common
             ["Cancel"] = "Cancel",
@@ -49,7 +49,7 @@ public static class Translations
             ["Nav.LargeFiles"] = "Large files",
             ["Nav.LogFinder"] = "Log finder",
             ["Nav.OrphanData"] = "Orphan user data",
-            ["Nav.History"] = "History",
+            ["Nav.History"] = "Recovery",
             ["Nav.Autostart"] = "Autostart",
             ["History.Title"] = "Cleanup history",
             ["History.Subtitle"] = "Every cleanup is recorded here. Items deleted to the recycle bin can be restored.",
@@ -78,12 +78,12 @@ public static class Translations
             // Dashboard
             ["Dashboard.Subtitle"] = "Keep your PC tidy — here's an overview.",
             ["Dashboard.QuickScan"] = "Quick scan",
-            ["Dashboard.CleanAll"] = "Clean all",
-            ["Dashboard.PotentialSavings"] = "Cleanable",
+            ["Dashboard.CleanAll"] = "Quarantine scanned items",
+            ["Dashboard.PotentialSavings"] = "Preview total",
             ["Dashboard.Drives"] = "Drives",
             ["Dashboard.FreedAllTime"] = "Freed all-time",
             ["Dashboard.FreedThisMonth"] = "Freed this month",
-            ["Dashboard.Health"] = "Disk health",
+            ["Dashboard.Health"] = "Disk free space",
             ["Dashboard.Health.Good"] = "Healthy",
             ["Dashboard.Health.Ok"] = "OK",
             ["Dashboard.Health.Low"] = "Low space",
@@ -106,14 +106,14 @@ public static class Translations
 
             // System cleaner / Developer cleaner shared
             ["Cleaner.ScanStart"] = "Start scan",
-            ["Cleaner.CleanSelected"] = "Clean selected",
+            ["Cleaner.CleanSelected"] = "Quarantine selected",
             ["Cleaner.Found"] = "Found",
             ["Cleaner.Selected"] = "Selected",
-            ["Cleaner.Freed"] = "Freed",
+            ["Cleaner.Freed"] = "Quarantined",
             ["Cleaner.Idle"] = "Ready. Click 'Start scan' to see what can be cleaned.",
             ["Cleaner.PathsHeader"] = "Found paths — double-click to reveal in Explorer.",
             ["Cleaner.PathsHidden"] = "... and {0} more (UI limit, all will be deleted)",
-            ["Cleaner.MoveToRecycleBin"] = "Move to recycle bin",
+            ["Cleaner.MoveToRecycleBin"] = "Use recoverable quarantine",
             ["Cleaner.DeletePermanent"] = "Delete permanently",
             ["Cleaner.CleanThis"] = "Clean",
             ["Cleaner.Profile"] = "Profile",
@@ -171,7 +171,7 @@ public static class Translations
             ["Programs.Title"] = "Installed programs",
             ["Programs.Subtitle"] = "All installed apps with size, install date and publisher. Sort by size for space hogs or by date for old leftovers.",
             ["Services.Title"] = "Services & recommendations",
-            ["Services.Subtitle"] = "Windows services with status, RAM usage and suggestions for safe deactivation. Admin required for actions.",
+            ["Services.Subtitle"] = "Read-only preview. In-app service changes are unavailable. Windows services with status, RAM usage and suggestions for safe deactivation. Admin required for actions.",
             ["Processes.Title"] = "Process monitor",
             ["Processes.Subtitle"] = "Top processes by RAM/CPU. Updates every 2 seconds.",
             ["Registry.Title"] = "Registry cleaner",
@@ -187,8 +187,8 @@ public static class Translations
             ["Settings.Language"] = "Language",
             ["Settings.LanguageDesc"] = "App language. Defaults to your Windows language.",
             ["Settings.CleanupSafety"] = "Cleanup safety",
-            ["Settings.UseRecycleBin"] = "Move files to recycle bin (instead of permanent delete)",
-            ["Settings.UseRecycleBinHint"] = "Recommended: leave the recycle bin on so you can restore accidentally deleted files.",
+            ["Settings.UseRecycleBin"] = "Recoverable quarantine (always enabled in preview)",
+            ["Settings.UseRecycleBinHint"] = "Files are quarantined. Restore or permanently delete them from Recovery. Quarantine does not free disk space.",
             ["Settings.Protection"] = "Protection rules",
             ["Settings.ProtectionDesc"] = "Apply to every cleaner — protected paths are never deleted.",
             ["Settings.ExclusionPatterns"] = "Never delete paths containing (one per line)",
@@ -314,7 +314,7 @@ public static class Translations
             ["KillProfiles.Title"] = "Kill profiles",
             ["KillProfiles.Subtitle"] = "End groups of processes with one click or a global shortcut — frees RAM and CPU instantly.",
             ["KillProfiles.Add"] = "New profile",
-            ["KillProfiles.HotkeyHint"] = "Shortcuts work system-wide while PowerClean is running (also minimized). Combos like Ctrl+Alt+K and gamepad buttons are supported; every trigger shows a toast.",
+            ["KillProfiles.HotkeyHint"] = "Shortcuts work system-wide while QuietCare Next is running (also minimized). Combos like Ctrl+Alt+K and gamepad buttons are supported; every trigger shows a toast.",
             ["KillProfiles.NamePlaceholder"] = "Profile name...",
             ["KillProfiles.Mode"] = "Mode",
             ["KillProfiles.ModeToolTip"] = "Graceful = close window · Standard = staged kill · ForceTree = kill process tree · Nuke = terminate everything in parallel, as hard and fast as possible",
@@ -358,7 +358,7 @@ public static class Translations
             ["About.GildeText"] = "More projects and info at gilde.org",
             ["About.Contact"] = "Contact",
             ["About.ContactText"] = "Send a message directly",
-            ["About.Support"] = "Support PowerClean",
+            ["About.Support"] = "Support QuietCare Next",
             ["About.SupportText"] = "Support further development",
 
             // Autostart
@@ -413,7 +413,7 @@ public static class Translations
         ["de"] = new()
         {
             // App
-            ["AppTitle"] = "PowerClean — Windows aufräumen & analysieren",
+            ["AppTitle"] = "QuietCare Next — Windows aufräumen & analysieren",
 
             // Common
             ["Cancel"] = "Abbrechen",
@@ -511,7 +511,7 @@ public static class Translations
             ["Cleaner.Idle"] = "Bereit. Klicke auf 'Scan starten' um zu sehen, was aufgeräumt werden kann.",
             ["Cleaner.PathsHeader"] = "Gefundene Pfade — Doppelklick öffnet im Explorer.",
             ["Cleaner.PathsHidden"] = "... und {0} weitere (UI-Limit, alle werden gelöscht)",
-            ["Cleaner.MoveToRecycleBin"] = "In Papierkorb verschieben",
+            ["Cleaner.MoveToRecycleBin"] = "Quarantäne (wiederherstellbar)",
             ["Cleaner.DeletePermanent"] = "Endgültig löschen",
             ["Cleaner.CleanThis"] = "Aufräumen",
             ["Cleaner.Profile"] = "Profil",
@@ -568,7 +568,7 @@ public static class Translations
             ["Programs.Title"] = "Installierte Programme",
             ["Programs.Subtitle"] = "Alle installierten Apps mit Größe, Installations-Datum und Hersteller. Sortier nach Größe um Speicherfresser zu finden, oder nach Datum um alte Reste zu entdecken.",
             ["Services.Title"] = "Dienste & Empfehlungen",
-            ["Services.Subtitle"] = "Alle Windows-Dienste mit Status, RAM-Verbrauch und Empfehlungen welche du gefahrlos deaktivieren kannst. Aktionen brauchen Admin-Rechte.",
+            ["Services.Subtitle"] = "Read-only preview. In-app service changes are unavailable. Alle Windows-Dienste mit Status, RAM-Verbrauch und Empfehlungen welche du gefahrlos deaktivieren kannst. Aktionen brauchen Admin-Rechte.",
             ["Processes.Title"] = "Prozess-Monitor",
             ["Processes.Subtitle"] = "Top-Prozesse nach RAM/CPU. Aktualisiert sich alle 2 Sekunden.",
             ["Registry.Title"] = "Registry-Cleaner",
@@ -699,7 +699,7 @@ public static class Translations
             ["KillProfiles.Title"] = "Kill-Profile",
             ["KillProfiles.Subtitle"] = "Prozessgruppen mit einem Klick oder globalem Shortcut beenden — gibt sofort RAM und CPU frei.",
             ["KillProfiles.Add"] = "Neues Profil",
-            ["KillProfiles.HotkeyHint"] = "Shortcuts wirken systemweit, solange PowerClean läuft (auch minimiert). Kombinationen wie Strg+Alt+K und Gamepad-Tasten werden unterstützt; jede Auslösung zeigt einen Toast.",
+            ["KillProfiles.HotkeyHint"] = "Shortcuts wirken systemweit, solange QuietCare Next läuft (auch minimiert). Kombinationen wie Strg+Alt+K und Gamepad-Tasten werden unterstützt; jede Auslösung zeigt einen Toast.",
             ["KillProfiles.NamePlaceholder"] = "Profilname...",
             ["KillProfiles.Mode"] = "Modus",
             ["KillProfiles.ModeToolTip"] = "Graceful = Fenster schließen · Standard = mehrstufiger Kill · ForceTree = Prozessbaum killen · Nuke = alles parallel terminieren, so hart und schnell wie möglich",
@@ -740,7 +740,7 @@ public static class Translations
             ["About.GildeText"] = "Mehr Projekte und Infos auf gilde.org",
             ["About.Contact"] = "Kontakt",
             ["About.ContactText"] = "Direkt eine Nachricht schreiben",
-            ["About.Support"] = "PowerClean unterstützen",
+            ["About.Support"] = "QuietCare Next unterstützen",
             ["About.SupportText"] = "Die Weiterentwicklung unterstützen",
 
             ["Autostart.ColCommand"] = "Befehl / Pfad",

@@ -26,7 +26,7 @@ public sealed partial class AutostartViewModel : ObservableObject
     private bool _isLoading;
 
     [ObservableProperty]
-    private string _statusText = "Klicke 'Scan starten' um alle Autostarts zu laden.";
+    private string _statusText = "Refresh to load registry entries, startup folders, scheduled tasks and automatic services.";
 
     [RelayCommand]
     public async Task ScanAsync()
@@ -37,7 +37,7 @@ public sealed partial class AutostartViewModel : ObservableObject
         {
             var result = await _scanner.ScanAsync();
             foreach (var e in result) Entries.Add(e);
-            StatusText = $"{Entries.Count} Autostart-Einträge gefunden.";
+            StatusText = $"{Entries.Count} startup entries found. Current-user sign-in items can be toggled here; system items use Windows tools.";
         }
         catch (Exception ex)
         {
@@ -50,7 +50,7 @@ public sealed partial class AutostartViewModel : ObservableObject
     [RelayCommand]
     public void ToggleEnabled(AutostartEntry? entry)
     {
-        if (entry is null) return;
+        if (entry is null || !entry.CanToggle) return;
         var newState = !entry.IsEnabled;
         if (_scanner.ToggleEnabled(entry, newState))
         {
@@ -61,11 +61,15 @@ public sealed partial class AutostartViewModel : ObservableObject
         }
         else
         {
-            MessageBox.Show($"Konnte Status nicht ändern: {entry.Name}\n(evtl. Admin-Rechte nötig)",
-                "Cleaner", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show($"Windows could not change {entry.Name}. The entry may have changed since the scan. Refresh and try again.",
+                "QuietCare", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
+    [RelayCommand]
+    public void OpenWindowsStartup()=>System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("ms-settings:startupapps"){UseShellExecute=true});
+    [RelayCommand]
+    public void OpenTaskScheduler()=>System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System),"taskschd.msc")){UseShellExecute=true});
     [RelayCommand]
     public void Delete(AutostartEntry? entry)
     {

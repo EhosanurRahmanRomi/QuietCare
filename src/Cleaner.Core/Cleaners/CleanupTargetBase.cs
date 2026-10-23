@@ -1,23 +1,12 @@
+using System.Runtime.CompilerServices;
 using Cleaner.Core.Models;
 using Cleaner.Core.Services;
 using Cleaner.Core.Utils;
-
 namespace Cleaner.Core.Cleaners;
-
-/// <summary>
-/// Basis-Implementierung für Cleaner, die einen oder mehrere Ordner aufräumen.
-/// Subklassen liefern via <see cref="EnumerateCleanupRoots"/> die Wurzel-Pfade
-/// und optional Filter (Datei-Pattern, Min-Alter, Ausschlüsse).
-/// </summary>
 public abstract class CleanupTargetBase : ICleanupTarget
 {
-    private readonly IFileSystemOperations _fileSystem;
-
-    protected CleanupTargetBase(IFileSystemOperations fileSystem)
-    {
-        _fileSystem = fileSystem;
-    }
-
+    readonly ConditionalWeakTable<ScanResult, IReadOnlyList<QuietCareSafety.TempItem>> approvals = new();
+    protected CleanupTargetBase(IFileSystemOperations fileSystem) { }
     public abstract string Id { get; }
     public abstract string Name { get; }
     public abstract string Description { get; }
@@ -25,163 +14,65 @@ public abstract class CleanupTargetBase : ICleanupTarget
     public abstract CleanupCategory Category { get; }
     public abstract SafetyLevel SafetyLevel { get; }
     public virtual bool RequiresAdmin => false;
-
     public virtual bool IsAvailable() => EnumerateCleanupRoots().Any(Directory.Exists);
-
-    /// <summary>Liefert die Ordner, die rekursiv aufgeräumt werden. Subklassen überschreiben.</summary>
     protected abstract IEnumerable<string> EnumerateCleanupRoots();
-
-    /// <summary>True, wenn die Wurzel-Ordner selbst NICHT gelöscht werden (typisch für Temp-Ordner).</summary>
     protected virtual bool PreserveRootDirectories => true;
-
-    /// <summary>Optionales Pattern für Dateien (default: *).</summary>
     protected virtual string FilePattern => "*";
-
-    /// <summary>Optional: Dateien jünger als das werden übersprungen. Default: kein Cutoff.</summary>
     protected virtual TimeSpan? MinimumAge => null;
-
-    /// <summary>Optional: Pfade die niemals angefasst werden dürfen (Substring-Match, case-insensitive).</summary>
-    protected virtual IEnumerable<string> ExcludePathSubstrings => Array.Empty<string>();
-
-    public virtual Task<ScanResult> ScanAsync(IProgress<ScanProgress>? progress = null, CancellationToken ct = default)
+    protected virtual IEnumerable<string> ExcludePathSubstrings => [];
+    protected virtual bool AdditionalPolicy(string path) => true;
+    bool Eligible(string path, DateTime written, string[] roots)
     {
-        return Task.Run(() =>
-        {
-            long bytes = 0;
-            int fileCount = 0;
-            var paths = new List<string>();
-            var errors = new List<string>();
-
-            // Effektives Min-Alter: das strengere (= größere) aus Cleaner-Default und globaler Policy.
-            var effectiveAge = MinimumAge;
-            if (GlobalCleanupPolicy.MinimumAge is { } gAge && (effectiveAge is null || gAge > effectiveAge))
-                effectiveAge = gAge;
-            var cutoff = effectiveAge.HasValue ? DateTime.UtcNow - effectiveAge.Value : (DateTime?)null;
-
-            // Cleaner-eigene Ausschlüsse + globale Schutzregeln.
-            var excludes = ExcludePathSubstrings.Concat(GlobalCleanupPolicy.ExcludeSubstrings).ToArray();
-
-            foreach (var root in EnumerateCleanupRoots())
-            {
-                if (ct.IsCancellationRequested) break;
-                if (!Directory.Exists(root)) continue;
-
-                try
-                {
-                    foreach (var file in SafeEnumerator.EnumerateFiles(root, FilePattern, recursive: true))
-                    {
-                        if (ct.IsCancellationRequested) break;
-                        if (IsExcluded(file, excludes)) continue;
-
-                        if (cutoff.HasValue)
-                        {
-                            var ts = SafeEnumerator.TryGetLastWrite(file);
-                            if (ts > cutoff.Value) continue;
-                        }
-
-                        long size = SafeEnumerator.TryGetSize(file);
-                        bytes += size;
-                        fileCount++;
-                        paths.Add(file);
-
-                        if ((fileCount & 63) == 0)
-                            progress?.Report(new ScanProgress(Id, file, bytes, fileCount));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    errors.Add($"{root}: {ex.Message}");
-                }
-            }
-
-            return new ScanResult
-            {
-                TargetId = Id,
-                SizeBytes = bytes,
-                FileCount = fileCount,
-                Paths = paths,
-                Errors = errors,
-            };
-        }, ct);
+        var age = MinimumAge ?? TimeSpan.Zero;
+        if (GlobalCleanupPolicy.MinimumAge is { } global && global > age) age = global;
+        return roots.Any(r => QuietCareSafety.SafePaths.Within(r, path))
+            && AdditionalPolicy(path)
+            && !GlobalCleanupPolicy.IsExcluded(path)
+            && !ExcludePathSubstrings.Any(x => path.Contains(x, StringComparison.OrdinalIgnoreCase))
+            && System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(FilePattern, Path.GetFileName(path), true)
+            && written < DateTime.UtcNow - age;
     }
-
-    public virtual Task<CleanResult> CleanAsync(
-        ScanResult scan,
-        bool useRecycleBin,
-        IProgress<CleanProgress>? progress = null,
-        CancellationToken ct = default)
+    protected ScanResult Seal(ScanResult raw, CancellationToken ct = default)
     {
-        return Task.Run(() =>
-        {
-            long freed = 0;
-            int deleted = 0;
-            var errors = new List<string>();
-            int total = scan.Paths.Count;
-
-            foreach (var path in scan.Paths)
-            {
-                if (ct.IsCancellationRequested) break;
-
-                // Globale Schutzregeln haben immer Vorrang — nie ein geschütztes File löschen.
-                if (GlobalCleanupPolicy.IsExcluded(path)) continue;
-
-                long size = SafeEnumerator.TryGetSize(path);
-                if (_fileSystem.DeleteFile(path, useRecycleBin))
-                {
-                    freed += size;
-                    deleted++;
-                }
-                else
-                {
-                    errors.Add(path);
-                }
-
-                if ((deleted & 31) == 0)
-                    progress?.Report(new CleanProgress(Id, path, freed, deleted, total));
-            }
-
-            // Leere Unterordner aufräumen (Wurzel selbst behalten wenn konfiguriert)
-            foreach (var root in EnumerateCleanupRoots())
-            {
-                if (!Directory.Exists(root)) continue;
-                try
-                {
-                    PruneEmptyDirectories(root, deleteSelf: !PreserveRootDirectories);
-                }
-                catch { /* ignore */ }
-            }
-
-            progress?.Report(new CleanProgress(Id, string.Empty, freed, deleted, total));
-
-            return new CleanResult
-            {
-                TargetId = Id,
-                FreedBytes = freed,
-                FilesDeleted = deleted,
-                Errors = errors,
-            };
-        }, ct);
-    }
-
-    private static bool IsExcluded(string path, string[] excludes)
-    {
-        if (excludes.Length == 0) return false;
-        foreach (var ex in excludes)
-            if (path.Contains(ex, StringComparison.OrdinalIgnoreCase)) return true;
-        return false;
-    }
-
-    private static void PruneEmptyDirectories(string root, bool deleteSelf)
-    {
-        foreach (var sub in SafeEnumerator.EnumerateDirectories(root))
-            PruneEmptyDirectories(sub, deleteSelf: true);
-
-        try
-        {
-            if (!deleteSelf) return;
-            if (!Directory.EnumerateFileSystemEntries(root).Any())
-                Directory.Delete(root, recursive: false);
+        var roots = EnumerateCleanupRoots().Where(Directory.Exists).Select(Path.GetFullPath).ToArray();
+        var stamps = new List<QuietCareSafety.TempItem>(); var errors = raw.Errors.ToList();
+        foreach (var path in raw.Paths.Distinct(StringComparer.OrdinalIgnoreCase)) {
+            ct.ThrowIfCancellationRequested();
+            try {
+                var item = RecoveryStore.Capture(path);
+                if (Eligible(path, DateTime.FromFileTimeUtc((long)item.Written), roots)) stamps.Add(item);
+            } catch (Exception ex) { errors.Add($"Skipped {path}: {ex.Message}"); }
         }
-        catch { /* ignore */ }
+        var result = new ScanResult { TargetId = Id, SizeBytes = stamps.Sum(x => x.Bytes), FileCount = stamps.Count,
+            Paths = Array.AsReadOnly(stamps.Select(x => x.Path).ToArray()), Errors = errors.AsReadOnly() };
+        approvals.Add(result, stamps.AsReadOnly()); return result;
     }
+    public virtual Task<ScanResult> ScanAsync(IProgress<ScanProgress>? progress = null, CancellationToken ct = default) => Task.Run(() => {
+        var paths = new List<string>(); long bytes = 0;
+        foreach (var root in EnumerateCleanupRoots())
+            foreach (var path in SafeEnumerator.EnumerateFiles(root, FilePattern, true)) {
+                ct.ThrowIfCancellationRequested();
+                if(paths.Count>=200000)throw new IOException("Cleanup scan reached its 200,000-file limit. Choose a smaller target before cleaning.");
+                paths.Add(path); bytes += SafeEnumerator.TryGetSize(path);
+                if ((paths.Count & 63) == 0) progress?.Report(new ScanProgress(Id, path, bytes, paths.Count));
+            }
+        var result = Seal(new ScanResult { TargetId = Id, SizeBytes = bytes, FileCount = paths.Count, Paths = paths }, ct);
+        progress?.Report(new ScanProgress(Id, string.Empty, result.SizeBytes, result.FileCount)); return result;
+    }, ct);
+    public virtual Task<CleanResult> CleanAsync(ScanResult scan, bool useRecycleBin, IProgress<CleanProgress>? progress = null, CancellationToken ct = default) => Task.Run(() => {
+        if (scan.TargetId != Id || !approvals.TryGetValue(scan, out var items) || DateTimeOffset.UtcNow - scan.ScannedAt > TimeSpan.FromMinutes(10))
+            return new CleanResult { TargetId = Id, FreedBytes = 0, FilesDeleted = 0, Errors = ["Scan approval is missing or expired. Scan again."] };
+        var roots = EnumerateCleanupRoots().Where(Directory.Exists).Select(Path.GetFullPath).ToArray();
+        var errors = new List<string>();var receipts = new List<string>(); long moved = 0; int count = 0;
+        foreach (var item in items) {
+            if (ct.IsCancellationRequested) break;
+            try {
+                if (!Eligible(item.Path, DateTime.FromFileTimeUtc((long)item.Written), roots)) throw new IOException("Cleanup policy changed.");
+                var receipt=RecoveryStore.Quarantine(item);receipts.Add(receipt.Id); moved += item.Bytes; count++;
+            } catch (Exception ex) { errors.Add($"{item.Path}: {ex.Message}"); }
+            progress?.Report(new CleanProgress(Id, item.Path, 0, count, items.Count));
+        }
+        approvals.Remove(scan);
+        return new CleanResult { TargetId = Id, FreedBytes = 0, QuarantinedBytes = moved, RecoveryIds=receipts.AsReadOnly(),FilesDeleted = count, Errors = errors.AsReadOnly() };
+    }, ct);
 }

@@ -22,7 +22,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40,24,40,40">
         <StackPanel>
             <TextBlock Text="{l:T Maintenance.Title}" Style="{StaticResource PageTitle}" />
-            <TextBlock Text="{l:T Maintenance.Subtitle}"
+            <TextBlock Text="Windows maintenance. Gray actions are unavailable in this preview. Restore-point deletion, ResetBase, hibernation changes and queue deletion are disabled."
                        Style="{StaticResource PageSubtitle}" />
 
             <TextBlock Text="{l:T Maintenance.DiskSavers}" FontSize="16" FontWeight="SemiBold" Margin="0,16,0,12" />
@@ -51,7 +51,7 @@
                         </Grid>
                         <ui:Button Appearance="Primary" HorizontalAlignment="Stretch"
                                    Content="{l:T Maintenance.HibernationToggle}"
-                                   Command="{Binding ViewModel.ToggleHibernationCommand}" />
+                                   IsEnabled="False" Command="{Binding ViewModel.ToggleHibernationCommand}" />
                     </StackPanel>
                 </Border>
 
@@ -89,10 +89,10 @@
                                        Command="{Binding ViewModel.LoadRestorePointsCommand}" />
                             <ui:Button Appearance="Caution" HorizontalAlignment="Stretch" Margin="0,0,0,6"
                                        Content="{l:T Maintenance.RestorePointsDeleteOld}"
-                                       Command="{Binding ViewModel.DeleteOldRestorePointsCommand}" />
+                                       IsEnabled="False" Command="{Binding ViewModel.DeleteOldRestorePointsCommand}" />
                             <ui:Button Appearance="Danger" HorizontalAlignment="Stretch"
                                        Content="{l:T Maintenance.RestorePointsDeleteAll}"
-                                       Command="{Binding ViewModel.DeleteAllRestorePointsCommand}" />
+                                       IsEnabled="False" Command="{Binding ViewModel.DeleteAllRestorePointsCommand}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -112,7 +112,7 @@
                             <ui:Button Appearance="Danger" HorizontalAlignment="Stretch"
                                        Content="{l:T Maintenance.WinComponentsResetBase}"
                                        ToolTip="Permanente Entfernung alter Updates — keine Rollbacks mehr möglich"
-                                       Command="{Binding ViewModel.RunDismResetBaseCommand}" />
+                                       IsEnabled="False" Command="{Binding ViewModel.RunDismResetBaseCommand}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -144,7 +144,7 @@
                                    Text="{l:T Maintenance.PrintQueueDesc}" />
                         <ui:Button Appearance="Primary" HorizontalAlignment="Stretch" Margin="0,12,0,0"
                                    Content="{l:T Maintenance.PrintQueueFlush}"
-                                   Command="{Binding ViewModel.FlushPrintQueueCommand}" />
+                                   IsEnabled="False" Command="{Binding ViewModel.FlushPrintQueueCommand}" />
                     </StackPanel>
                 </Border>
 
@@ -158,7 +158,7 @@
                                    Text="{l:T Maintenance.RecycleBinDesc}" />
                         <ui:Button Appearance="Primary" HorizontalAlignment="Stretch" Margin="0,12,0,0"
                                    Content="{l:T Maintenance.RecycleBinEmpty}"
-                                   Command="{Binding ViewModel.EmptyRecycleBinCommand}" />
+                                   IsEnabled="False" Command="{Binding ViewModel.EmptyRecycleBinCommand}" />
                     </StackPanel>
                 </Border>
             </WrapPanel>

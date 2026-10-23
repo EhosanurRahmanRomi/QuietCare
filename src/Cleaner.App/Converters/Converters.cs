@@ -7,6 +7,12 @@ using Cleaner.Core.Utils;
 
 namespace Cleaner.App.Converters;
 
+public sealed class InverseBooleanConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value is bool active && !active;
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotSupportedException();
+}
+
 public sealed class BytesToSizeConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -43,9 +49,9 @@ public sealed class SafetyLevelToTextConverter : IValueConverter
         if (value is not SafetyLevel level) return string.Empty;
         return level switch
         {
-            SafetyLevel.Safe        => "Sicher",
-            SafetyLevel.Recommended => "Empfohlen",
-            SafetyLevel.Caution     => "Vorsicht",
+            SafetyLevel.Safe        => "Lower risk",
+            SafetyLevel.Recommended => "Review",
+            SafetyLevel.Caution     => "Caution",
             SafetyLevel.Warning     => "Warnung",
             _ => string.Empty,
         };

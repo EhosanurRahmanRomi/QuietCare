@@ -13,9 +13,8 @@ public sealed class DotNetBuildArtifactsCleaner : CleanupTargetBase
     public DotNetBuildArtifactsCleaner(IFileSystemOperations fs) : base(fs) { }
 
     public override string Id => "dev.dotnet-build-artifacts";
-    public override string Name => ".NET Build-Artefakte (bin/obj)";
-    public override string Description =>
-        "Sucht bin/ und obj/ Ordner in deinen .NET-Projekten. Werden beim nächsten Build neu erstellt.";
+    public override string Name => ".NET build outputs";
+    public override string Description => "bin and obj files in detected .NET projects. Close builds first; review generated files before cleanup.";
     public override string IconGlyph => "";
     public override CleanupCategory Category => CleanupCategory.Developer;
     public override SafetyLevel SafetyLevel => SafetyLevel.Recommended;
@@ -74,7 +73,7 @@ public sealed class DotNetBuildArtifactsCleaner : CleanupTargetBase
                 }
             }
 
-            return new ScanResult { TargetId = Id, SizeBytes = total, FileCount = count, Paths = paths };
+            return Seal(new ScanResult { TargetId = Id, SizeBytes = total, FileCount = count, Paths = paths }, ct);
         }, ct);
     }
 
@@ -113,5 +112,5 @@ public sealed class DotNetBuildArtifactsCleaner : CleanupTargetBase
         }
     }
 
-    protected override IEnumerable<string> EnumerateCleanupRoots() => Array.Empty<string>();
+    protected override IEnumerable<string> EnumerateCleanupRoots() => SearchRoots;
 }

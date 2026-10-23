@@ -21,7 +21,7 @@ public sealed class ProcessSnapshot
 public interface IProcessMonitor
 {
     IReadOnlyList<ProcessSnapshot> Snapshot();
-    bool Kill(int pid);
+    bool Kill(int pid, DateTime expectedStart);
     bool KillElevated(int pid);
     bool OpenFileLocation(int pid);
 }
@@ -46,7 +46,7 @@ public sealed class ProcessMonitorService : IProcessMonitor
 
                 try { path = p.MainModule?.FileName; } catch { /* Access denied common */ }
                 try { desc = p.MainModule?.FileVersionInfo?.FileDescription; } catch { }
-                try { isMine = p.SessionId != 0; } catch { }
+                try { isMine = p.SessionId == Process.GetCurrentProcess().SessionId; } catch { }
 
                 var cpu = p.TotalProcessorTime;
 
@@ -102,54 +102,28 @@ public sealed class ProcessMonitorService : IProcessMonitor
     /// managed-Wrapper (z.B. bei Processes die WM_CLOSE ignorieren oder mehrere Threads
     /// blockieren).
     /// </summary>
-    public bool Kill(int pid)
+    public bool Kill(int pid, DateTime expectedStart)
     {
-        // 1. Standard-Kill versuchen
+        if (pid <= 4 || pid == Environment.ProcessId || expectedStart == DateTime.MinValue) return false;
         try
         {
-            using var p = Process.GetProcessById(pid);
-            try { p.Kill(entireProcessTree: false); } catch { /* Access denied — taskkill probieren */ }
-            if (p.WaitForExit(2000)) return true;
-        }
-        catch (ArgumentException) { return true; /* Process bereits weg */ }
-        catch { /* weitermachen mit taskkill */ }
-
-        if (!IsAlive(pid)) return true;
-
-        // 2. taskkill /F /PID
-        if (RunTaskkill($"/F /PID {pid}", 2000) && !IsAlive(pid)) return true;
-
-        // 3. taskkill /F /T /PID (entire tree)
-        if (RunTaskkill($"/F /T /PID {pid}", 2000) && !IsAlive(pid)) return true;
-
-        return !IsAlive(pid);
-    }
-
-    /// <summary>
-    /// Erzwingt eine UAC-Elevation und führt taskkill als Admin aus. Sinnvoll wenn der
-    /// normale Kill an Access-Denied scheitert (z.B. bei Processes anderer User oder
-    /// services-internen Workern).
-    /// </summary>
-    public bool KillElevated(int pid)
-    {
-        try
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "taskkill.exe",
-                Arguments = $"/F /T /PID {pid}",
-                UseShellExecute = true,
-                Verb = "runas",
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            };
-            using var elevated = Process.Start(psi);
-            if (elevated is null) return false;
-            elevated.WaitForExit(5000);
-            return !IsAlive(pid);
+            using var process = Process.GetProcessById(pid);
+            if (process.SessionId != Process.GetCurrentProcess().SessionId) return false;
+            using var handle = QuietCareSafety.Native.OpenProcess(0x1000 | 0x1, false, pid);
+            if (handle.IsInvalid) return false;
+            if (!QuietCareSafety.Native.GetProcessTimes(handle, out var created, out _, out _, out _)
+                || DateTime.FromFileTimeUtc((long)created.Value) != expectedStart) return false;
+            var path = new System.Text.StringBuilder(32768); int length = path.Capacity;
+            if (!QuietCareSafety.Native.QueryFullProcessImageName(handle, 0, path, ref length)) return false;
+            var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows).TrimEnd('\\') + "\\";
+            if (path.ToString().StartsWith(windows, StringComparison.OrdinalIgnoreCase)) return false;
+            return TerminateProcess(handle, 1);
         }
         catch { return false; }
     }
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool TerminateProcess(Microsoft.Win32.SafeHandles.SafeProcessHandle process, uint exitCode);
+    public bool KillElevated(int pid) => false; // No elevation or process-tree termination in preview.
 
     internal static bool IsAlive(int pid)
     {

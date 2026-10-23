@@ -22,9 +22,6 @@ public sealed class WindowsService
 public interface IServiceScanner
 {
     Task<IReadOnlyList<WindowsService>> ScanAsync(CancellationToken ct = default);
-    bool SetStartType(string serviceName, ServiceStartMode mode);
-    bool Stop(string serviceName);
-    bool Start(string serviceName);
 }
 
 public sealed class ServiceScanner : IServiceScanner
@@ -117,101 +114,5 @@ public sealed class ServiceScanner : IServiceScanner
         return map;
     }
 
-    /// <summary>Heuristik für Dienste die User typischerweise nicht braucht.</summary>
-    private static string? BuildRecommendation(string serviceName, string displayName,
-        ServiceControllerStatus? status, ServiceStartMode start)
-    {
-        // Nur Vorschläge wenn Dienst Auto-Start und läuft
-        if (start != ServiceStartMode.Automatic) return null;
-
-        var heuristics = new (string Pattern, string Message)[]
-        {
-            ("Fax",                "Fax-Dienst — meist überflüssig, falls kein Fax-Modem im Einsatz."),
-            ("RemoteRegistry",     "Remote-Registry — Sicherheitsrisiko, fast nie nötig. Deaktivieren empfohlen."),
-            ("RetailDemo",         "Retail-Demo — nur für Geräte im Laden. Kann deaktiviert werden."),
-            ("DiagTrack",          "Connected User Experiences and Telemetry — Microsoft-Telemetrie. Optional deaktivierbar."),
-            ("MapsBroker",         "Downloaded Maps Manager — nur nötig wenn die Karten-App offline genutzt wird."),
-            ("WSearch",            "Windows Search — frisst gerne RAM. Deaktivieren wenn Datei-Suche nicht oft genutzt."),
-            ("Spooler",            "Print Spooler — kann deaktiviert werden falls kein Drucker im Einsatz."),
-            ("XblGameSave",        "Xbox-Spielspeicher — nur für Xbox-Live-Nutzer relevant."),
-            ("XboxGipSvc",         "Xbox Accessory-Mgmt — nur bei Xbox-Controller-Nutzung relevant."),
-            ("XboxNetApiSvc",      "Xbox Live Netzwerk — nur für Xbox-Live."),
-            ("WerSvc",             "Windows Error Reporting — sendet Crash-Reports an Microsoft. Optional."),
-            ("TabletInputService", "Tablet-Eingabe — nur auf Tablets / Geräten mit Touch nötig."),
-        };
-
-        foreach (var (pattern, msg) in heuristics)
-        {
-            if (serviceName.Equals(pattern, StringComparison.OrdinalIgnoreCase))
-                return msg;
-        }
-        return null;
-    }
-
-    public bool SetStartType(string serviceName, ServiceStartMode mode)
-    {
-        try
-        {
-            // sc.exe ist der zuverlässigste Weg ohne PInvoke
-            var modeStr = mode switch
-            {
-                ServiceStartMode.Boot => "boot",
-                ServiceStartMode.System => "system",
-                ServiceStartMode.Automatic => "auto",
-                ServiceStartMode.Manual => "demand",
-                ServiceStartMode.Disabled => "disabled",
-                _ => "demand",
-            };
-            return RunSc($"config \"{serviceName}\" start= {modeStr}");
-        }
-        catch { return false; }
-    }
-
-    public bool Stop(string serviceName)
-    {
-        try
-        {
-            using var sc = new ServiceController(serviceName);
-            if (sc.Status == ServiceControllerStatus.Running)
-            {
-                sc.Stop();
-                sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(10));
-            }
-            return true;
-        }
-        catch { return false; }
-    }
-
-    public bool Start(string serviceName)
-    {
-        try
-        {
-            using var sc = new ServiceController(serviceName);
-            if (sc.Status == ServiceControllerStatus.Stopped)
-            {
-                sc.Start();
-                sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(10));
-            }
-            return true;
-        }
-        catch { return false; }
-    }
-
-    private static bool RunSc(string args)
-    {
-        var psi = new ProcessStartInfo("sc.exe", args)
-        {
-            UseShellExecute = false, CreateNoWindow = true,
-            RedirectStandardOutput = true, RedirectStandardError = true,
-            Verb = "runas", // braucht Admin
-        };
-        try
-        {
-            using var p = Process.Start(psi);
-            if (p is null) return false;
-            p.WaitForExit(5000);
-            return p.ExitCode == 0;
-        }
-        catch { return false; }
-    }
+    private static string? BuildRecommendation(string serviceName,string displayName, ServiceControllerStatus? status, ServiceStartMode start)=>null;
 }

@@ -29,7 +29,7 @@
                 <ui:Button Appearance="Primary" Icon="{ui:SymbolIcon Search24}"
                            Content="{l:T OrphanData.ScanStart}"
                            Command="{Binding ViewModel.ScanCommand}"
-                           IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBoolToVis}}" />
+                           IsEnabled="{Binding ViewModel.IsScanning, Converter={StaticResource InverseBool}}" />
                 <ui:Button Appearance="Caution" Icon="{ui:SymbolIcon Dismiss24}"
                            Margin="8,0,0,0" Content="{l:T Cancel}"
                            Command="{Binding ViewModel.CancelCommand}"

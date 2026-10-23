@@ -151,7 +151,7 @@ public sealed partial class DashboardViewModel : ObservableObject
                             done++;
                             PotentialSavings = sum;
                             ScanProgress = total == 0 ? 0 : (double)done / total * 100;
-                            ScanStatus = $"Scanne {done}/{total} — bisher " +
+                            ScanStatus = $"Scanning {done}/{total} — so far " +
                                          Cleaner.Core.Utils.ByteFormatter.Format(sum);
                             bgTask.Progress = ScanProgress;
                             bgTask.StatusText = ScanStatus;
@@ -162,7 +162,7 @@ public sealed partial class DashboardViewModel : ObservableObject
                     catch (OperationCanceledException) { }
                     catch (Exception ex)
                     {
-                        item.StatusMessage = "Fehler: " + ex.Message;
+                        item.StatusMessage = "Error: " + ex.Message;
                     }
                     finally
                     {
@@ -174,7 +174,7 @@ public sealed partial class DashboardViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            ScanStatus = "Scan abgebrochen.";
+            ScanStatus = "Scan cancelled.";
         }
         finally
         {
@@ -193,21 +193,16 @@ public sealed partial class DashboardViewModel : ObservableObject
         var toClean = SuggestedCleanups.Where(i => i.HasResult && i.Size > 0).ToList();
         if (toClean.Count == 0) return;
 
-        bool useRecycleBin = mode switch
-        {
-            "recycle" => true,
-            "permanent" => false,
-            _ => _settings.UseRecycleBin,
-        };
+        bool useRecycleBin = true;
 
         var totalSize = toClean.Sum(i => i.Size);
-        var msg = $"{toClean.Count} Kategorie(n) mit zusammen " +
-                  $"{Cleaner.Core.Utils.ByteFormatter.Format(totalSize)} aufräumen?\n\n" +
+        var msg = $"{toClean.Count} categories totaling " +
+                  $"{Cleaner.Core.Utils.ByteFormatter.Format(totalSize)} quarantine?\n\n" +
                   (useRecycleBin
-                      ? "Dateien gehen in den Papierkorb."
-                      : "ACHTUNG: Endgültiges Löschen.");
+                      ? "Files move to recoverable quarantine. Restore or permanently delete them from Recovery."
+                      : "Moves to recoverable quarantine.");
 
-        if (MessageBox.Show(msg, "Aufräumen", MessageBoxButton.YesNo,
+        if (MessageBox.Show(msg, "Quarantine", MessageBoxButton.YesNo,
                 useRecycleBin ? MessageBoxImage.Question : MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
@@ -220,7 +215,7 @@ public sealed partial class DashboardViewModel : ObservableObject
 
         var bgTask = _taskRegistry.Start(
             title: "Quick-Cleanup",
-            category: useRecycleBin ? "Papierkorb" : "Endgültig löschen",
+            category: useRecycleBin ? "Quarantine" : "Quarantine",
             cts: _cts);
 
         try
@@ -234,22 +229,22 @@ public sealed partial class DashboardViewModel : ObservableObject
                     var cleanedPaths = item.LastScan!.Paths;
                     var result = await item.Target.CleanAsync(item.LastScan!, useRecycleBin, null, _cts.Token);
                     _history.Record(result, item.Name, useRecycleBin, cleanedPaths);
-                    freedTotal += result.FreedBytes;
-                    item.Freed = result.FreedBytes;
+                    freedTotal += result.QuarantinedBytes;
+                    item.Freed = result.QuarantinedBytes;
                     item.Size = 0;
                     item.HasResult = false;
-                    item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.FreedBytes)} freigegeben";
+                    item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.QuarantinedBytes)} quarantined; {result.Errors.Count} skipped." + (result.Errors.Count > 0 ? " " + result.Errors[0] : "");
                 }
                 catch (Exception ex)
                 {
-                    item.StatusMessage = "Fehler: " + ex.Message;
+                    item.StatusMessage = "Error: " + ex.Message;
                 }
                 finally
                 {
                     item.IsCleaning = false;
                     done++;
                     ScanProgress = total == 0 ? 0 : (double)done / total * 100;
-                    ScanStatus = $"Aufräumen {done}/{total} — bisher freigegeben " +
+                    ScanStatus = $"Aufräumen {done}/{total} — so far quarantined " +
                                  Cleaner.Core.Utils.ByteFormatter.Format(freedTotal);
                     bgTask.Progress = ScanProgress;
                     bgTask.StatusText = ScanStatus;
@@ -258,18 +253,18 @@ public sealed partial class DashboardViewModel : ObservableObject
                 }
             }
             PotentialSavings = SuggestedCleanups.Where(i => i.HasResult).Sum(i => i.Size);
-            ScanStatus = $"Fertig — {Cleaner.Core.Utils.ByteFormatter.Format(freedTotal)} freigegeben.";
+            ScanStatus = $"Fertig — {Cleaner.Core.Utils.ByteFormatter.Format(freedTotal)} quarantined.";
         }
         catch (OperationCanceledException)
         {
-            ScanStatus = "Aufräumen abgebrochen.";
+            ScanStatus = "Quarantine cancelled.";
         }
         finally
         {
             _taskRegistry.Complete(bgTask);
             IsCleaning = false;
             ScanProgress = 0;
-            Refresh(); // Drives neu laden für freigegebenen Platz
+            Refresh(); // Drives neu laden für quarantineden Platz
         }
     }
 
@@ -288,16 +283,11 @@ public sealed partial class DashboardViewModel : ObservableObject
     {
         if (item is null || !item.HasResult || item.LastScan is null || item.Size == 0) return;
 
-        bool useRecycleBin = mode switch
-        {
-            "recycle" => true,
-            "permanent" => false,
-            _ => _settings.UseRecycleBin,
-        };
+        bool useRecycleBin = true;
 
-        var msg = $"{item.Name} aufräumen ({Cleaner.Core.Utils.ByteFormatter.Format(item.Size)})?\n\n" +
-                  (useRecycleBin ? "Geht in den Papierkorb." : "ACHTUNG: Endgültiges Löschen.");
-        if (MessageBox.Show(msg, "Aufräumen", MessageBoxButton.YesNo,
+        var msg = $"{item.Name} quarantine ({Cleaner.Core.Utils.ByteFormatter.Format(item.Size)})?\n\n" +
+                  (useRecycleBin ? "Moves to recoverable quarantine." : "Moves to recoverable quarantine.");
+        if (MessageBox.Show(msg, "Quarantine", MessageBoxButton.YesNo,
                 useRecycleBin ? MessageBoxImage.Question : MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
@@ -305,7 +295,7 @@ public sealed partial class DashboardViewModel : ObservableObject
         item.IsCleaning = true;
         var bgTask = _taskRegistry.Start(
             title: $"Aufräumen: {item.Name}",
-            category: useRecycleBin ? "Papierkorb" : "Endgültig löschen",
+            category: useRecycleBin ? "Quarantine" : "Quarantine",
             cts: cts,
             indeterminate: true);
         try
@@ -313,10 +303,10 @@ public sealed partial class DashboardViewModel : ObservableObject
             var cleanedPaths = item.LastScan.Paths;
             var result = await item.Target.CleanAsync(item.LastScan, useRecycleBin, null, cts.Token);
             _history.Record(result, item.Name, useRecycleBin, cleanedPaths);
-            item.Freed = result.FreedBytes;
+            item.Freed = result.QuarantinedBytes;
             item.Size = 0;
             item.HasResult = false;
-            item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.FreedBytes)} freigegeben";
+            item.StatusMessage = $"{Cleaner.Core.Utils.ByteFormatter.Format(result.QuarantinedBytes)} quarantined; {result.Errors.Count} skipped." + (result.Errors.Count > 0 ? " " + result.Errors[0] : "");
             PotentialSavings = SuggestedCleanups.Where(i => i.HasResult).Sum(i => i.Size);
             QuickCleanCommand.NotifyCanExecuteChanged();
             Refresh();

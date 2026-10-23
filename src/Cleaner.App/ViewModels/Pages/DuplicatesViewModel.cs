@@ -186,7 +186,7 @@ public sealed partial class DuplicatesViewModel : ObservableObject
 
         WastedTotal = Groups.Sum(g => g.WastedBytes);
         RecomputeSelection();
-        StatusText = $"{selected.Count - failed} Dateien gelöscht" +
+        StatusText = $"{selected.Count - failed} Dateien in Quarantäne verschoben" +
                      (failed > 0 ? $", {failed} fehlgeschlagen" : "") +
                      $" — noch {Cleaner.Core.Utils.ByteFormatter.Format(WastedTotal)} verschwendet.";
     }

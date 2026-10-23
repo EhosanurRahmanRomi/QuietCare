@@ -13,10 +13,23 @@ namespace Cleaner.App;
 public partial class App : Application
 {
     private readonly IHost _host;
+    public static QuietCare.MonitorController? Monitor { get; private set; }
+    public static bool Exiting { get; private set; }
+    public static Cleaner.App.Services.StartupWatchService? StartupWatch { get; private set; }
+    public static void Navigate(Type page)
+    {
+        if(Current is not App app)return;
+        app.RequestReveal();
+        app.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ApplicationIdle,new Action(()=>
+        {if(app.MainWindow is MainWindow window)window.NavigateTo(page);}));
+    }
+    private Action? revealRequested;
+    private bool revealPending;
+    public void RequestReveal(){if(revealRequested is null)revealPending=true;else revealRequested();}
 
     // Log liegt direkt neben der EXE — leicht zu finden für User & Entwickler.
     private static readonly string LogPath = System.IO.Path.Combine(
-        AppContext.BaseDirectory, "powerclean.log");
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuietCareNext", "app.log");
 
     public App()
     {
@@ -58,7 +71,7 @@ public partial class App : Application
             e.SetObserved();
         };
 
-        _host = Host.CreateDefaultBuilder()
+        _host = new HostBuilder()
             .ConfigureServices((_, services) =>
             {
                 services.AddCleanerCore();
@@ -66,6 +79,8 @@ public partial class App : Application
                 // ViewModels
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<DashboardViewModel>();
+                services.AddSingleton<CareHubViewModel>();
+                services.AddSingleton<Cleaner.App.Services.StartupWatchService>();
                 services.AddSingleton<SystemCleanerViewModel>();
                 services.AddSingleton<DeveloperCleanerViewModel>();
                 services.AddSingleton<DiskAnalyzerViewModel>();
@@ -79,7 +94,6 @@ public partial class App : Application
                 services.AddSingleton<InstalledProgramsViewModel>();
                 services.AddSingleton<ServicesViewModel>();
                 services.AddSingleton<ProcessMonitorViewModel>();
-                services.AddSingleton<KillProfilesViewModel>();
                 services.AddSingleton<RegistryCleanerViewModel>();
                 services.AddSingleton<SystemMaintenanceViewModel>();
                 services.AddSingleton<SettingsViewModel>();
@@ -101,7 +115,6 @@ public partial class App : Application
                 services.AddSingleton<InstalledProgramsPage>();
                 services.AddSingleton<ServicesPage>();
                 services.AddSingleton<ProcessMonitorPage>();
-                services.AddSingleton<KillProfilesPage>();
                 services.AddSingleton<RegistryCleanerPage>();
                 services.AddSingleton<SystemMaintenancePage>();
                 services.AddSingleton<SettingsPage>();
@@ -128,15 +141,49 @@ public partial class App : Application
                 ApplyCleanupPolicy(settings);
         };
 
-        // Globale Kill-Profil-Shortcuts scharf schalten (Hook braucht den UI-Thread).
-        try { _host.Services.GetRequiredService<Cleaner.App.Services.KillHotkeyService>().Start(); }
-        catch (Exception ex) { LogException("KillHotkeyStart", ex); }
-
-        var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-        mainWindow.Show();
-
-        // Update-Check im Hintergrund — wenn was Neues da ist, zeig einen unobtrusive Dialog
-        _ = CheckForUpdatesOnStartupAsync();
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        if (Environment.GetCommandLineArgs().Contains("--monitor-smoke"))
+        {
+            var arguments = Environment.GetCommandLineArgs();
+            try { await PreviewValidation.MonitorSmoke(arguments[Array.IndexOf(arguments,"--monitor-smoke")+1]); }
+            catch(Exception ex) { LogException("Monitor smoke",ex); Exiting=true;Shutdown(1);return; }
+            Exiting=true;Shutdown();return;
+        }
+        if (Environment.GetCommandLineArgs().Contains("--validate-ui"))
+        {
+            var arguments = Environment.GetCommandLineArgs();
+            int index = Array.IndexOf(arguments, "--validate-ui");
+            try { await PreviewValidation.Run(Services, arguments[index + 1]); }
+            catch (Exception ex) { LogException("UI validation", ex); Exiting = true; Shutdown(1); return; }
+            Exiting = true; Shutdown(); return;
+        }
+        MainWindow? mainWindow = null;
+        void RevealMain()
+        {
+            if (mainWindow is null)
+            {
+                InitializeComponent();
+                mainWindow = _host.Services.GetRequiredService<MainWindow>();
+                MainWindow = mainWindow;
+                mainWindow.Closing += (_, args) => { if (!Exiting) { args.Cancel = true; mainWindow.Hide(); } };
+                _ = Services.GetRequiredService<CareHubViewModel>().RefreshProtectionAsync();
+            }
+            mainWindow.Show(); mainWindow.WindowState = WindowState.Normal; mainWindow.Activate();
+        }
+        Monitor = new QuietCare.MonitorController(RevealMain, () => { Exiting = true; Shutdown(); });
+        revealRequested=RevealMain;
+        if (!Environment.GetCommandLineArgs().Contains("--no-monitor")) Monitor.Start();
+        StartupWatch=Services.GetRequiredService<Cleaner.App.Services.StartupWatchService>();
+        StartupWatch.Changed+=changes=>Dispatcher.BeginInvoke(new Action(()=>
+        {
+            Services.GetRequiredService<CareHubViewModel>().OnStartupChanges(changes);
+            Monitor?.ShowStartupNotice(changes.Count+" new or changed startup entries. Click to review.",()=>Navigate(typeof(AutostartPage)));
+        }));
+        var hub=Services.GetRequiredService<CareHubViewModel>();
+        hub.StartupStatus="Startup watch active: registry/folders every 30 seconds; scheduled tasks/services every 5 minutes. First scan establishes a baseline.";
+        if(StartupWatch.Recent.Count>0)hub.OnStartupChanges(StartupWatch.Recent.Take(10).ToArray());
+        StartupWatch.Start();
+        if (revealPending || !Environment.GetCommandLineArgs().Contains("--tray")) RevealMain();
     }
 
     private static void ApplyCleanupPolicy(AppSettings s)
@@ -146,39 +193,11 @@ public partial class App : Application
             s.CleanMinAgeDays > 0 ? TimeSpan.FromDays(s.CleanMinAgeDays) : null;
     }
 
-    private async Task CheckForUpdatesOnStartupAsync()
-    {
-        try
-        {
-            await Task.Delay(TimeSpan.FromSeconds(3));
-            var updates = _host.Services.GetRequiredService<Cleaner.App.Services.UpdateService>();
-            if (!updates.IsManaged) return;
-
-            var info = await updates.CheckAsync();
-            if (info is null) return;
-
-            await Dispatcher.InvokeAsync(() =>
-            {
-                var ver = info.TargetFullRelease.Version.ToString();
-                var ask = MessageBox.Show(
-                    $"PowerClean {ver} ist verfügbar (aktuell: {updates.CurrentVersion}).\n\n" +
-                    "Jetzt herunterladen und neu starten?",
-                    "PowerClean Update", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                if (ask == MessageBoxResult.Yes)
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        if (await updates.DownloadAsync(info))
-                            await Dispatcher.InvokeAsync(() => updates.ApplyAndRestart(info));
-                    });
-                }
-            });
-        }
-        catch (Exception ex) { LogException("UpdateCheck", ex); }
-    }
-
     protected override async void OnExit(ExitEventArgs e)
     {
+        Exiting = true;
+        Monitor?.Dispose();
+        StartupWatch?.Dispose();
         await _host.StopAsync(TimeSpan.FromSeconds(2));
         _host.Dispose();
         base.OnExit(e);
@@ -190,6 +209,7 @@ public partial class App : Application
         {
             var dir = System.IO.Path.GetDirectoryName(LogPath)!;
             if (!string.IsNullOrEmpty(dir)) System.IO.Directory.CreateDirectory(dir);
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(LogPath)!);
             System.IO.File.AppendAllText(LogPath,
                 $"[{DateTimeOffset.UtcNow:O}] [EXCEPTION] [{source}]\n{ex}\n\n");
         }
@@ -200,6 +220,7 @@ public partial class App : Application
     {
         try
         {
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(LogPath)!);
             System.IO.File.AppendAllText(LogPath,
                 $"[{DateTimeOffset.UtcNow:O}] [INFO] {message}\n");
         }
