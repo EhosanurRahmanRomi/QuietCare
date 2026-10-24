@@ -4,7 +4,7 @@ Requires Python 3.12 on Windows. No downloaded installer engine, custom privileg
 remote bootstrap, recursive removal, or user-data deletion is used.
 """
 from pathlib import Path
-import argparse,hashlib,json,msilib,uuid,xml.etree.ElementTree as ET
+import argparse,gc,hashlib,json,msilib,uuid,xml.etree.ElementTree as ET
 from msilib import schema,sequence
 
 parser=argparse.ArgumentParser();parser.add_argument('--payload',required=True);parser.add_argument('--output',required=True);parser.add_argument('--fixture',action='store_true');parser.add_argument('--version',default='0.6.0');args=parser.parse_args()
@@ -76,6 +76,6 @@ add('RemoveFile',[('RemoveAppMenu','CmpLinks',None,'APP_MENU',2)])
 # Build a uniquely named cabinet to avoid the legacy library's temporary-name race.
 cabpath=out.with_suffix('.payload.cab');msilib.FCICreate(str(cabpath),cab.files)
 add('Media',[(1,cab.index,None,'#QuietCarePayload.cab',None,None)]);msilib.add_stream(db,'QuietCarePayload.cab',str(cabpath));db.Commit();cabpath.unlink()
-si=db.GetSummaryInformation(20);si.SetProperty(msilib.PID_TEMPLATE,'x64;1033');si.SetProperty(msilib.PID_WORDCOUNT,10);si.SetProperty(msilib.PID_PAGECOUNT,500);si.SetProperty(msilib.PID_APPNAME,'QuietCare native Windows Installer builder');si.Persist();db.Commit();db=None
+si=db.GetSummaryInformation(20);si.SetProperty(msilib.PID_TEMPLATE,'x64;1033');si.SetProperty(msilib.PID_WORDCOUNT,10);si.SetProperty(msilib.PID_PAGECOUNT,500);si.SetProperty(msilib.PID_APPNAME,'QuietCare native Windows Installer builder');si.Persist();si=None;view=None;db.Commit();db=None;gc.collect()
 receipt={'productCode':product,'upgradeCode':upgrade,'version':version,'fixture':args.fixture,'startupDefault':True,'perUser':True,'files':manifest,'msiBytes':out.stat().st_size,'msiSha256':hashlib.sha256(out.read_bytes()).hexdigest()}
 out.with_suffix('.manifest.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8');print(json.dumps({k:receipt[k] for k in ['productCode','version','fixture','msiBytes','msiSha256']}))
