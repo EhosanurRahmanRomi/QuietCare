@@ -76,4 +76,10 @@
     <SolidColorBrush x:Key="CleanerAccentBrush" Color="#0078D4" />
     <Color x:Key="CleanerAccentColor">#0078D4</Color>
 
+
+    <Style x:Key="CareSectionTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitle}"><Setter Property="FontSize" Value="25"/><Setter Property="Margin" Value="0,0,0,6"/></Style>
+    <Style x:Key="CareCaption" TargetType="TextBlock" BasedOn="{StaticResource StatLabel}"><Setter Property="FontSize" Value="12"/><Setter Property="LineHeight" Value="18"/></Style>
+    <Style x:Key="CarePanel" TargetType="Border" BasedOn="{StaticResource Card}"><Setter Property="Background" Value="{DynamicResource CareSurfaceBrush}"/><Setter Property="CornerRadius" Value="10"/><Setter Property="Padding" Value="20"/></Style>
+    <Style x:Key="CareAction" TargetType="{x:Type ui:Button}" BasedOn="{StaticResource {x:Type ui:Button}}"><Setter Property="Appearance" Value="Primary"/><Setter Property="Background" Value="#1769D2"/><Setter Property="Foreground" Value="White"/><Setter Property="BorderBrush" Value="#1769D2"/><Setter Property="Padding" Value="18,10"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
+    <Style x:Key="CareStepStatus" TargetType="TextBlock"><Setter Property="FontSize" Value="11"/><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="{DynamicResource CareMutedBrush}"/><Style.Triggers><DataTrigger Binding="{Binding Status}" Value="Completed"><Setter Property="Foreground" Value="{DynamicResource SafeBrush}"/></DataTrigger><DataTrigger Binding="{Binding Status}" Value="Running"><Setter Property="Foreground" Value="{DynamicResource CareRunningBrush}"/></DataTrigger><DataTrigger Binding="{Binding Status}" Value="Review"><Setter Property="Foreground" Value="{DynamicResource CareAttentionBrush}"/></DataTrigger><DataTrigger Binding="{Binding Status}" Value="Failed"><Setter Property="Foreground" Value="{DynamicResource CareFailureBrush}"/></DataTrigger></Style.Triggers></Style>
 </ResourceDictionary>

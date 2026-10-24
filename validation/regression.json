@@ -1,5 +1,5 @@
 {
-  "utc": "2026-10-24T01:11:24.1221672+00:00",
+  "utc": "2026-10-24T02:25:20.4486496+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
   "count": 74,
   "checks": [
@@ -120,7 +120,7 @@
       "passed": true
     },
     {
-      "name": "Automatic cleanup never purges another operation's recovery receipt",
+      "name": "Automatic cleanup never purges another operation\u0027s recovery receipt",
       "passed": true
     },
     {

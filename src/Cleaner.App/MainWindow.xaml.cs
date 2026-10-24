@@ -25,14 +25,15 @@ public partial class MainWindow : FluentWindow
         careHub=services.GetRequiredService<CareHubViewModel>();SmartCareActions.DataContext=careHub;
         CareMotion.Enabled=settings.EnableAnimations;
         settings.PropertyChanged+=(_,args)=>{if(args.PropertyName==nameof(AppSettings.EnableAnimations))CareMotion.Enabled=settings.EnableAnimations;};
-        Width=Math.Min(1280,SystemParameters.WorkArea.Width-40);
-        Height=Math.Min(820,SystemParameters.WorkArea.Height-40);
+        Width=Math.Min(1180,SystemParameters.WorkArea.Width-40);
+        Height=Math.Min(790,SystemParameters.WorkArea.Height-40);
         MinHeight=Math.Min(640,Height);MinWidth=Math.Min(980,Width);
 
         RootNavigation.SetServiceProvider(services);
         TasksHost.DataContext = taskRegistry;
 
-        Loaded += (_, _) => RootNavigation.Navigate(typeof(DashboardPage));
+        IsVisibleChanged+=(_,_)=>App.Monitor?.SetDashboardVisible(IsVisible);
+        Loaded += async (_, _) => { RootNavigation.Navigate(typeof(DashboardPage)); await careHub.RefreshReadingsAsync(); await careHub.RefreshStorageAsync(); };
     }
 
     private void TasksTriggerButton_Click(object sender, RoutedEventArgs e)
@@ -44,12 +45,16 @@ public partial class MainWindow : FluentWindow
     {
         RootNavigation.Navigate(typeof(AboutPage));
     }
+    private void MiniMonitor_Click(object sender,RoutedEventArgs e)=>App.Monitor?.ShowMonitor();
     private async void SmartCare_Click(object sender,RoutedEventArgs e)
     {
         RootNavigation.Navigate(typeof(DashboardPage));
         if(!careHub.SmartCareRunning)await careHub.StartSmartCareAsync();
     }
-    public void NavigateTo(Type page)=>RootNavigation.Navigate(page);
+    public void NavigateTo(Type page)
+    {
+        RootNavigation.Navigate(page);
+    }
 
     protected override void OnSourceInitialized(EventArgs e)
     {

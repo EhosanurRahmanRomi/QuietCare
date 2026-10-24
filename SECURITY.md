@@ -26,3 +26,7 @@ NuGet.org is the only configured package feed; locked content hashes and explici
 Upstream licenses and pinned commits are documented. No cloned reference project was executed, no remote bootstrap script was run, and GPL/Anti-996 reference implementations were not copied into the shipped application.
 
 Report suspected vulnerabilities through [GitHub private reporting](https://github.com/EhosanurRahmanRomi/QuietCare/security/advisories/new). If unavailable, open an issue requesting a private contact without posting exploit details, personal commands or files. No response-time or long-term-support contract is promised.
+
+## Installer
+
+Setup contains a local MSI and verifies its embedded SHA-256 before using the Windows engine. It creates a private staging directory for the current user and SYSTEM and removes only its own temporary file and empty directory. Startup and shortcuts are explicit setup choices, enabled initially. The package has no arbitrary custom-action script, service or driver. Uninstall removes registered resources and preserves user state. The EXE/MSI are unsigned: the embedded hash detects payload corruption, not a maliciously replaced whole installer. Check the release SHA-256 and source.

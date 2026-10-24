@@ -21,7 +21,7 @@ internal sealed class NativeCompactMonitor : Form
     public NativeCompactMonitor(MonitorController controller,Settings settings)
     {
         this.controller=controller;this.settings=settings;
-        Text="QuietCare Next Monitor";FormBorderStyle=FormBorderStyle.None;ShowInTaskbar=false;
+        Text="QuietCare Monitor";FormBorderStyle=FormBorderStyle.None;ShowInTaskbar=false;
         TopMost=settings.Topmost;AutoScaleMode=AutoScaleMode.None;StartPosition=FormStartPosition.Manual;
         Size=new Size(212,28);
         var screen=Screen.PrimaryScreen.WorkingArea;
@@ -30,13 +30,14 @@ internal sealed class NativeCompactMonitor : Form
         var menu=new ContextMenuStrip();
         menu.Items.Add("Smart RAM Boost",null,(_,_)=>controller.BoostRam());
         menu.Items.Add("Last Boost results",null,(_,_)=>controller.Reveal("Boost results"));
-        menu.Items.Add("Open QuietCare Next",null,(_,_)=>controller.Reveal());
+        menu.Items.Add("Open QuietCare",null,(_,_)=>controller.Reveal());
         var rates=new ToolStripMenuItem("Refresh speed");
         foreach(var value in new[]{100,250,500,1000,2000,5000,10000}){int ms=value;rates.DropDownItems.Add(ms+" ms",null,(_,_)=>controller.SetRefresh(ms));}
         menu.Items.Add(rates);
         menu.Items.Add("Transparency and startup settings",null,(_,_)=>controller.Reveal("Settings"));
+        menu.Items.Add("About meter readings",null,(_,_)=>controller.ShowReadingsInfo());
         menu.Items.Add("Hide monitor",null,(_,_)=>controller.ToggleWidget());
-        menu.Items.Add("Exit QuietCare Next",null,(_,_)=>controller.Exit());
+        menu.Items.Add("Exit QuietCare",null,(_,_)=>controller.Exit());
         ContextMenuStrip=menu;
     }
     protected override bool ShowWithoutActivation=>true;

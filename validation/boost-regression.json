@@ -1,8 +1,8 @@
 {
-  "utc": "2026-10-24T01:11:45.2415938+00:00",
+  "utc": "2026-10-24T02:30:20.8500231+00:00",
   "count": 27,
   "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
-  "beforeBytes": 131813376,
+  "beforeBytes": 132747264,
   "afterBytes": 0,
   "tests": [
     {
@@ -113,6 +113,5 @@
       "name": "All 96 MB of allocated helper data preserved",
       "passed": true
     }
-  ],
-  "interpretation": "The helper working-set reading was zero at follow-up; all 96 MB of allocated contents were then verified. This measures resident pages, not freed allocations. Fixture cases also verify refill and negative overall RAM deltas."
+  ]
 }

@@ -101,6 +101,10 @@ public partial class App : Application
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<DashboardPage>();
+                services.AddSingleton<MemoryPage>();
+                services.AddSingleton<ProtectionPage>();
+                services.AddSingleton<StoragePage>();
+                services.AddSingleton<ToolboxPage>();
                 services.AddSingleton<SystemCleanerPage>();
                 services.AddSingleton<DeveloperCleanerPage>();
                 services.AddSingleton<DiskAnalyzerPage>();
@@ -180,6 +184,7 @@ public partial class App : Application
         var hub=Services.GetRequiredService<CareHubViewModel>();
         hub.BoostStatus=Monitor.BoostStatus;
         Monitor.BoostStatusChanged+=hub.OnBoostStatus;
+        Monitor.SnapshotUpdated+=snapshot=>{if(MainWindow?.IsVisible==true)hub.OnSnapshot(snapshot);};
         hub.StartupStatus="Startup watch active: registry/folders every 30 seconds; scheduled tasks/services every 5 minutes. First scan establishes a baseline.";
         if(StartupWatch.Recent.Count>0)hub.OnStartupChanges(StartupWatch.Recent.Take(10).ToArray());
         StartupWatch.Start();

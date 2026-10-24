@@ -27,3 +27,20 @@ jobs:
         run: dotnet run --project tests/QuietCare.BoostRegression -c Release --no-restore -- ${{ runner.temp }}/quietcare-boost-fixtures
       - name: Audit dependency advisories
         run: dotnet list src/Cleaner.App/Cleaner.App.csproj package --vulnerable --include-transitive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build native installer
+        shell: pwsh
+        run: ./installer/build-installer.ps1 -Output "${{ runner.temp }}/quietcare-installer"
+      - name: Build isolated installer fixture
+        run: python installer/build_msi.py --payload "${{ runner.temp }}/quietcare-installer/payload" --output "${{ runner.temp }}/QuietCareFixture.msi" --fixture
+      - name: Build next-version upgrade fixture
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content src/Cleaner.App/Cleaner.App.csproj
+          $version = [version](($project.Project.PropertyGroup.Version | Where-Object { $_ }) -replace '-.*$','')
+          $next = "$($version.Major).$($version.Minor).$($version.Build + 1)"
+          python installer/build_msi.py --payload "${{ runner.temp }}/quietcare-installer/payload" --output "${{ runner.temp }}/QuietCareFixtureNext.msi" --fixture --version $next
+      - name: Verify native install, startup choices and uninstall preservation
+        run: python tests/installer-regression.py --package "${{ runner.temp }}/QuietCareFixture.msi" --output "${{ runner.temp }}/quietcare-native-installer-fixture" --upgrade-package "${{ runner.temp }}/QuietCareFixtureNext.msi"

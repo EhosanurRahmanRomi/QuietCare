@@ -24,7 +24,8 @@ public sealed class MonitorController : IDisposable
     NativeCompactMonitor compact;
     NativeBoostNotice boostNotice;
     Forms.NotifyIcon tray;
-    bool sampling, disposed;
+    System.Drawing.Icon appIcon;
+    bool sampling, disposed, dashboardVisible;
     string lastResult = "No RAM Boost has run in this session.";
     Window preferences;
     Action startupReview;
@@ -32,6 +33,7 @@ public sealed class MonitorController : IDisposable
     public Snapshot Latest { get; private set; }
     public string BoostStatus {get;private set;}="Ready. Boost checks idle background apps and reports the measured result after three seconds.";
     public event Action<string,bool> BoostStatusChanged;
+    public event Action<Snapshot> SnapshotUpdated;
     public int BoostReadyInSeconds=>booster.ReadyInSeconds;
     public void ShowStartupNotice(string text,Action review)
     {
@@ -56,11 +58,12 @@ public sealed class MonitorController : IDisposable
     {
         if (tray != null || disposed) return;
         if(Environment.GetCommandLineArgs().Contains("--monitor"))settings.ShowWidget=true;
-        tray = new Forms.NotifyIcon { Text = "QuietCare Next", Icon = System.Drawing.SystemIcons.Application, Visible = true };
+        try{appIcon=System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath);}catch(Exception){appIcon=null;}
+        tray = new Forms.NotifyIcon { Text = "QuietCare", Icon = appIcon??System.Drawing.SystemIcons.Application, Visible = true };
         tray.BalloonTipClicked+=(_,_)=>{var review=startupReview;startupReview=null;review?.Invoke();};
         tray.DoubleClick += (_, _) => open();
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Open QuietCare Next", null, (_, _) => open());
+        menu.Items.Add("Open QuietCare", null, (_, _) => open());
         menu.Items.Add("Show / hide monitor", null, (_, _) => ToggleWidget());
         menu.Items.Add("Monitor settings", null, (_, _) => Reveal("Settings"));
         menu.Items.Add("Exit", null, (_, _) => Exit());
@@ -103,6 +106,13 @@ public sealed class MonitorController : IDisposable
         settings.Save(); RefreshMonitor();
     }
 
+    public void ShowMonitor()
+    {
+        Start();settings.ShowWidget=true;if(widget?.IsExpanded==true)widget.ToggleExpanded();EnsureWidget();settings.Save();RefreshMonitor();
+    }
+
+    public void ShowReadingsInfo()=>MessageBox.Show("CPU: processor busy time over the sampling interval. Task Manager may use frequency-adjusted processor utility, so its percentage can differ.\n\nGPU: the busiest Windows GPU engine across adapters. It may belong to either GPU on a multi-GPU PC.\n\nRAM: Windows' approximate physical-memory usage. Available memory includes reusable standby pages.\n\nRefresh speed, whole-number rounding and driver support affect comparisons. A dash means the counter is unavailable.","About meter readings",MessageBoxButton.OK,MessageBoxImage.Information);
+
     public void SetRefresh(int ms)
     {
         settings.RefreshMs = Math.Max(100, Math.Min(10000, ms));
@@ -110,15 +120,17 @@ public sealed class MonitorController : IDisposable
         settings.Save();
     }
 
+    public void SetDashboardVisible(bool visible){dashboardVisible=visible;RefreshMonitor();}
+
     public void RefreshMonitor()
     {
-        if (compact?.Visible==true || widget?.IsVisible==true) { timer.Start(); _ = Sample(); }
+        if (dashboardVisible || compact?.Visible==true || widget?.IsVisible==true) { timer.Start(); _ = Sample(); }
         else timer.Stop();
     }
 
     async Task Sample()
     {
-        if (sampling || disposed || !(compact?.Visible==true || widget?.IsVisible==true)) return;
+        if (sampling || disposed || !(dashboardVisible || compact?.Visible==true || widget?.IsVisible==true)) return;
         sampling = true;
         bool detailed = widget?.IsExpanded==true && widget.IsVisible;
         try
@@ -128,7 +140,7 @@ public sealed class MonitorController : IDisposable
                 telemetry ??= new Telemetry();var snapshot=telemetry.Sample(detailed);
                 SamplingCpuMilliseconds+=(process.TotalProcessorTime-cpu).TotalMilliseconds;SamplingWallMilliseconds+=watch.Elapsed.TotalMilliseconds;return snapshot;
             });
-            if (!disposed) { Latest = value; SamplesCompleted++; compact?.Update(value); if(widget?.IsVisible==true)widget.Update(value); }
+            if (!disposed) { Latest = value; SamplesCompleted++; compact?.Update(value); if(widget?.IsVisible==true)widget.Update(value);SnapshotUpdated?.Invoke(value); }
         }
         catch (Exception ex) { State.Log("Monitor: " + ex.Message); }
         finally { sampling = false; if (disposed) { telemetry?.Dispose(); telemetry = null; } }
@@ -187,7 +199,7 @@ public sealed class MonitorController : IDisposable
         var top = new CheckBox { Content = "Keep monitor above other windows", IsChecked = settings.Topmost, Margin = new Thickness(0,0,0,16) };
         top.Click += (_, _) => { settings.Topmost = top.IsChecked == true; if (widget != null) widget.Topmost = settings.Topmost;compact?.ApplySettings(); settings.Save(); };
         panel.Children.Add(top);
-        var startup = new CheckBox { Content = "Start QuietCare Next monitor when I sign in", IsChecked = StartupEnabled(), Margin = new Thickness(0,0,0,16) };
+        var startup = new CheckBox { Content = "Start QuietCare monitor when I sign in", IsChecked = StartupEnabled(), Margin = new Thickness(0,0,0,16) };
         startup.Click += (_, _) => { try { SetStartup(startup.IsChecked == true); } catch (Exception ex) { startup.IsChecked = StartupEnabled(); MessageBox.Show(ex.Message, "Startup setting"); } };
         panel.Children.Add(startup);
         var browser = new CheckBox { Content = "Include browser renderers marked idle by Windows", IsChecked = settings.BoostBackgroundBrowsers, Margin = new Thickness(0,0,0,16) };
@@ -198,8 +210,8 @@ public sealed class MonitorController : IDisposable
         excluded.Foreground=System.Windows.Media.Brushes.Black;excluded.Background=System.Windows.Media.Brushes.White;
         excluded.LostFocus += (_, _) => { settings.BoostExclusions = excluded.Text; settings.Save(); };
         panel.Children.Add(excluded);
-        panel.Children.Add(new TextBlock { Text = "Boost runs only when clicked. Active apps, media and protected processes are skipped. This preview has its own startup entry and settings.", TextWrapping = TextWrapping.Wrap });
-        preferences = new Window { Title = "QuietCare Next — monitor settings", Content = new ScrollViewer{Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto}, Width = 520,MaxHeight=Math.Max(320,SystemParameters.WorkArea.Height-32), SizeToContent = SizeToContent.Height, ResizeMode = ResizeMode.NoResize, WindowStartupLocation = WindowStartupLocation.CenterScreen,ShowActivated=activate,
+        panel.Children.Add(new TextBlock { Text = "Boost runs only when clicked. Active apps, media and protected processes are skipped. Startup uses the installed application location.", TextWrapping = TextWrapping.Wrap });
+        preferences = new Window { Title = "QuietCare — monitor settings", Content = new ScrollViewer{Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto}, Width = 520,MaxHeight=Math.Max(320,SystemParameters.WorkArea.Height-32), SizeToContent = SizeToContent.Height, ResizeMode = ResizeMode.NoResize, WindowStartupLocation = WindowStartupLocation.CenterScreen,ShowActivated=activate,
             Background=(System.Windows.Media.Brush)Application.Current.TryFindResource("ApplicationBackgroundBrush")??new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(14,24,40)),
             Foreground=(System.Windows.Media.Brush)Application.Current.TryFindResource("TextFillColorPrimaryBrush")??System.Windows.Media.Brushes.White};
         preferences.Closed += (_, _) => preferences = null;
@@ -244,6 +256,7 @@ public sealed class MonitorController : IDisposable
         compact?.Shutdown();
         boostNotice?.Dispose();
         tray?.Dispose();
+        appIcon?.Dispose();
         if (!sampling) { telemetry?.Dispose(); telemetry = null; }
     }
 }

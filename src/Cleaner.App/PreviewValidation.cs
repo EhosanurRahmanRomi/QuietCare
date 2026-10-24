@@ -49,7 +49,7 @@ internal static class PreviewValidation
         System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level=System.Diagnostics.SourceLevels.Error;
         ApplicationThemeManager.Apply(ApplicationTheme.Dark);
         Localization.L.Current.Language = "en";
-        var pages = new Type[] {typeof(DashboardPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
+        var pages = new Type[] {typeof(DashboardPage),typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
         var report = new List<object>();
         var window = services.GetRequiredService<MainWindow>();
         window.ShowActivated = false;
@@ -62,10 +62,13 @@ internal static class PreviewValidation
         var heartbeat=new DispatcherTimer(DispatcherPriority.Background){Interval=TimeSpan.FromMilliseconds(100)};
         heartbeat.Tick+=(_,_)=>{double now=heartbeatClock.Elapsed.TotalMilliseconds;longestHeartbeatGap=Math.Max(longestHeartbeatGap,now-lastHeartbeat);lastHeartbeat=now;heartbeatTicks++;};
         heartbeat.Start();
+        var displayHub=services.GetRequiredService<CareHubViewModel>();
+        displayHub.OnSnapshot(new QuietCare.Snapshot{Cpu=24,Gpu=7,Ram=65,Total=16UL*1024*1024*1024,Available=6UL*1024*1024*1024,Time=DateTime.Now});
+        displayHub.ReadingTime="Display fixture · CPU 24% / GPU 7% / RAM 65%";
         foreach (var type in pages)
         {
             var page = (FrameworkElement)services.GetRequiredService(type);
-            bool navigated = navigation.Navigate(type);
+            window.NavigateTo(type);bool navigated=true;
             await Task.Delay(260);
             await Application.Current.Dispatcher.InvokeAsync(() => {},DispatcherPriority.ApplicationIdle);
             window.UpdateLayout();
@@ -82,6 +85,8 @@ internal static class PreviewValidation
             throw new InvalidOperationException("Live assessment did not return valid memory/CPU readings.");
         File.WriteAllText(Path.Combine(output,"assessment-adapter.json"),JsonSerializer.Serialize(new{utc=DateTimeOffset.UtcNow,scope="Production assessment adapter read actual memory, CPU, power and Defender status; no system actions started",memoryReadingValid=true,cpuReadingValid=true,powerReadingAvailable=liveAssessment.OnBattery.HasValue,defenderStatusReadCompleted=true}));
         var hub=services.GetRequiredService<CareHubViewModel>();
+        hub.OnSnapshot(new QuietCare.Snapshot{Cpu=24,Gpu=7,Ram=65,Total=16UL*1024*1024*1024,Available=6UL*1024*1024*1024,Time=DateTime.Now});
+        hub.ReadingTime="Display fixture · CPU 24% / GPU 7% / RAM 65%";
         hub.SmartCareRunning=true;
         hub.SmartCareStatus="Fixture: Checking idle apps and measuring actual memory changes…";
         var careFixture=Cleaner.Core.Services.SmartCareService.InitialSteps();
@@ -90,6 +95,7 @@ internal static class PreviewValidation
         var smartShell=(FrameworkElement)window.Content;
         Render(smartShell,Path.Combine(output,"SmartCareProgressFixture.png"),(int)Math.Ceiling(smartShell.ActualWidth),(int)Math.Ceiling(smartShell.ActualHeight));
         hub.SmartCareRunning=false;
+        hub.StageTitle="Fixture: care session complete";hub.StageDetail="4 completed, 1 skipped, 1 needs attention.";
         hub.SmartCareStatus="Fixture: Finished: 4 completed, 1 skipped, 1 needs attention. Open steps to review.";
         for(int i=0;i<careFixture.Count;i++)hub.ApplyCareStep(careFixture[i] with{State=i==2?Cleaner.Core.Services.CareState.Review:i==5?Cleaner.Core.Services.CareState.Skipped:Cleaner.Core.Services.CareState.Completed,Detail=i==2?"Fixture: Trims were accepted, but no overall available-RAM gain remained.":careFixture[i].Detail});
         await Task.Delay(150);window.UpdateLayout();
@@ -109,6 +115,11 @@ internal static class PreviewValidation
         ApplicationThemeManager.Apply(ApplicationTheme.Light);PreviewTheme.Apply(false);
         await Task.Delay(280);window.UpdateLayout();
         Render(previewShell,Path.Combine(output,"DashboardCompactLight.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
+        foreach(var type in new[]{typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(AutostartPage)})
+        {
+            window.NavigateTo(type);await Task.Delay(280);window.UpdateLayout();Render(previewShell,Path.Combine(output,type.Name+"CompactLight.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
+        }
+        window.NavigateTo(typeof(DashboardPage));
         ApplicationThemeManager.Apply(ApplicationTheme.Dark);PreviewTheme.Apply(true);
         window.Width=normalWidth;window.Height=normalHeight;
         bool motionSetting=CareMotion.Enabled;int transitions=CareMotion.TransitionsStarted;CareMotion.Enabled=false;CareMotion.Enter(previewShell);

@@ -34,3 +34,12 @@ Smart Care adds original local decision rules and a sequential coordinator; no a
 ## Interface references
 
 The revised care dashboard uses original XAML with a compact primary action, separate category surfaces, clear action/result states and optional 180 ms page fades. Official [Microsoft PC Manager](https://pcmanager.microsoft.com/en-us) and [PowerToys settings](https://learn.microsoft.com/en-us/windows/powertoys/general) pages/screenshots supplied layout references; [Fluent motion guidance](https://fluent2.microsoft.design/motion) informed short page fades, reduced-motion support and avoiding decorative background movement. Their artwork and interface code were not copied. Browser control was unavailable in this session; official web references and the application's own render harness were used, not interactive testing of those external applications. No UI-rating comparison is claimed.
+
+
+## 0.6 interface and packaging review
+
+The user's Advanced SystemCare screen recording was reviewed through sampled frames: compact navigation, a central circular care action and visible scanning stages informed the new hierarchy. Official [Advanced SystemCare](https://www.iobit.com/en/advancedsystemcarefree.php), Microsoft PC Manager and PowerToys pages were compared. All new layouts and the Q logo are original; no vendor artwork, ads or activation code was copied.
+
+Packaging uses Windows Installer's native tables and standard actions, built with Python 3.12's standard-library `msilib`; Python is a build tool only. The EXE wrapper uses the Windows .NET Framework compiler and has no new application dependency. References: [MSI installation context](https://learn.microsoft.com/en-us/windows/win32/msi/installation-context), [File table](https://learn.microsoft.com/en-us/windows/win32/msi/file-table), [Registry table](https://learn.microsoft.com/en-us/windows/win32/msi/registry-table), [Shortcut table](https://learn.microsoft.com/en-us/windows/win32/msi/shortcut-table). Isolated install/uninstall checks validate the emitted package rather than assuming authoring success means correct behavior.
+
+Meter definitions were checked against [Windows memory status](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex) and [Microsoft's GPU usage explanation](https://devblogs.microsoft.com/directx/gpus-in-the-task-manager/). The meter is real telemetry; this does not establish synchronized Task Manager parity.

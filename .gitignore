@@ -40,3 +40,5 @@ Thumbs.db
 
 artifacts/
 work/
+__pycache__/
+*.pyc

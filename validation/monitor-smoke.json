@@ -1,33 +1,33 @@
 {
-  "utc": "2026-10-24T01:39:40.141565+00:00",
+  "utc": "2026-10-24T02:57:38.7219043+00:00",
   "scope": "Live compact monitor plus startup watch, main UI unopened, no Boost invoked; short local sample, not a benchmark",
   "startupWatchStatus": "Watching startup entries. Registry/folder checks every 30 seconds; tasks/services every 5 minutes.",
   "measurements": [
     {
       "phase": "First 20 seconds including startup initialization",
-      "seconds": 20.6156403,
-      "cpuPercentOfMachine": 4.613832350484092,
-      "workingSetBytes": 235671552,
-      "privateBytes": 108298240
+      "seconds": 20.6322183,
+      "cpuPercentOfMachine": 4.487062073828614,
+      "workingSetBytes": 234938368,
+      "privateBytes": 107716608
     },
     {
       "refreshMs": 1000,
-      "seconds": 12.010147,
+      "seconds": 12.0151173,
       "samples": 12,
-      "cpuPercentOfMachine": 0.4553436916699527,
-      "samplingCpuMs": 15.625,
-      "samplingWallMs": 820.2605999999998,
-      "workingSetBytes": 234078208,
-      "privateBytes": 106917888,
+      "cpuPercentOfMachine": 0.24383325489471108,
+      "samplingCpuMs": 62.5,
+      "samplingWallMs": 41.16899999999964,
+      "workingSetBytes": 234164224,
+      "privateBytes": 106389504,
       "latest": {
-        "Time": "2026-10-24T07:39:19.5424184+06:00",
-        "Cpu": 100,
-        "Gpu": 6.043016848422771,
+        "Time": "2026-10-24T08:57:18.5705405+06:00",
+        "Cpu": 33.3984375,
+        "Gpu": 2.852326104494379,
         "DiskRead": null,
         "DiskWrite": null,
-        "Ram": 66,
+        "Ram": 72,
         "Total": 17006391296,
-        "Available": 5642952704,
+        "Available": 4722286592,
         "Download": null,
         "Upload": null,
         "GpuStatus": "Busiest GPU engine across adapters"
@@ -36,22 +36,22 @@
     },
     {
       "refreshMs": 250,
-      "seconds": 12.0764085,
-      "samples": 45,
-      "cpuPercentOfMachine": 0.9056908637234471,
-      "samplingCpuMs": 328.125,
-      "samplingWallMs": 3996.8045999999986,
-      "workingSetBytes": 240857088,
-      "privateBytes": 112156672,
+      "seconds": 12.0045881,
+      "samples": 47,
+      "cpuPercentOfMachine": 0.6507923752240673,
+      "samplingCpuMs": 62.5,
+      "samplingWallMs": 164.60809999999947,
+      "workingSetBytes": 240906240,
+      "privateBytes": 112001024,
       "latest": {
-        "Time": "2026-10-24T07:39:32.4926981+06:00",
-        "Cpu": 100,
-        "Gpu": 6.368140454487811,
+        "Time": "2026-10-24T08:57:31.3977354+06:00",
+        "Cpu": 83.62068965517241,
+        "Gpu": 2.9337075925161056,
         "DiskRead": null,
         "DiskWrite": null,
-        "Ram": 70,
+        "Ram": 72,
         "Total": 17006391296,
-        "Available": 5031563264,
+        "Available": 4648017920,
         "Download": null,
         "Upload": null,
         "GpuStatus": "Busiest GPU engine across adapters"
@@ -60,9 +60,9 @@
     },
     {
       "phase": "Monitor hidden",
-      "seconds": 6.2182747,
+      "seconds": 6.0069161,
       "cpuPercentOfMachine": 0,
-      "workingSetBytes": 235171840
+      "workingSetBytes": 234520576
     }
   ]
 }

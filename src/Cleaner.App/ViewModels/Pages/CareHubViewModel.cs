@@ -13,6 +13,26 @@ public sealed partial class CareHubViewModel : ObservableObject
     readonly SmartCareService smartCare;
     readonly RunningTaskRegistry tasks;
     CancellationTokenSource? careStop;
+    DateTime lastReading;
+    [ObservableProperty] string _cpuReading="—";
+    [ObservableProperty] string _gpuReading="—";
+    [ObservableProperty] string _ramReading="—";
+    [ObservableProperty] double _cpuValue;
+    [ObservableProperty] double _gpuValue;
+    [ObservableProperty] double _ramValue;
+    [ObservableProperty] string _availableRam="Waiting for a live reading";
+    [ObservableProperty] string _readingTime="Waiting for a live reading…";
+    [ObservableProperty] string _protectionBadge="Not checked";
+    [ObservableProperty] string _protectionDetail="Check your Windows antivirus status.";
+    [ObservableProperty] string _diskAvailable="—";
+    [ObservableProperty] string _diskDetail="System drive";
+    [ObservableProperty] double _diskUsed;
+    [ObservableProperty] string _stageTitle="Ready to care for your PC";
+    [ObservableProperty] string _stageDetail="Checks memory, old junk, protection, startup and drive maintenance.";
+    [ObservableProperty] string _careOutcome="Recommended care";
+    [ObservableProperty] string _startupBadge="Watching for changes";
+    public string CareButtonLabel=>SmartCareRunning?"Working":"Start care";
+    partial void OnSmartCareRunningChanged(bool value)=>OnPropertyChanged(nameof(CareButtonLabel));
     [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _smartCareRunning;
     [ObservableProperty] string _smartCareStatus="One click chooses suitable actions from live PC checks. Windows may request administrator approval.";
     [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _cleaning;
@@ -31,11 +51,11 @@ public sealed partial class CareHubViewModel : ObservableObject
         this.tasks=tasks;smartBackend=new(store,cleanup);smartCare=new(smartBackend);
         var last=store.Load("smart-care.json",()=>new CareHistory()).LastReport;
         foreach(var step in last?.Steps??SmartCareService.InitialSteps())CareSteps.Add(new(step));
-        if(last is not null)SmartCareStatus="Last run "+last.FinishedUtc.ToLocalTime().ToString("g")+" · "+last.Summary;
+        if(last is not null){SmartCareStatus="Last run "+last.FinishedUtc.ToLocalTime().ToString("g")+" · "+last.Summary;StageTitle=last.Cancelled?"Previous care was stopped":"Previous care result";StageDetail=last.Summary;CareOutcome="Last care "+last.FinishedUtc.ToLocalTime().ToString("g");}
     }
     public void ApplyCareStep(CareStep step)
     {
-        void Apply(){for(int i=0;i<CareSteps.Count;i++)if(CareSteps[i].Key==step.Key){CareSteps[i]=new(step);return;}}
+        void Apply(){if(step.State==CareState.Running){StageTitle=step.Title;StageDetail=step.Detail;}for(int i=0;i<CareSteps.Count;i++)if(CareSteps[i].Key==step.Key){CareSteps[i]=new(step);return;}}
         if(Application.Current.Dispatcher.CheckAccess())Apply();else Application.Current.Dispatcher.Invoke(Apply);
     }
     [RelayCommand] public async Task StartSmartCareAsync()
@@ -56,12 +76,34 @@ public sealed partial class CareHubViewModel : ObservableObject
                 if(step.Key=="drive")OptimizationStatus=step.Detail;
                 if(step.Key=="startup")StartupStatus=step.Detail;
             }),careStop.Token);
-            smartBackend.SaveReport(report);SmartCareStatus=report.Summary;Add("Smart Care: "+report.Summary);
+            smartBackend.SaveReport(report);SmartCareStatus=report.Summary;CareOutcome=report.AttentionCount>0?"Review recommended":"Care completed";StageTitle=report.Cancelled?"Care stopped":report.AttentionCount>0?"Some items need your attention":"Your care session is complete";StageDetail=report.Summary;Add("Smart Care: "+report.Summary);
             foreach(var step in report.Steps)Add(step.Title+" · "+step.State+": "+step.Detail);
         }
         catch(OperationCanceledException){SmartCareStatus="Smart Care stopped before starting the next action.";}
         catch(Exception ex){SmartCareStatus="Smart Care stopped: "+ex.Message;Add(SmartCareStatus);}
         finally{tasks.Complete(task);careStop.Dispose();careStop=null;SmartCareRunning=false;}
+    }
+    public void OnSnapshot(QuietCare.Snapshot value)
+    {
+        if(DateTime.UtcNow-lastReading<TimeSpan.FromSeconds(1))return;lastReading=DateTime.UtcNow;
+        CpuReading=value.Cpu.HasValue?value.Cpu.Value.ToString("F0")+"%":"—";GpuReading=value.Gpu.HasValue?value.Gpu.Value.ToString("F0")+"%":"—";
+        RamReading=value.Total>0?value.Ram.ToString("F0")+"%":"—";CpuValue=value.Cpu??0;GpuValue=value.Gpu??0;RamValue=value.Ram;
+        AvailableRam=value.Total>0?QuietCare.Format.Bytes(value.Available)+" available of "+QuietCare.Format.Bytes(value.Total):"Memory reading unavailable";
+        ReadingTime="Last reading "+value.Time.ToString("HH:mm:ss");
+    }
+    [RelayCommand] public async Task RefreshReadingsAsync()
+    {
+        if(App.Monitor?.Latest is {} snapshot){lastReading=default;OnSnapshot(snapshot);return;}
+        var reading=await Task.Run(async()=>{using var telemetry=new QuietCare.Telemetry();telemetry.Sample(false);await Task.Delay(250);return telemetry.Sample(false);});lastReading=default;OnSnapshot(reading);
+    }
+    [RelayCommand] public async Task RefreshStorageAsync()
+    {
+        try{var stats=await Task.Run(()=>{var root=System.IO.Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows))!;var drive=new System.IO.DriveInfo(root);return(root,drive.AvailableFreeSpace,drive.TotalSize);});DiskAvailable=Cleaner.Core.Utils.ByteFormatter.Format(stats.AvailableFreeSpace)+" free";DiskDetail=stats.root+"  ·  "+Cleaner.Core.Utils.ByteFormatter.Format(stats.TotalSize)+" total";DiskUsed=100.0*(1-(double)stats.AvailableFreeSpace/stats.TotalSize);}
+        catch(Exception ex){DiskAvailable="Unavailable";DiskDetail=ex.Message;}
+    }
+    [RelayCommand] public void NavigateTool(string key)
+    {
+        Type? page=key switch{"memory"=>typeof(Cleaner.App.Views.Pages.MemoryPage),"protection"=>typeof(Cleaner.App.Views.Pages.ProtectionPage),"storage"=>typeof(Cleaner.App.Views.Pages.StoragePage),"startup"=>typeof(Cleaner.App.Views.Pages.AutostartPage),"system"=>typeof(Cleaner.App.Views.Pages.SystemCleanerPage),"developer"=>typeof(Cleaner.App.Views.Pages.DeveloperCleanerPage),"disk"=>typeof(Cleaner.App.Views.Pages.DiskAnalyzerPage),"duplicates"=>typeof(Cleaner.App.Views.Pages.DuplicatesPage),"large"=>typeof(Cleaner.App.Views.Pages.LargeFilesPage),"logs"=>typeof(Cleaner.App.Views.Pages.LogFinderPage),"compare"=>typeof(Cleaner.App.Views.Pages.FolderComparePage),"orphan"=>typeof(Cleaner.App.Views.Pages.OrphanUserDataPage),"recovery"=>typeof(Cleaner.App.Views.Pages.CleanupHistoryPage),"services"=>typeof(Cleaner.App.Views.Pages.ServicesPage),"apps"=>typeof(Cleaner.App.Views.Pages.InstalledProgramsPage),"registry"=>typeof(Cleaner.App.Views.Pages.RegistryCleanerPage),"maintenance"=>typeof(Cleaner.App.Views.Pages.SystemMaintenancePage),_=>null};if(page is not null)App.Navigate(page);
     }
     [RelayCommand] public void StopSmartCare()
     {
@@ -95,6 +137,8 @@ public sealed partial class CareHubViewModel : ObservableObject
     {
         SecurityStatus="Reading Windows antivirus status…";
         var status=await WindowsCareTools.ReadDefenderStatusAsync();
+        ProtectionBadge=!status.Available?"Status unavailable":!status.AntivirusEnabled?"Check antivirus provider":!status.RealTimeEnabled?"Protection needs review":"Protection on";
+        ProtectionDetail=status.Available?"Microsoft Defender · real-time protection "+(status.RealTimeEnabled?"on":"off"):status.Detail;
         SecurityStatus=status.Available?$"Microsoft Defender: antivirus {(status.AntivirusEnabled?"enabled":"disabled")}; real-time protection {(status.RealTimeEnabled?"on":"off")}. Signatures: {status.SignatureUpdated}. Last quick scan: {status.LastQuickScan}.":status.Detail;
     }
     [RelayCommand] public Task QuickVirusScanAsync()=>RunWindows(WindowsCareJob.DefenderQuickScan);
@@ -122,7 +166,7 @@ public sealed partial class CareHubViewModel : ObservableObject
     [RelayCommand] public void ManageApps()=>App.Navigate(typeof(Cleaner.App.Views.Pages.InstalledProgramsPage));
     [RelayCommand] public void ManageServices()=>App.Navigate(typeof(Cleaner.App.Views.Pages.ServicesPage));
     [RelayCommand] public void MonitorSettings()=>App.Monitor?.Reveal("Settings");
-    public void OnStartupChanges(IReadOnlyList<StartupChange> changes){StartupStatus=changes.Count+" startup changes detected. Review Startup apps.";foreach(var change in changes)Add(change.Kind+": "+change.Entry.Name);}
+    public void OnStartupChanges(IReadOnlyList<StartupChange> changes){StartupBadge=changes.Count+" changes to review";StartupStatus=changes.Count+" startup changes detected. Review Startup apps.";foreach(var change in changes)Add(change.Kind+": "+change.Entry.Name);}
 }
 
 public sealed class CareStepRow(CareStep step)
@@ -131,5 +175,6 @@ public sealed class CareStepRow(CareStep step)
     public string Title=>step.Title;
     public string Detail=>step.Detail;
     public string Status=>step.State.ToString();
+    public string Marker=>step.State switch{CareState.Completed=>"✓",CareState.Running=>"●",CareState.Review=>"!",CareState.Failed=>"!",CareState.Skipped=>"–",_=>"○"};
     public string Accent=>step.State switch{CareState.Completed=>"#67E1B2",CareState.Running=>"#7EC6FF",CareState.Review=>"#FFC680",CareState.Failed=>"#FF9292",_=>"#9AAFC6"};
 }

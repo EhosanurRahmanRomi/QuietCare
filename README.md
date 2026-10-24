@@ -1,14 +1,14 @@
-# QuietCare Next
+# QuietCare
 
 A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.5.0-preview.3 · Windows x64 · unsigned preview**
+**0.6.0-preview.1 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.3) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.6.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
-The screenshot renders the production controls. The separate monitor preview uses demonstration readings.
+The screenshots render the actual WPF controls with explicitly labeled display fixtures. The compact monitor preview also uses demonstration readings.
 
 ![Smart Care live-step layout, fixture outcomes](docs/images/smart-care-steps.png)
 
@@ -16,12 +16,12 @@ The step screenshot shows labeled fixture outcomes; it does not represent a comp
 
 ## Start using it
 
-1. Download **QuietCareNext-portable-win-x64.zip** and extract it. The folder contains **QuietCare.Next.exe** plus the licenses and guide from the preview release. It includes the .NET runtime; no separate runtime installation is needed.
-2. Put it in a permanent folder you control, then run it. This preview has separate settings and leaves QuietCare 0.3 installed.
-3. Click **Run Smart Care** on Home, or **Smart Care** in the top bar from any tool. No category selection is needed. Expand **Steps and decisions** for live reasons and results. Manual actions and advanced tools remain available.
-4. To start the mini monitor when signing in, open **Monitor settings → Start QuietCare Next monitor when I sign in**. Startup is off until you enable it.
+1. Download **QuietCare-Setup.exe** from the release and open it. This is a real installer with an embedded native MSI package and the .NET runtime included.
+2. Leave **Start the mini monitor when I sign in to Windows** checked. Setup installs the permanent app, Start menu entries, optional desktop shortcut, app icon and Windows uninstaller for your account.
+3. The **tiny transparent CPU → GPU → RAM monitor is the priority**. Its lightning button runs RAM Boost directly. Use **Mini monitor** in the app header to show it again, or the Start menu's **QuietCare Performance Monitor** shortcut.
+4. Use **Overview → Start care** for automatic care with live stages, or Memory, Protection, Storage, Startup and Toolbox for individual tools. No categories need to be selected for Smart Care.
 
-Keep the executable at that location while startup is enabled. Closing the main window leaves the tray and monitor running. Use **Exit** in the tray menu to stop them.
+Closing the main window leaves the tray and monitor running. Use **Exit** in the tray menu to stop them. To change sign-in behavior, refresh speed or opacity, right-click the monitor and open its settings. Uninstall through **Windows Settings → Apps → Installed apps → QuietCare**. Settings, Recovery and startup backups are retained. [Installation details](docs/INSTALLATION.md).
 
 ![Compact monitor](docs/images/mini-monitor.png)
 
@@ -30,6 +30,8 @@ The Process Monitor tab and its synchronous polling backend were removed after a
 The lightning button runs RAM Boost immediately. The chevron expands details. A result panel appears next to the floating monitor and closes automatically. Last results persist across restarts. Right-click exposes refresh speeds from 100 to 10,000 ms, transparency, startup and the last Boost result.
 
 ## What works in this preview
+
+The shell has been rebuilt around a central care action and live stages, with dedicated Memory, Protection and Storage pages, a compact Startup table, an organized Toolbox and matching About/Settings screens. The original Q icon is used consistently in the window, executable, tray, Start menu and setup. Page fades are brief and honor reduced-motion settings.
 
 | Area | Behavior |
 | --- | --- |
@@ -49,6 +51,10 @@ The lightning button runs RAM Boost immediately. The chevron expands details. A 
 | Updates | Manual GitHub release check and release notes; downloads and replacement remain manual |
 
 See [automatic-care rules](docs/SMART-CARE.md) for the exact thresholds, exclusions and per-tool behavior. Smart Care uses local decision rules, not an external AI model. It starts only when clicked.
+
+## Meter readings
+
+CPU measures processor busy time using Windows `GetSystemTimes`; it can differ from Task Manager’s frequency-adjusted CPU utility. RAM shows Windows’ approximate physical-memory load and available bytes. GPU is the busiest Windows GPU engine across adapters, not a sum of independent engines or a single selected adapter. Missing CPU/GPU counters display **—**, rather than a false zero. Sampling windows, rounding and driver support affect comparisons. The monitor uses your selected refresh interval; the main Overview limits visual updates to once per second.
 
 ## Limits that matter
 
@@ -73,7 +79,7 @@ dotnet run --project tests/QuietCare.Regression -c Release -- ./work/core-fixtur
 dotnet run --project tests/QuietCare.BoostRegression -c Release -- ./work/boost-fixtures
 ```
 
-[`build.ps1`](build.ps1) publishes the self-contained executable. Runtime extraction on first launch needs additional disk space; download size and runtime memory are different measurements. The executable is larger than the previous .NET Framework app because it includes .NET 10 and WPF, not because of padding.
+[`build.ps1`](build.ps1) publishes the self-contained application. [`installer/build-installer.ps1`](installer/build-installer.ps1) packages the MSI and setup EXE using Python 3.12 and the Windows .NET Framework compiler; neither is required on the user’s PC. Runtime extraction on first launch needs additional disk space; download size and runtime memory are different measurements. The payload includes .NET 10 and WPF. Download size is not a feature or quality score.
 
 The starting application is an attributed [PowerClean](https://github.com/fgilde/PowerClean) derivative. BCUninstaller startup-state handling is adapted with its Apache-2.0 notice. The other reviewed repositories informed design and policy choices; their engines were not combined or silently bundled. See the [seven-source comparison](docs/SOURCE-REVIEW.md).
 

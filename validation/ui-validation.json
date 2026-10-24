@@ -1,20 +1,52 @@
 {
-  "utc": "2026-10-24T01:38:43.9493501+00:00",
+  "utc": "2026-10-24T02:56:43.4123399+00:00",
   "scope": "Production control renders, compact dark/light dashboard and monitor settings, reduced-motion override and dispatcher heartbeat; care/Boost displays use fixtures; no destructive actions invoked",
   "compactWidth": 980,
   "compactHeight": 640,
   "reducedMotionOverridePassed": true,
-  "pageTransitionsStarted": 18,
-  "heartbeatTicks": 94,
-  "longestHeartbeatGapMs": 1859.7957999999999,
+  "pageTransitionsStarted": 28,
+  "heartbeatTicks": 100,
+  "longestHeartbeatGapMs": 1738.9033999999997,
   "bindingErrors": [],
   "pages": [
     {
       "page": "DashboardPage",
-      "navigated": false,
+      "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
+      "height": 679
+    },
+    {
+      "page": "MemoryPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 985,
+      "height": 679
+    },
+    {
+      "page": "ProtectionPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 985,
+      "height": 679
+    },
+    {
+      "page": "StoragePage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 985,
+      "height": 679
+    },
+    {
+      "page": "ToolboxPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 985,
       "height": 679
     },
     {
@@ -22,7 +54,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -30,7 +62,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -38,7 +70,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -46,7 +78,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -54,7 +86,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -62,7 +94,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -70,7 +102,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -78,7 +110,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -86,7 +118,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -94,7 +126,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -102,7 +134,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -110,7 +142,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -118,7 +150,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -126,7 +158,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -134,7 +166,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {
@@ -142,7 +174,7 @@
       "navigated": true,
       "loaded": true,
       "visible": true,
-      "width": 1051,
+      "width": 985,
       "height": 679
     },
     {

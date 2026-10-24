@@ -7,8 +7,8 @@
                  xmlns:pages="clr-namespace:Cleaner.App.Views.Pages"
                  xmlns:l="clr-namespace:Cleaner.App.Localization"
                  xmlns:controls="clr-namespace:Cleaner.App.Controls"
-                 Title="{l:T AppTitle}"
-                 Width="1280" Height="820"
+                 Title="QuietCare"
+                 Width="1180" Height="790"
                  MinWidth="980" MinHeight="640"
                  WindowBackdropType="None"
                  ExtendsContentIntoTitleBar="True"
@@ -16,7 +16,7 @@
                  Background="{DynamicResource ApplicationBackgroundBrush}"
                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                  TextOptions.TextFormattingMode="Display"
-                 Icon="pack://application:,,,/Assets/PowerClean.ico"
+                 Icon="pack://application:,,,/Assets/QuietCare.ico"
                  mc:Ignorable="d">
     <Grid Background="{DynamicResource ApplicationBackgroundBrush}">
         <Grid.RowDefinitions>
@@ -25,15 +25,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Title="QuietCare Next  ·  Preview"
+        <ui:TitleBar Title="QuietCare"
                      Grid.Row="0"
                      ShowMaximize="True"
                      ShowMinimize="True">
             <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Assets/PowerClean.ico" />
+                <ui:ImageIcon Source="pack://application:,,,/Assets/QuietCare.ico" />
             </ui:TitleBar.Icon>
             <ui:TitleBar.Header>
               <StackPanel x:Name="SmartCareActions" Orientation="Horizontal">
+                <ui:Button x:Name="ShowMiniMonitor" Content="Mini monitor" Padding="12,4" Margin="0,0,8,0"
+                           WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Show the tiny transparent CPU, GPU and RAM monitor" Click="MiniMonitor_Click"/>
                 <ui:Button Content="Smart Care" Icon="{ui:SymbolIcon Flash24}" Appearance="Primary"
                            Padding="12,4" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True"
                            ToolTip="One-click automatic care, available from every tool. Click again to view live steps." Click="SmartCare_Click"/>
@@ -54,110 +56,16 @@
                            Grid.Row="1"
                            PaneDisplayMode="Left"
                            IsBackButtonVisible="Collapsed"
-                           OpenPaneLength="220" TransitionDuration="0">
+                           OpenPaneLength="186" TransitionDuration="0">
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="{l:T Nav.Dashboard}" TargetPageType="{x:Type pages:DashboardPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Home24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.System}" TargetPageType="{x:Type pages:SystemCleanerPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Broom24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.Developer}" TargetPageType="{x:Type pages:DeveloperCleanerPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Code24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="File tools" Icon="{ui:SymbolIcon Folder24}">
-                  <ui:NavigationViewItem.MenuItems>
-                <ui:NavigationViewItem Content="{l:T Nav.Disk}" TargetPageType="{x:Type pages:DiskAnalyzerPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="DataTreemap24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.Duplicates}" TargetPageType="{x:Type pages:DuplicatesPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="DocumentCopy24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.FolderCompare}" TargetPageType="{x:Type pages:FolderComparePage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="BranchCompare24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.LargeFiles}" TargetPageType="{x:Type pages:LargeFilesPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="DocumentSearch24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.LogFinder}" TargetPageType="{x:Type pages:LogFinderPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="DocumentText24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.OrphanData}" TargetPageType="{x:Type pages:OrphanUserDataPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="FolderProhibited24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                  </ui:NavigationViewItem.MenuItems>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.History}" TargetPageType="{x:Type pages:CleanupHistoryPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="History24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItemSeparator />
-
-                <ui:NavigationViewItem Content="System tools" Icon="{ui:SymbolIcon Settings24}">
-                  <ui:NavigationViewItem.MenuItems>
-                <ui:NavigationViewItem Content="{l:T Nav.Autostart}" TargetPageType="{x:Type pages:AutostartPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Rocket24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.Programs}" TargetPageType="{x:Type pages:InstalledProgramsPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="AppFolder24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.Services}" TargetPageType="{x:Type pages:ServicesPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Server24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItemSeparator />
-
-                <ui:NavigationViewItem Content="{l:T Nav.Registry}" TargetPageType="{x:Type pages:RegistryCleanerPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Database24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
-                <ui:NavigationViewItem Content="{l:T Nav.Maintenance}" TargetPageType="{x:Type pages:SystemMaintenancePage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Wrench24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-                  </ui:NavigationViewItem.MenuItems>
-                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Overview" TargetPageType="{x:Type pages:DashboardPage}" Icon="{ui:SymbolIcon Home24}"/>
+                <ui:NavigationViewItem Content="Memory" TargetPageType="{x:Type pages:MemoryPage}" Icon="{ui:SymbolIcon Flash24}"/>
+                <ui:NavigationViewItem Content="Protection" TargetPageType="{x:Type pages:ProtectionPage}" Icon="{ui:SymbolIcon Shield24}"/>
+                <ui:NavigationViewItem Content="Storage" TargetPageType="{x:Type pages:StoragePage}" Icon="{ui:SymbolIcon Storage24}"/>
+                <ui:NavigationViewItem Content="Startup" TargetPageType="{x:Type pages:AutostartPage}" Icon="{ui:SymbolIcon Rocket24}"/>
+                <ui:NavigationViewItem Content="Toolbox" TargetPageType="{x:Type pages:ToolboxPage}" Icon="{ui:SymbolIcon Grid24}"/>
+                <ui:NavigationViewItemSeparator/>
+                <ui:NavigationViewItem Content="Recovery" TargetPageType="{x:Type pages:CleanupHistoryPage}" Icon="{ui:SymbolIcon History24}"/>
             </ui:NavigationView.MenuItems>
 
             <ui:NavigationView.FooterMenuItems>
@@ -190,7 +98,7 @@
                     <ui:ProgressRing IsIndeterminate="True" Width="16" Height="16" Margin="0,0,10,0" />
                     <TextBlock VerticalAlignment="Center" FontSize="12">
                         <Run Text="{Binding ElementName=TasksHost, Path=DataContext.Count, Mode=OneWay}" />
-                        <Run Text=" Aktion(en) laufen — Klick für Details" />
+                        <Run Text=" active task(s) — click for details" />
                     </TextBlock>
                 </StackPanel>
             </Button>
