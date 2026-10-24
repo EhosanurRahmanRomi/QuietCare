@@ -5,7 +5,6 @@ using Cleaner.Core.Utils;
 using System.Text.Json;
 using System.Diagnostics;
 
-if (args[0] == "--wait-child") { Thread.Sleep(TimeSpan.FromMinutes(2)); return; }
 var root = Path.GetFullPath(args[0]);
 Directory.CreateDirectory(root);
 if (Directory.EnumerateFileSystemEntries(root).Any()) throw new Exception("Fixture directory must be empty.");
@@ -63,10 +62,6 @@ var matches=await new DuplicateFinder().FindAsync([duplicates],0);
 Check(matches.Count==1&&matches[0].Paths.Count==2,"Duplicate finder compares SHA-256 content");
 var session=new DiskScanner().StartScan(duplicates);await session.Completion;
 Check(session.Root.FileCount==3&&session.Root.Size==new DirectoryInfo(duplicates).GetFiles().Sum(f=>f.Length),"Disk analysis reports fixture sizes and counts");
-var monitor=new ProcessMonitorService();Check(!monitor.Kill(Environment.ProcessId,Process.GetCurrentProcess().StartTime.ToUniversalTime()),"Process control refuses to terminate QuietCare itself");
-Check(!monitor.KillElevated(Environment.ProcessId),"Elevated process termination disabled");
-var childInfo=new ProcessStartInfo(Environment.ProcessPath!){UseShellExecute=false,CreateNoWindow=true};childInfo.ArgumentList.Add("--wait-child");
-using(var helper=Process.Start(childInfo)!){try{Thread.Sleep(300);var created=helper.StartTime.ToUniversalTime();Check(!monitor.Kill(helper.Id,created.AddSeconds(-1))&&!helper.HasExited,"Process identity mismatch leaves helper alive");Check(monitor.Kill(helper.Id,created)&&helper.WaitForExit(3000),"Confirmed helper termination uses its verified handle");}finally{if(!helper.HasExited)helper.Kill();}}
 await CareChecks.Run(root,Check);
 var report=new { utc=DateTimeOffset.UtcNow, scope="Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed", count=checks.Count,checks };
 File.WriteAllText(Path.Combine(root,"regression.json"),JsonSerializer.Serialize(report,new JsonSerializerOptions{WriteIndented=true}));

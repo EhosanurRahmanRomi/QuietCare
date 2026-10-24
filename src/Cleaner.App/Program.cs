@@ -6,6 +6,7 @@ internal static class Program
     {
         var identity=System.Security.Principal.WindowsIdentity.GetCurrent().User!.Value;
         string name="Local\\QuietCareNext."+identity;
+        if(args.Contains("--validate-ui")||args.Contains("--monitor-smoke"))name+=".Validation."+Environment.ProcessId;
         using var mutex = new System.Threading.Mutex(true, name, out var first);
         if (!first)
         {

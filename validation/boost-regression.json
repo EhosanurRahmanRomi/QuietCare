@@ -1,8 +1,8 @@
 {
-  "utc": "2026-10-23T18:13:56.8681945+00:00",
-  "count": 10,
+  "utc": "2026-10-24T00:31:51.306268+00:00",
+  "count": 16,
   "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
-  "beforeBytes": 129060864,
+  "beforeBytes": 128794624,
   "afterBytes": 0,
   "tests": [
     {
@@ -34,6 +34,30 @@
       "passed": true
     },
     {
+      "name": "Immediate working-set drop is rechecked after settling",
+      "passed": true
+    },
+    {
+      "name": "Refilled pages are not reported as a lasting RAM reduction",
+      "passed": true
+    },
+    {
+      "name": "Small actual available-RAM changes are shown in bytes instead of whole percentages",
+      "passed": true
+    },
+    {
+      "name": "Process working-set sums are distinguished from total RAM reclaimed",
+      "passed": true
+    },
+    {
+      "name": "An overall available-RAM decrease cannot be displayed as a gain",
+      "passed": true
+    },
+    {
+      "name": "Cancelled Boost makes no trim requests",
+      "passed": true
+    },
+    {
       "name": "96 MB memory helper initialized",
       "passed": true
     },
@@ -46,5 +70,5 @@
       "passed": true
     }
   ],
-  "interpretation": "An immediate Windows working-set read returned zero after trim. This does not mean allocations or all physical memory were freed. The helper verified all 96 MB of allocated data."
+  "interpretation": "The helper working-set reading remained zero at the follow-up. Allocations were not freed: the helper verified all 96 MB. Fake refilled-memory and negative-overall-delta cases verify honest reporting."
 }

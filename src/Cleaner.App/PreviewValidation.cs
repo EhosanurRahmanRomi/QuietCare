@@ -47,13 +47,18 @@ internal static class PreviewValidation
         System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level=System.Diagnostics.SourceLevels.Error;
         ApplicationThemeManager.Apply(ApplicationTheme.Dark);
         Localization.L.Current.Language = "en";
-        var pages = new Type[] {typeof(DashboardPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(ProcessMonitorPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
+        var pages = new Type[] {typeof(DashboardPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
         var report = new List<object>();
         var window = services.GetRequiredService<MainWindow>();
         window.ShowActivated = false;
         window.Show();
         await Application.Current.Dispatcher.InvokeAsync(() => {}, DispatcherPriority.ApplicationIdle);
         var navigation = (NavigationView)window.FindName("RootNavigation");
+        int heartbeatTicks=0;double longestHeartbeatGap=0;
+        var heartbeatClock=System.Diagnostics.Stopwatch.StartNew();double lastHeartbeat=0;
+        var heartbeat=new DispatcherTimer(DispatcherPriority.Background){Interval=TimeSpan.FromMilliseconds(100)};
+        heartbeat.Tick+=(_,_)=>{double now=heartbeatClock.Elapsed.TotalMilliseconds;longestHeartbeatGap=Math.Max(longestHeartbeatGap,now-lastHeartbeat);lastHeartbeat=now;heartbeatTicks++;};
+        heartbeat.Start();
         foreach (var type in pages)
         {
             var page = (FrameworkElement)services.GetRequiredService(type);
@@ -66,10 +71,23 @@ internal static class PreviewValidation
             Render(shell,Path.Combine(output,type.Name+".png"),(int)Math.Ceiling(shell.ActualWidth),(int)Math.Ceiling(shell.ActualHeight));
             report.Add(new {page=type.Name,navigated,loaded=page.IsLoaded,visible=page.IsVisible,width=page.ActualWidth,height=page.ActualHeight});
             if(!page.IsLoaded || !page.IsVisible || page.ActualWidth<100)throw new InvalidOperationException("Page did not load: "+type.Name);
-            services.GetRequiredService<ProcessMonitorViewModel>().Deactivate();
         }
+        navigation.Navigate(typeof(DashboardPage));
+        var hub=services.GetRequiredService<CareHubViewModel>();
+        hub.OnBoostStatus("Measuring again after 3 seconds so refilled memory is included…",true);
+        await Task.Delay(150);window.UpdateLayout();
+        var previewShell=(FrameworkElement)window.Content;
+        Render(previewShell,Path.Combine(output,"BoostProgressFixture.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
+        hub.OnBoostStatus("Fixture: available RAM +64 MB after 3 seconds. RAM used: 65.4% → 65.0%.",false);
+        await Task.Delay(150);window.UpdateLayout();
+        Render(previewShell,Path.Combine(output,"BoostResultFixture.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
+        hub.Activity.Clear();
+        // Observe dispatching for longer than the removed process page's polling interval.
+        await Task.Delay(5000);heartbeat.Stop();
+        if(heartbeatTicks<20)throw new InvalidOperationException("UI dispatcher heartbeat did not remain active.");
         window.Hide();
         QuietCare.MonitorController.RenderPreview(Path.Combine(output,"NativeCompactMonitor.png"));
+        QuietCare.MonitorController.RenderBoostPreview(Path.Combine(output,"FloatingBoostResultFixture.png"));
         QuietCare.State.DirectoryPath=Path.Combine(output,"monitor-fixture-state");
         using(var controller=new QuietCare.MonitorController(()=>{},()=>{},Path.Combine(output,"monitor-fixture-state")))
         {
@@ -82,7 +100,7 @@ internal static class PreviewValidation
             report.Add(new{page="CompactMonitor",width=size.Width,height=size.Height,fixture=true});
             monitor.AllowClose=true;monitor.Close();
         }
-        File.WriteAllText(Path.Combine(output,"ui-validation.json"),JsonSerializer.Serialize(new{utc=DateTimeOffset.UtcNow,scope="Production control renders; monitor readings are fixtures; no destructive actions invoked",bindingErrors=bindingErrors.Messages.Distinct().ToArray(),pages=report},new JsonSerializerOptions{WriteIndented=true}));
+        File.WriteAllText(Path.Combine(output,"ui-validation.json"),JsonSerializer.Serialize(new{utc=DateTimeOffset.UtcNow,scope="Production control renders and dispatcher heartbeat; monitor and Boost display values are fixtures; no destructive actions invoked",heartbeatTicks,longestHeartbeatGapMs=longestHeartbeatGap,bindingErrors=bindingErrors.Messages.Distinct().ToArray(),pages=report},new JsonSerializerOptions{WriteIndented=true}));
     }
     static void Render(FrameworkElement element,string file,int width,int height)
     {

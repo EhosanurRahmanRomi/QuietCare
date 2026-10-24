@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-23T18:13:37.87711+00:00",
+  "utc": "2026-10-24T00:31:25.1546817+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 58,
+  "count": 54,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -109,22 +109,6 @@
     },
     {
       "name": "Disk analysis reports fixture sizes and counts",
-      "passed": true
-    },
-    {
-      "name": "Process control refuses to terminate QuietCare itself",
-      "passed": true
-    },
-    {
-      "name": "Elevated process termination disabled",
-      "passed": true
-    },
-    {
-      "name": "Process identity mismatch leaves helper alive",
-      "passed": true
-    },
-    {
-      "name": "Confirmed helper termination uses its verified handle",
       "passed": true
     },
     {

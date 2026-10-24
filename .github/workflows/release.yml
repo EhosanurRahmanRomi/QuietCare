@@ -21,5 +21,9 @@ jobs:
         run: dotnet restore tests/QuietCare.Regression/QuietCare.Regression.csproj --locked-mode
       - name: Run core fixtures
         run: dotnet run --project tests/QuietCare.Regression -c Release --no-restore -- ${{ runner.temp }}/quietcare-core-fixtures
+      - name: Restore locked Boost fixtures
+        run: dotnet restore tests/QuietCare.BoostRegression/QuietCare.BoostRegression.csproj --locked-mode
+      - name: Run Boost policies and dedicated memory helper
+        run: dotnet run --project tests/QuietCare.BoostRegression -c Release --no-restore -- ${{ runner.temp }}/quietcare-boost-fixtures
       - name: Audit dependency advisories
         run: dotnet list src/Cleaner.App/Cleaner.App.csproj package --vulnerable --include-transitive

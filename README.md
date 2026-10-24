@@ -2,9 +2,9 @@
 
 A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.5.0-preview.1 · Windows x64 · unsigned preview**
+**0.5.0-preview.2 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.2) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
@@ -21,14 +21,16 @@ Keep the executable at that location while startup is enabled. Closing the main 
 
 ![Compact monitor](docs/images/mini-monitor.png)
 
-The lightning button runs RAM Boost immediately. The chevron expands details. Right-click exposes refresh speeds from 100 to 10,000 ms, transparency, startup and the last Boost result.
+The Process Monitor tab and its synchronous polling backend were removed after a user-reported freeze. The tiny CPU/GPU/RAM monitor remains.
+
+The lightning button runs RAM Boost immediately. The chevron expands details. A result panel appears next to the floating monitor and closes automatically. Last results persist across restarts. Right-click exposes refresh speeds from 100 to 10,000 ms, transparency, startup and the last Boost result.
 
 ## What works in this preview
 
 | Area | Behavior |
 | --- | --- |
 | Performance monitor | CPU, GPU and RAM readings; transparent native compact view, expanded detail view, adjustable speed, position and opacity |
-| RAM Boost | Selects eligible idle background processes; protects foreground work, audio, system and excluded processes; reports individual outcomes |
+| RAM Boost | Selects eligible idle background processes; protects foreground work, audio, system and excluded processes; reports actual available-RAM change and per-process outcomes after a three-second follow-up |
 | Safe junk cleanup | One click scans, revalidates and permanently removes eligible old temporary files and closed-browser disposable caches; live status and result counts |
 | Advanced cleanup | Category previews with approved-file identity checks and recoverable quarantine; restore and explicit permanent deletion in Recovery |
 | Virus checking | Starts the installed Microsoft Defender quick or full scanner through Windows UAC; displays actual exit status and links to Protection history |

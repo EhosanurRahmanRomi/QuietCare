@@ -1,12 +1,14 @@
-# QuietCare Next 0.5.0-preview.1
+# QuietCare Next 0.5.0-preview.2
 
-A larger PC-care workspace built from an attributed PowerClean foundation, with selected BCUninstaller startup-state handling and independently implemented safeguards informed by five other reviewed projects.
+Removes the Process Monitor tab after a reported UI freeze and corrects RAM Boost result reporting.
 
-- Adds a direct-action care hub: guarded RAM Boost, old-junk cleanup, Defender quick/full scans, and Windows drive optimization.
-- Adds persisted startup-change detection and Windows tray alerts while running.
-- Retains the tiny transparent CPU → GPU → RAM monitor and adjustable refresh speed.
-- Adds advanced cleanup previews/recovery, file analysis, startup/service/app inventory and restricted maintenance tools.
-- Uses Windows catalog/embedded Microsoft signature checks before launching fixed privileged tools.
-- Ships as a self-contained x64 executable and a portable ZIP with documentation and licenses. The .NET runtime accounts for much of the download size.
+- Completely removes the process page, synchronous two-second process polling, registrations and unused process-control backend.
+- Keeps the tiny transparent CPU → GPU → RAM monitor.
+- RAM Boost measures each trimmed process again after three seconds. An immediate drop that refills is no longer reported as a lasting reduction.
+- Shows actual overall available-RAM changes in bytes and RAM-use percentages to one decimal place. Process working-set totals are labeled separately because shared pages can overlap.
+- Displays live Boost progress/results on the home screen and in a temporary panel beside the floating monitor. Results remain accessible after restart.
+- States clearly when no overall RAM gain remains, no idle process qualifies, or Windows declines a request.
 
-58 core checks and 10 Boost checks passed; 18 production pages rendered without binding errors. Read [the validation scope](VALIDATION.md) before relying on system operations. This unsigned preview is separate from the installed 0.3 version; system-wide service/startup changes use Windows consoles. No automatic updater or independent antivirus engine is included.
+54 core checks and 16 Boost checks passed, including refilled memory, small positive changes, negative overall changes, cancellation and allocated-data preservation in a dedicated 96 MB helper. The core count is four lower because tests for the removed process-control backend were removed with it.
+
+This does not close user apps/tabs or free their allocations. Resident memory can return when used. No reduction is guaranteed. See [validation scope](VALIDATION.md) for tested and untested behavior.

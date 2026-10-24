@@ -13,14 +13,20 @@ public sealed class BoostProcess {
 }
 public sealed class BoostObservation {
     public string App {get;set;}public long BeforeBytes,AfterBytes;public bool Measured,BeforeMeasured;
+    public long ImmediateBytes;public bool ImmediateMeasured;
     public string Before {get{return BeforeMeasured?Format.Bytes(BeforeBytes):"Unavailable";}}public string After {get{return Measured?Format.Bytes(AfterBytes):"Unavailable";}}
-    public string Outcome {get{return !Measured?"Trim accepted; fresh measurements unavailable":AfterBytes<BeforeBytes?"Resident pages decreased":"No resident decrease observed";}}
+    public string Outcome {get{return !Measured?"Trim accepted; settled measurement unavailable":AfterBytes<BeforeBytes?"Resident footprint lower at follow-up":"No lasting resident decrease at follow-up";}}
 }
 public sealed class BoostResult {
-    public int Trimmed,Skipped,Failed,Eligible;public ulong AvailableBefore,AvailableAfter;public bool MediaVerified;public readonly List<string> Details=new List<string>();
+    public int Trimmed,Skipped,Failed,Eligible;public ulong AvailableBefore,AvailableAfter,TotalMemory;public bool MediaVerified;public readonly List<string> Details=new List<string>();
     public readonly Dictionary<string,int> SkipReasons=new Dictionary<string,int>();public readonly List<BoostObservation> Observations=new List<BoostObservation>();
     public int ObservedReductions {get{return Observations.Count(x=>x.Measured&&x.AfterBytes<x.BeforeBytes);}}
-    public string Summary {get{return !MediaVerified?"Media activity could not be verified. No apps were changed.":Trimmed==0?(Failed>0?"Windows declined "+Failed+" eligible trim requests.":"No idle background processes qualified. "+Skipped+" were protected or skipped."):"Windows accepted "+Trimmed+" trims; resident decreases observed in "+ObservedReductions+" processes. Available RAM: "+Format.Bytes(AvailableBefore)+" → "+Format.Bytes(AvailableAfter)+(AvailableAfter<=AvailableBefore?". No overall available-RAM increase was measured.":". Other running apps also affect this reading.");}}
+    public long AvailableDelta {get{return AvailableAfter>=AvailableBefore?(long)(AvailableAfter-AvailableBefore):-(long)(AvailableBefore-AvailableAfter);}}
+    public long ResidentReduction {get{return Observations.Where(x=>x.Measured).Sum(x=>Math.Max(0,x.BeforeBytes-x.AfterBytes));}}
+    public string AvailableChange {get{return (AvailableDelta>=0?"+":"−")+Format.Bytes(Math.Abs(AvailableDelta));}}
+    public string UsageChange {get{return TotalMemory==0?"":" RAM used: "+(100.0*(1-(double)AvailableBefore/TotalMemory)).ToString("F1")+"% → "+(100.0*(1-(double)AvailableAfter/TotalMemory)).ToString("F1")+"%.";}}
+    public string Summary {get{return !MediaVerified?"Media activity could not be verified. No apps were changed.":Trimmed==0?(Failed>0?"Windows declined "+Failed+" eligible trim requests.":"No idle background processes qualified. "+Skipped+" were protected or skipped."):"RAM checked after 3 seconds: available "+AvailableChange+"; "+ObservedReductions+"/"+Trimmed+" processes still have a lower resident footprint."+UsageChange+(AvailableDelta<=0?" No overall available-RAM gain remained.":" Other running apps also affect available RAM.");}}
+    public string Report {get{return Summary+"\n\nAvailable RAM: "+Format.Bytes(AvailableBefore)+" → "+Format.Bytes(AvailableAfter)+"\nSum of per-process resident reductions: "+Format.Bytes(ResidentReduction)+" (shared pages may overlap; this is not total RAM freed).\n\n"+string.Join("\n",Observations.Select(x=>x.App+": "+x.Before+" → "+x.After+" · "+x.Outcome))+"\n\nProtected or skipped:\n"+string.Join("\n",SkipReasons.Select(x=>x.Key+": "+x.Value))+"\n\n"+string.Join("\n",Details)+"\n\nThis trims resident pages, not allocations. Pages can return when an app uses them. Active tabs and projects are preserved; no decrease is guaranteed.";}}
 }
 public static class BoostPolicy {
     public static readonly HashSet<string> Browsers=new HashSet<string>(new[]{"chrome","msedge","brave","vivaldi","opera","firefox"},StringComparer.OrdinalIgnoreCase);
@@ -53,8 +59,10 @@ public interface IBoostRuntime {
     List<BoostProcess> Capture();int Foreground();AudioActivity Audio();void Trim(AppProcess app);ulong Available();
 }
 public interface IBoostMeasurements {long? WorkingSet(AppProcess app);}
+public interface IBoostMemoryStatus {ulong TotalMemory();}
 public interface IBoostReadiness {string Recheck(BoostProcess app,bool requireBackgroundPriority);}
-public sealed class WindowsBoostRuntime : IBoostRuntime,IBoostMeasurements,IBoostReadiness {
+public sealed class WindowsBoostRuntime : IBoostRuntime,IBoostMeasurements,IBoostReadiness,IBoostMemoryStatus {
+    public ulong TotalMemory(){return Native.Memory().Total;}
     public List<BoostProcess> Capture(){
         var result=new List<BoostProcess>();var commands=new Dictionary<int,string>();
         try{using(var search=new ManagementObjectSearcher("root\\CIMV2","SELECT ProcessId,CommandLine FROM Win32_Process WHERE Name='chrome.exe' OR Name='msedge.exe' OR Name='brave.exe' OR Name='vivaldi.exe' OR Name='opera.exe' OR Name='firefox.exe'",new System.Management.EnumerationOptions{Timeout=TimeSpan.FromSeconds(3),ReturnImmediately=true}))using(var rows=search.Get())foreach(ManagementObject row in rows)using(row)commands[Convert.ToInt32(row["ProcessId"])]=row["CommandLine"] as string;}catch(ManagementException){}catch(UnauthorizedAccessException){}
@@ -85,18 +93,20 @@ internal static class ForegroundHistory {
     internal static int Observe(){int pid=Native.ForegroundPid();if(pid!=0&&pid!=Own)Interlocked.Exchange(ref lastExternal,pid);return pid==Own?Volatile.Read(ref lastExternal):pid;}
 }
 public sealed class SmartBoost {
-    readonly IBoostRuntime runtime;readonly Func<Task> observe;readonly Stopwatch cooldown=new Stopwatch();bool busy;
-    public SmartBoost(IBoostRuntime host=null,Func<Task> observation=null){runtime=host??new WindowsBoostRuntime();observe=observation??(()=>Task.Delay(750));}
+    readonly IBoostRuntime runtime;readonly Func<Task> observe;readonly Func<CancellationToken,Task> settle;readonly Stopwatch cooldown=new Stopwatch();bool busy;
+    public SmartBoost(IBoostRuntime host=null,Func<Task> observation=null,Func<CancellationToken,Task> settling=null){runtime=host??new WindowsBoostRuntime();observe=observation??(()=>Task.Delay(750));settle=settling??(ct=>Task.Delay(3000,ct));}
     public bool Busy {get{return busy;}}
-    public async Task<BoostResult> Run(IEnumerable<string> exclusions,CancellationToken cancel,bool backgroundBrowsers=false){
+    public async Task<BoostResult> Run(IEnumerable<string> exclusions,CancellationToken cancel,bool backgroundBrowsers=false,IProgress<string> progress=null){
         if(busy)throw new InvalidOperationException("RAM Boost is already running.");
         if(cooldown.IsRunning&&cooldown.Elapsed.TotalSeconds<30)throw new InvalidOperationException("RAM Boost is cooling down. Ready in "+Math.Ceiling(30-cooldown.Elapsed.TotalSeconds)+" seconds.");
         busy=true;
         try{
+            progress?.Report("Checking idle background apps and protecting active work…");
             int firstActive=runtime.Foreground();var first=await Task.Run(()=>runtime.Capture(),cancel);var audio=await Task.Run(()=>runtime.Audio(),cancel);await observe();cancel.ThrowIfCancellationRequested();
             int secondActive=runtime.Foreground();var second=await Task.Run(()=>runtime.Capture(),cancel);var currentAudio=await Task.Run(()=>runtime.Audio(),cancel);audio.Verified&=currentAudio.Verified;audio.ActiveProcesses.UnionWith(currentAudio.ActiveProcesses);
             var activeIds=new HashSet<int>{firstActive,secondActive};var activeNames=new HashSet<string>(first.Concat(second).Where(x=>activeIds.Contains(x.App.Id)).Select(x=>BoostPolicy.Name(x.App.Name)),StringComparer.OrdinalIgnoreCase);var mediaNames=new HashSet<string>(first.Concat(second).Where(x=>audio.ActiveProcesses.Contains(x.App.Id)).Select(x=>BoostPolicy.Name(x.App.Name)),StringComparer.OrdinalIgnoreCase);
-            var extra=new HashSet<string>((exclusions??new string[0]).Select(BoostPolicy.Name),StringComparer.OrdinalIgnoreCase);var before=first.ToDictionary(x=>x.App.Id);var result=new BoostResult{AvailableBefore=runtime.Available(),MediaVerified=audio.Verified};int ownId=Process.GetCurrentProcess().Id;
+            var extra=new HashSet<string>((exclusions??new string[0]).Select(BoostPolicy.Name),StringComparer.OrdinalIgnoreCase);var before=first.ToDictionary(x=>x.App.Id);var result=new BoostResult{AvailableBefore=runtime.Available(),MediaVerified=audio.Verified,TotalMemory=(runtime as IBoostMemoryStatus)?.TotalMemory()??0};int ownId=Process.GetCurrentProcess().Id;
+            var trimmedApps=new List<AppProcess>();
             var watch=Stopwatch.StartNew();var measurements=runtime as IBoostMeasurements;var readiness=runtime as IBoostReadiness;
             foreach(var candidate in second.OrderByDescending(x=>x.App.Bytes)){
                 cancel.ThrowIfCancellationRequested();if(result.Trimmed>=12 || watch.Elapsed.TotalSeconds>5)break;
@@ -107,9 +117,14 @@ public sealed class SmartBoost {
                 if(reason==null){if(activeBrowser&&readiness==null)reason="background priority could not be rechecked";else if(readiness!=null)reason=await Task.Run(()=>readiness.Recheck(candidate,activeBrowser),cancel);}
                 if(reason!=null){result.Skipped++;if(!result.SkipReasons.ContainsKey(reason))result.SkipReasons[reason]=0;result.SkipReasons[reason]++;continue;}
                 result.Eligible++;
-                try{long? beforeBytes=measurements==null?null:measurements.WorkingSet(candidate.App);await Task.Run(()=>runtime.Trim(candidate.App),cancel);result.Trimmed++;long? afterBytes=measurements==null?null:measurements.WorkingSet(candidate.App);result.Observations.Add(new BoostObservation{App=candidate.App.Name,BeforeBytes=beforeBytes??0,AfterBytes=afterBytes??0,BeforeMeasured=beforeBytes.HasValue,Measured=beforeBytes.HasValue&&afterBytes.HasValue});result.Details.Add(candidate.App.Name+" • Windows accepted working-set trim");}catch(OperationCanceledException){throw;}catch(Exception ex){result.Failed++;result.Details.Add(candidate.App.Name+" • trim declined / unavailable ("+ex.GetType().Name+")");}
+                try{long? beforeBytes=measurements==null?null:measurements.WorkingSet(candidate.App);await Task.Run(()=>runtime.Trim(candidate.App),cancel);result.Trimmed++;trimmedApps.Add(candidate.App);long? afterBytes=measurements==null?null:measurements.WorkingSet(candidate.App);result.Observations.Add(new BoostObservation{App=candidate.App.Name,BeforeBytes=beforeBytes??0,ImmediateBytes=afterBytes??0,BeforeMeasured=beforeBytes.HasValue,ImmediateMeasured=afterBytes.HasValue});result.Details.Add(candidate.App.Name+" • Windows accepted working-set trim");progress?.Report("Windows accepted "+result.Trimmed+" trim requests. Checking the result…");}catch(OperationCanceledException){throw;}catch(Exception ex){result.Failed++;result.Details.Add(candidate.App.Name+" • trim declined / unavailable ("+ex.GetType().Name+")");}
             }
-            await Task.Delay(300,cancel);result.AvailableAfter=runtime.Available();cooldown.Restart();State.Log("Smart RAM Boost: "+result.Trimmed+" trim requests accepted; "+result.ObservedReductions+" resident decreases observed; "+result.Skipped+" protected/skipped; "+result.Failed+" unavailable.");return result;
+            if(result.Trimmed>0){progress?.Report("Measuring again after 3 seconds so refilled memory is included…");await settle(cancel);}
+            for(int index=0;index<trimmedApps.Count;index++){
+                var item=result.Observations[index];long? after=measurements==null?null:await Task.Run(()=>measurements.WorkingSet(trimmedApps[index]),cancel);
+                item.AfterBytes=after??0;item.Measured=item.BeforeMeasured&&after.HasValue;
+            }
+            result.AvailableAfter=runtime.Available();cooldown.Restart();State.Log("Smart RAM Boost: "+result.Trimmed+" accepted; "+result.ObservedReductions+" decreases at follow-up; available change "+result.AvailableChange+"; "+result.Skipped+" protected/skipped; "+result.Failed+" unavailable.");progress?.Report(result.Summary);return result;
         }finally{busy=false;}
     }
 }

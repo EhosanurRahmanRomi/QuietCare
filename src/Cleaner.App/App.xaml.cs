@@ -93,7 +93,6 @@ public partial class App : Application
                 services.AddSingleton<AutostartViewModel>();
                 services.AddSingleton<InstalledProgramsViewModel>();
                 services.AddSingleton<ServicesViewModel>();
-                services.AddSingleton<ProcessMonitorViewModel>();
                 services.AddSingleton<RegistryCleanerViewModel>();
                 services.AddSingleton<SystemMaintenanceViewModel>();
                 services.AddSingleton<SettingsViewModel>();
@@ -114,7 +113,6 @@ public partial class App : Application
                 services.AddSingleton<AutostartPage>();
                 services.AddSingleton<InstalledProgramsPage>();
                 services.AddSingleton<ServicesPage>();
-                services.AddSingleton<ProcessMonitorPage>();
                 services.AddSingleton<RegistryCleanerPage>();
                 services.AddSingleton<SystemMaintenancePage>();
                 services.AddSingleton<SettingsPage>();
@@ -180,6 +178,8 @@ public partial class App : Application
             Monitor?.ShowStartupNotice(changes.Count+" new or changed startup entries. Click to review.",()=>Navigate(typeof(AutostartPage)));
         }));
         var hub=Services.GetRequiredService<CareHubViewModel>();
+        hub.BoostStatus=Monitor.BoostStatus;
+        Monitor.BoostStatusChanged+=hub.OnBoostStatus;
         hub.StartupStatus="Startup watch active: registry/folders every 30 seconds; scheduled tasks/services every 5 minutes. First scan establishes a baseline.";
         if(StartupWatch.Recent.Count>0)hub.OnStartupChanges(StartupWatch.Recent.Take(10).ToArray());
         StartupWatch.Start();

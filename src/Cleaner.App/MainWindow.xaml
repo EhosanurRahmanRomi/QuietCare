@@ -137,12 +137,6 @@
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <ui:NavigationViewItem Content="{l:T Nav.Processes}" TargetPageType="{x:Type pages:ProcessMonitorPage}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:SymbolIcon Symbol="Pulse24" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
                 <ui:NavigationViewItemSeparator />
 
                 <ui:NavigationViewItem Content="{l:T Nav.Registry}" TargetPageType="{x:Type pages:RegistryCleanerPage}">

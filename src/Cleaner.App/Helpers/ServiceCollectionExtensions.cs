@@ -34,7 +34,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IInstalledProgramsScanner, InstalledProgramsScanner>();
         services.AddSingleton<IOrphanUserDataScanner, OrphanUserDataScanner>();
         services.AddSingleton<IServiceScanner, ServiceScanner>();
-        services.AddSingleton<IProcessMonitor, ProcessMonitorService>();
 
         services.AddSingleton<IRegistryScanner, RegistryScanner>();
         services.AddSingleton<ISystemMaintenanceService, SystemMaintenanceService>();

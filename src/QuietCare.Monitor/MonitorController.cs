@@ -22,6 +22,7 @@ public sealed class MonitorController : IDisposable
     Telemetry telemetry;
     Widget widget;
     NativeCompactMonitor compact;
+    NativeBoostNotice boostNotice;
     Forms.NotifyIcon tray;
     bool sampling, disposed;
     string lastResult = "No RAM Boost has run in this session.";
@@ -29,6 +30,8 @@ public sealed class MonitorController : IDisposable
     Action startupReview;
     public int SamplesCompleted { get; private set; }
     public Snapshot Latest { get; private set; }
+    public string BoostStatus {get;private set;}="Ready. Boost checks idle background apps and reports the measured result after three seconds.";
+    public event Action<string,bool> BoostStatusChanged;
     public void ShowStartupNotice(string text,Action review)
     {
         if(tray==null)return;
@@ -43,6 +46,7 @@ public sealed class MonitorController : IDisposable
         open = openApp; exit = exitApp;
         State.DirectoryPath = dataDirectory ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuietCareNext", "Monitor");
         settings = Settings.Load();
+        try{var saved=State.Read(State.FilePath("last-boost.xml")).Root;lastResult=(string)saved.Element("report")??lastResult;BoostStatus=(string)saved.Element("summary")??BoostStatus;}catch(Exception){}
         timer.Interval = TimeSpan.FromMilliseconds(settings.RefreshMs);
         timer.Tick += async (_, _) => await Sample();
     }
@@ -89,6 +93,7 @@ public sealed class MonitorController : IDisposable
         using var bitmap=NativeCompactMonitor.Draw(new Snapshot{Cpu=24,Gpu=7,Ram=65},.48);
         bitmap.Save(path,System.Drawing.Imaging.ImageFormat.Png);
     }
+    public static void RenderBoostPreview(string path)=>NativeBoostNotice.RenderPreview(path);
 
     public void ToggleWidget()
     {
@@ -132,17 +137,26 @@ public sealed class MonitorController : IDisposable
     {
         if (disposed || booster.Busy) return;
         compact?.SetBusy(true);
-        widget?.BoostFeedback("Checking idle background processes…", true);
+        void Feedback(string text,bool busy)
+        {
+            BoostStatus=text;BoostStatusChanged?.Invoke(text,busy);
+            if(widget?.IsVisible==true)widget.BoostFeedback(text,busy);
+            if(compact?.Visible==true)
+            {
+                if(boostNotice==null||boostNotice.IsDisposed)boostNotice=new NativeBoostNotice(()=>Reveal("Boost results"));
+                boostNotice.UpdateResult(text,busy,compact.Bounds);
+            }
+        }
+        Feedback("Checking idle background processes…",true);
         try
         {
-            var result = await booster.Run(settings.ProtectedApps, shutdown.Token, settings.BoostBackgroundBrowsers);
-            lastResult = result.Summary + "\n\n" + string.Join("\n",result.Observations.Select(x=>x.App+": "+x.Before+" → "+x.After+" · "+x.Outcome))
-                + "\n\nProtected or skipped:\n" + string.Join("\n",result.SkipReasons.Select(x=>x.Key+": "+x.Value))
-                + "\n\nWorking-set trimming moves some resident pages out of RAM. It does not close tabs or free allocations, and pages can return when an app uses them. A reduction is not guaranteed.";
-            if (!disposed) { widget?.BoostFeedback(result.Summary, false); if(compact?.Visible==true)ShowBoostNotice(result.Summary); await Sample(); }
+            var result = await booster.Run(settings.ProtectedApps,shutdown.Token,settings.BoostBackgroundBrowsers,new Progress<string>(text=>{if(!disposed)Feedback(text,booster.Busy);}));
+            lastResult=result.Report;
+            try{State.Save(State.FilePath("last-boost.xml"),new System.Xml.Linq.XDocument(new System.Xml.Linq.XElement("boost",new System.Xml.Linq.XAttribute("utc",DateTimeOffset.UtcNow.ToString("O")),new System.Xml.Linq.XElement("summary",result.Summary),new System.Xml.Linq.XElement("report",lastResult))));}catch(Exception ex){State.Log("Boost result could not be saved: "+ex.Message);}
+            if (!disposed) {Feedback(result.Summary,false);await Sample();}
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { lastResult = ex.Message; if (!disposed) { widget?.BoostFeedback(ex.Message, false); if(compact?.Visible==true)ShowBoostNotice(ex.Message); } }
+        catch (Exception ex) { lastResult = ex.Message; if (!disposed) Feedback(ex.Message,false); }
         finally { if(!disposed)compact?.SetBusy(false); }
     }
 
@@ -208,6 +222,7 @@ public sealed class MonitorController : IDisposable
         preferences?.Close();
         if (widget != null) { widget.AllowClose = true; widget.Close(); }
         compact?.Shutdown();
+        boostNotice?.Dispose();
         tray?.Dispose();
         if (!sampling) { telemetry?.Dispose(); telemetry = null; }
     }

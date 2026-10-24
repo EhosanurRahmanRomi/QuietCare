@@ -10,6 +10,8 @@ public sealed partial class CareHubViewModel : ObservableObject
     readonly AutomaticCleanupService cleanup=new();
     [ObservableProperty] bool _cleaning;
     [ObservableProperty] bool _windowsJobRunning;
+    [ObservableProperty] bool _boostRunning;
+    [ObservableProperty] string _boostStatus="Ready. Checks idle background apps, protects active work and measures again after three seconds.";
     [ObservableProperty] string _cleanupStatus="Ready. Deletes old .tmp/.temp files and caches of closed browsers. Documents and projects are excluded.";
     [ObservableProperty] string _securityStatus="Open Windows Security to check your antivirus status.";
     [ObservableProperty] string _optimizationStatus="Windows chooses the correct operation for your system drive, including TRIM where appropriate.";
@@ -17,7 +19,8 @@ public sealed partial class CareHubViewModel : ObservableObject
     public ObservableCollection<string> Activity {get;}=[];
     public CareHubViewModel(){ }
     void Add(string line){Activity.Insert(0,DateTime.Now.ToString("HH:mm:ss")+"  "+line);while(Activity.Count>40)Activity.RemoveAt(Activity.Count-1);}
-    [RelayCommand] public void BoostRam(){App.Monitor?.BoostRam();Add("RAM Boost requested. Results appear on the monitor and in Last Boost results.");}
+    [RelayCommand] public void BoostRam(){if(App.Monitor is null){BoostStatus="The monitor controller is unavailable. Restart QuietCare to retry.";return;}App.Monitor.BoostRam();}
+    public void OnBoostStatus(string text,bool busy){bool completed=BoostRunning&&!busy;BoostStatus=text;BoostRunning=busy;if(completed)Add(text);}
     [RelayCommand] public void BoostResults()=>App.Monitor?.Reveal("Boost results");
     [RelayCommand] public async Task CleanSafeJunkAsync()
     {

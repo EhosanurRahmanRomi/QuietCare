@@ -68,7 +68,6 @@ public static class Translations
             ["History.ModePermanent"] = "Permanent",
             ["Nav.Programs"] = "Installed programs",
             ["Nav.Services"] = "Services",
-            ["Nav.Processes"] = "Process monitor",
             ["Nav.KillProfiles"] = "Kill profiles",
             ["Nav.About"] = "About",
             ["Nav.Registry"] = "Registry cleaner",
@@ -172,8 +171,6 @@ public static class Translations
             ["Programs.Subtitle"] = "All installed apps with size, install date and publisher. Sort by size for space hogs or by date for old leftovers.",
             ["Services.Title"] = "Services & recommendations",
             ["Services.Subtitle"] = "Read-only preview. In-app service changes are unavailable. Windows services with status, RAM usage and suggestions for safe deactivation. Admin required for actions.",
-            ["Processes.Title"] = "Process monitor",
-            ["Processes.Subtitle"] = "Top processes by RAM/CPU. Updates every 2 seconds.",
             ["Registry.Title"] = "Registry cleaner",
             ["Registry.Subtitle"] = "Finds broken registry entries: app paths for deleted exes, dead autostart, MUI cache leftovers, OpenWith, SharedDLL references. Auto-backups as .reg files — restore by double-click.",
             ["Maintenance.Title"] = "System maintenance",
@@ -303,12 +300,6 @@ public static class Translations
             ["Services.CopyName"] = "Copy service name",
 
             // Process monitor
-            ["Processes.FilterPlaceholder"] = "Filter (process or description name)...",
-            ["Processes.AutoRefresh"] = "Auto-refresh (2s)",
-            ["Processes.KillProcess"] = "Kill process",
-            ["Processes.KillElevated"] = "Force kill as admin (UAC)",
-            ["Processes.CopyPid"] = "Copy PID",
-            ["Processes.End"] = "End",
 
             // Kill profiles
             ["KillProfiles.Title"] = "Kill profiles",
@@ -468,7 +459,6 @@ public static class Translations
             ["History.ModePermanent"] = "Endgültig",
             ["Nav.Programs"] = "Installierte Programme",
             ["Nav.Services"] = "Dienste",
-            ["Nav.Processes"] = "Prozess-Monitor",
             ["Nav.KillProfiles"] = "Kill-Profile",
             ["Nav.About"] = "Info",
             ["Nav.Registry"] = "Registry-Cleaner",
@@ -569,8 +559,6 @@ public static class Translations
             ["Programs.Subtitle"] = "Alle installierten Apps mit Größe, Installations-Datum und Hersteller. Sortier nach Größe um Speicherfresser zu finden, oder nach Datum um alte Reste zu entdecken.",
             ["Services.Title"] = "Dienste & Empfehlungen",
             ["Services.Subtitle"] = "Read-only preview. In-app service changes are unavailable. Alle Windows-Dienste mit Status, RAM-Verbrauch und Empfehlungen welche du gefahrlos deaktivieren kannst. Aktionen brauchen Admin-Rechte.",
-            ["Processes.Title"] = "Prozess-Monitor",
-            ["Processes.Subtitle"] = "Top-Prozesse nach RAM/CPU. Aktualisiert sich alle 2 Sekunden.",
             ["Registry.Title"] = "Registry-Cleaner",
             ["Registry.Subtitle"] = "Findet defekte Registry-Einträge: App-Paths zu gelöschten exes, Dead-Autostarts, MUI-Cache-Reste, OpenWith-Einträge, SharedDLL-Verweise. Backup wird automatisch als .reg-Datei gespeichert — Restore per Doppelklick.",
             ["Maintenance.Title"] = "System-Wartung",
@@ -689,12 +677,6 @@ public static class Translations
             ["Services.OpenFile"] = "Datei im Explorer öffnen",
             ["Services.CopyName"] = "Service-Namen kopieren",
 
-            ["Processes.FilterPlaceholder"] = "Filter (Prozess- oder Beschreibungsname)...",
-            ["Processes.AutoRefresh"] = "Auto-Refresh (2s)",
-            ["Processes.KillProcess"] = "Prozess beenden",
-            ["Processes.KillElevated"] = "Als Admin erzwingen (UAC)",
-            ["Processes.CopyPid"] = "PID kopieren",
-            ["Processes.End"] = "Beenden",
 
             ["KillProfiles.Title"] = "Kill-Profile",
             ["KillProfiles.Subtitle"] = "Prozessgruppen mit einem Klick oder globalem Shortcut beenden — gibt sofort RAM und CPU frei.",
