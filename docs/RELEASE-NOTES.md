@@ -1,14 +1,18 @@
-# QuietCare Next 0.5.0-preview.2
+# QuietCare Next 0.5.0-preview.3
 
-Removes the Process Monitor tab after a reported UI freeze and corrects RAM Boost result reporting.
+Adds one-click Smart Care and expands the RAM Boost idle-app policy. The removed Process Monitor remains absent; the tiny transparent CPU / GPU / RAM monitor stays available.
 
-- Completely removes the process page, synchronous two-second process polling, registrations and unused process-control backend.
-- Keeps the tiny transparent CPU → GPU → RAM monitor.
-- RAM Boost measures each trimmed process again after three seconds. An immediate drop that refills is no longer reported as a lasting reduction.
-- Shows actual overall available-RAM changes in bytes and RAM-use percentages to one decimal place. Process working-set totals are labeled separately because shared pages can overlap.
-- Displays live Boost progress/results on the home screen and in a temporary panel beside the floating monitor. Results remain accessible after restart.
-- States clearly when no overall RAM gain remains, no idle process qualifies, or Windows declines a request.
+- Start the recommended automatic care workflow from Home or the header on every page, with live steps, reasons, actual outcomes and Stop.
+- Uses live RAM/load/power, Defender completion time and successful drive-operation history. Rechecks conditions before memory, security and drive actions; avoids duplicate runs and unnecessary recent scans/optimization.
+- Runs guarded old-junk cleanup, pressure-aware memory trimming, startup-change review, due Defender quick scan and due Windows drive optimization. UAC may be required for Windows operations.
+- Expanded RAM Boost includes eligible inactive visible apps after a longer idle observation. Up to 24 accepted trims, or 32 under high memory pressure, with tighter CPU-idle checks. Active work, media, project tools, system/security processes, browser-controller/GPU/extension processes and exclusions remain protected.
+- Keeps three-second follow-up measurements and reports zero/negative available-RAM changes honestly. The floating Boost action still operates directly without opening a selection page.
+- Persists the last care report locally. A Stop request does not terminate a running Windows scanner/optimizer; it prevents subsequent actions. Startup refreshes are serialized against the background watch.
 
-54 core checks and 16 Boost checks passed, including refilled memory, small positive changes, negative overall changes, cancellation and allocated-data preservation in a dedicated 96 MB helper. The core count is four lower because tests for the removed process-control backend were removed with it.
+Smart Care is a local decision engine, not an external AI service. Personal files, duplicate removal, app uninstall and service/startup changes retain review in their tools. No RAM decrease is guaranteed. See [validation scope](VALIDATION.md) and [automatic-care rules](SMART-CARE.md).
 
-This does not close user apps/tabs or free their allocations. Resident memory can return when used. No reduction is guaranteed. See [validation scope](VALIDATION.md) for tested and untested behavior.
+Validation: 74 core checks, 27 Boost checks, all 17 production pages plus monitor renders with zero binding errors, and live assessment-adapter reads. One explicitly requested guarded Boost pass on the local PC observed +294.1 MiB available RAM after three seconds; this does not establish a fixed 1 GiB gain. No app was terminated or tab discarded.
+
+Interface refinement: compact gradient Smart Care header, theme-aware emerald/blue/violet/amber tool surfaces, clearer text/button contrast and optional 180 ms page fades. Monitor settings now fit the work area with scrolling and explicit readable background/foreground. Dark/light compact layouts and the reduced-motion override are included in render validation. The resource harness now uses fresh monitor settings and rejects zero-sample runs; a remembered hidden-state sample was rejected instead of being published as a zero-CPU result.
+
+The About and update-check screens now read the build version from assembly metadata rather than retaining a hardcoded previous-preview label.

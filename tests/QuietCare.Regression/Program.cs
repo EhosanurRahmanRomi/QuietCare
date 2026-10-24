@@ -63,6 +63,7 @@ Check(matches.Count==1&&matches[0].Paths.Count==2,"Duplicate finder compares SHA
 var session=new DiskScanner().StartScan(duplicates);await session.Completion;
 Check(session.Root.FileCount==3&&session.Root.Size==new DirectoryInfo(duplicates).GetFiles().Sum(f=>f.Length),"Disk analysis reports fixture sizes and counts");
 await CareChecks.Run(root,Check);
+await SmartCareChecks.Run(Check);
 var report=new { utc=DateTimeOffset.UtcNow, scope="Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed", count=checks.Count,checks };
 File.WriteAllText(Path.Combine(root,"regression.json"),JsonSerializer.Serialize(report,new JsonSerializerOptions{WriteIndented=true}));
 Console.WriteLine($"{checks.Count} checks passed.");

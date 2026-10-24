@@ -1,8 +1,8 @@
 {
-  "utc": "2026-10-24T00:31:51.306268+00:00",
-  "count": 16,
+  "utc": "2026-10-24T01:11:45.2415938+00:00",
+  "count": 27,
   "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
-  "beforeBytes": 128794624,
+  "beforeBytes": 131813376,
   "afterBytes": 0,
   "tests": [
     {
@@ -58,6 +58,50 @@
       "passed": true
     },
     {
+      "name": "Conservative policy continues to exclude visible background windows",
+      "passed": true
+    },
+    {
+      "name": "Expanded idle policy includes an inactive visible app without closing its window",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy still protects the foreground app",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy applies a stricter observed CPU-idle requirement",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy protects media-playing background apps",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy cannot bypass unavailable media verification",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy preserves project tools, antivirus and QuietCare itself",
+      "passed": true
+    },
+    {
+      "name": "Expanded high-pressure run is bounded at 32 accepted trims",
+      "passed": true
+    },
+    {
+      "name": "Expanded run with lower memory pressure is bounded at 24 accepted trims",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy leaves newly started apps time to initialize",
+      "passed": true
+    },
+    {
+      "name": "RAM cooldown prevents repeated trimming and exposes the remaining wait",
+      "passed": true
+    },
+    {
       "name": "96 MB memory helper initialized",
       "passed": true
     },
@@ -70,5 +114,5 @@
       "passed": true
     }
   ],
-  "interpretation": "The helper working-set reading remained zero at the follow-up. Allocations were not freed: the helper verified all 96 MB. Fake refilled-memory and negative-overall-delta cases verify honest reporting."
+  "interpretation": "The helper working-set reading was zero at follow-up; all 96 MB of allocated contents were then verified. This measures resident pages, not freed allocations. Fixture cases also verify refill and negative overall RAM deltas."
 }

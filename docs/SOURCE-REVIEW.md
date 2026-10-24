@@ -26,3 +26,11 @@ These repositories were actually cloned locally. The six reference clones used s
 Microsoft Defender is the installed scan engine. Windows Optimize Drives owns media-specific optimization. Windows Services and Installed Apps provide privileged service/uninstall workflows. QuietCare does not download external engines or execute a repository's install script.
 
 Official references: [Defender command line](https://learn.microsoft.com/en-us/defender-endpoint/command-line-arguments-microsoft-defender-antivirus), [Windows defrag command](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/defrag), [catalog signature verification](https://learn.microsoft.com/en-us/windows/win32/api/wintrust/ns-wintrust-wintrust_catalog_info), [NuGet trust policy](https://learn.microsoft.com/en-us/nuget/reference/nuget-config-file), [Microsoft 2026 signing certificate](https://devblogs.microsoft.com/dotnet/microsoft-author-signing-certificate-update-2026/).
+
+## Automatic care and browser-memory review
+
+Smart Care adds original local decision rules and a sequential coordinator; no additional third-party engine or script is bundled. Microsoft working-set behavior and Chrome Memory Saver were checked against their official documentation. Chrome deactivates inactive tabs and reloads them when revisited; QuietCare preserves allocations/tabs and reports its narrower working-set effect honestly. See [the exact rules and references](SMART-CARE.md).
+
+## Interface references
+
+The revised care dashboard uses original XAML with a compact primary action, separate category surfaces, clear action/result states and optional 180 ms page fades. Official [Microsoft PC Manager](https://pcmanager.microsoft.com/en-us) and [PowerToys settings](https://learn.microsoft.com/en-us/windows/powertoys/general) pages/screenshots supplied layout references; [Fluent motion guidance](https://fluent2.microsoft.design/motion) informed short page fades, reduced-motion support and avoiding decorative background movement. Their artwork and interface code were not copied. Browser control was unavailable in this session; official web references and the application's own render harness were used, not interactive testing of those external applications. No UI-rating comparison is claimed.

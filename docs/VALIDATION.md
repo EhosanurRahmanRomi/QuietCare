@@ -1,37 +1,37 @@
-# Validation of 0.5.0-preview.2
+# Validation of 0.5.0-preview.3
 
-Validated locally on Windows 11 x64. These are separate evidence levels; rendered pages and fixtures do not prove every native interaction or hardware configuration.
+Validated locally on Windows 11 x64. Evidence levels are kept separate: fixtures, rendered dark/light layouts, live read-only checks and one explicitly requested live memory pass do not prove every native interaction or hardware configuration.
 
-| Evidence | Result | Practical scope |
+| Evidence | Result | Scope |
 | --- | --- | --- |
-| Release compilation/publish | Successful; no compiler warnings in the recorded build | .NET 10.0.402 SDK; self-contained compressed Windows x64 executable |
-| Core regressions | **54 passed** | File identity, exclusions/age, cancellation, changed files, junctions/hard links, recovery conflicts, receipt ownership, one-click deletion, startup-state mapping/diffs, independent disk scans, and Windows-tool trust/resolution |
-| RAM Boost | **16 passed** | Selection, refilled-memory reporting, available-RAM positive/negative deltas and cancellation policies plus a dedicated 96 MB helper; all helper bytes remained intact after working-set trimming. User apps were not trimmed. |
-| Production controls | **17 pages loaded + monitor render; zero binding errors** | Real controls rendered by the application's validation harness; dispatcher heartbeat and Boost progress/result display fixtures included. Monitor image readings are fixtures. No cleaning, scan or optimization commands were clicked. |
-| Live monitor + startup watch | Completed, main window unopened | Actual CPU/GPU/RAM sampling, startup baseline and a 30-second refresh; no Boost invoked |
-| Packages | See signature report | All downloaded dependency, SDK-tool and runtime archives verified; signatures do not establish absence of malicious behavior |
-| Advisory audit | No known vulnerable packages returned for App, Core or Monitor | Snapshot from the configured NuGet advisory source at validation time |
-| Locked restores | Normal and single-file publish configurations passed | Separate lock files prevent the two build variants from replacing one another's dependency state |
+| Release compile/publish | Successful with warnings treated as errors | SDK 10.0.402; self-contained compressed Windows x64 executable |
+| Core regressions | **74 passed** | Guarded file cleanup/recovery, identity/age/exclusions, junctions/hard links, cancellation, receipt ownership, startup mappings/diffs, independent disk scans, Windows-tool signatures/resolution, automatic-care decisions, sequencing, changing conditions, failures and duplicate/cancelled requests |
+| RAM fixtures/helper | **27 passed** | Conservative/expanded selection, media/foreground/project/security protection, CPU-idle constraints, new-app grace period, 24/32 request bounds, cooldown, refill/negative-delta reporting and allocated-data preservation in a dedicated 96 MiB helper |
+| Production controls | **17 pages + monitor, zero binding errors** | Real WPF controls and the actual native monitor/result renderers; Smart Care progress and result displays use labeled fixtures. The header action was present on each page. Dark/light dashboards at 980 x 640, dark/light monitor settings and the no-animation override were also checked. No cleanup or Windows scan/optimization command was invoked by the UI harness. |
+| Production assessment adapter | Valid live memory/CPU readings; power available; Defender read completed | Read-only adapter call using isolated application state; no care action started |
+| Actual guarded Boost pass | **10 eligible processes trimmed, +294.1 MiB available RAM at three seconds** | Explicit live diagnostic invokes the production SmartBoost implementation with user exclusions and protection checks; no app termination, tab discard or file cleanup. This is separate from the fixture suite. |
+| Live compact monitor/startup watch | Completed with main window unopened | Actual sampling and startup-baseline refresh; no Boost during resource sample |
+| Dependency advisories | No known vulnerable packages returned | Fresh NuGet.org snapshot for App, Core and Monitor |
+| Package integrity | Existing 41-archive signature report retained | No dependencies added/changed. Signatures establish provenance/integrity, not harmless behavior. |
 
-The UI harness recorded 65 dispatcher heartbeats, including a five-second idle period after navigation. Its longest gap was 1.31 seconds during navigation/rendering; this is not a claim of frame-perfect interaction. The new floating-result image uses fixture values.
+The UI harness recorded 94 dispatcher heartbeats; the longest gap was 1.86 seconds during navigation/rendering. It also observed a five-second idle period. Short page fades respect Windows motion/high-contrast settings and the in-app appearance switch; there is no decorative monitor animation. This does not establish frame-perfect interaction. Smart Care stages in screenshots are demonstration outcomes, not a claim that Defender or drive optimization ran.
 
-The Process Monitor page and polling backend are absent. Four old process-control checks were removed with the feature; the remaining core cases were rerun. No user application was terminated.
+## Live RAM result
+
+A single guarded pass accepted 10 requests, with no declined requests. Available physical RAM rose by **308,338,688 bytes (294.1 MiB)** at the three-second follow-up; used RAM changed from **68.2% to 66.4%**. All 10 selected processes had a lower resident footprint at follow-up. Other running activity also affects the available-memory delta; this is an observed result, not a guaranteed isolated causal gain or long-term benchmark. It did **not** establish a 1 GiB gain.
+
+The sum of per-process resident reductions was 891,125,760 bytes; shared pages can overlap, so this is not total RAM freed. No allocations were discarded, tabs closed or processes terminated. The sanitized summary is published; the private process-name report stays local. The explicit `--live-boost-check` diagnostic is opt-in and is never called by CI or the default fixture test path.
 
 ## Short local resource sample
 
-The current correction's first 20 seconds, including startup initialization, averaged **4.56% of total-machine CPU**. After warm-up, 12-second samples measured **0.37% at 1,000 ms** and **0.59% at 250 ms**; a six-second hidden-monitor sample measured **0%**. Working set was about **223–229 MiB** with startup monitoring enabled. This was a short workload-dependent sample on an eight-logical-processor PC, not a sustained benchmark or a guarantee. No Boost ran during this sample.
+The first 20 seconds including startup initialization averaged **4.61% of total-machine CPU**. Twelve-second warmed samples measured **0.46% at 1,000 ms** and **0.91% at 250 ms**. The six-second hidden-monitor sample measured **0.00%**. Working sets were approximately **223–230 MiB** with startup monitoring enabled. Short samples depend on workload and are not sustained benchmarks.
 
 ## Not yet established
 
-- Full interactive acceptance of every button, keyboard path, monitor drag/expand and UAC outcome.
-- End-to-end Defender scanning, remediation, or actual drive optimization through this release. Tests verified the installed tools, signatures and allowed command construction; they did not run these system operations.
-- Real startup enable/disable or real-user file cleanup on this PC. Mutation tests used dedicated fixtures. Detection-policy tests do not prove every Windows persistence location is covered.
-- Long-duration notification tests, five-minute refresh behavior over days, reboot/startup acceptance, or broad hardware/OS/language coverage.
-- Complete English localization of all inherited advanced-tool status messages.
-- Authenticode signing, independent penetration testing, or a guarantee of bug-free behavior.
+- Full interactive acceptance of every button, keyboard path, drag/expand and UAC outcome.
+- End-to-end Defender scanning/remediation or actual Windows drive optimization through this build. Resolution, signatures and command construction were checked; these operations were not launched during testing.
+- Real-user file cleanup, startup enable/disable or reboot acceptance on this PC. File mutations used isolated fixtures. The separate live Boost pass changed only eligible resident working sets.
+- Long-duration startup notifications, every persistence location, complete inherited-message localization, or broad hardware/OS/language coverage.
+- Authenticode signing, independent penetration testing, bug-free behavior or a fixed RAM gain.
 
-## Evidence
-
-Machine-readable reports are in [validation/](../validation/): `regression.json`, `boost-regression.json`, `ui-validation.json`, `monitor-smoke.json`, `package-signatures.json`, and the three advisory reports. Local personal startup inventories and process screenshots are deliberately excluded from publication.
-
-The previously installed QuietCare 0.3 application was not replaced or uninstalled during this work. Preview settings and startup registration use `QuietCareNext`.
+Machine-readable evidence is in [validation/](../validation/). Local startup inventories, commands and process-name reports are excluded. The running user copy and older installed version were not replaced during this work. [Exact automatic-care rules](SMART-CARE.md).

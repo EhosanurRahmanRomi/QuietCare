@@ -1,8 +1,12 @@
 {
-  "utc": "2026-10-24T00:54:38.8803813+00:00",
-  "scope": "Production control renders and dispatcher heartbeat; monitor and Boost display values are fixtures; no destructive actions invoked",
-  "heartbeatTicks": 65,
-  "longestHeartbeatGapMs": 1313.4637,
+  "utc": "2026-10-24T01:38:43.9493501+00:00",
+  "scope": "Production control renders, compact dark/light dashboard and monitor settings, reduced-motion override and dispatcher heartbeat; care/Boost displays use fixtures; no destructive actions invoked",
+  "compactWidth": 980,
+  "compactHeight": 640,
+  "reducedMotionOverridePassed": true,
+  "pageTransitionsStarted": 18,
+  "heartbeatTicks": 94,
+  "longestHeartbeatGapMs": 1859.7957999999999,
   "bindingErrors": [],
   "pages": [
     {

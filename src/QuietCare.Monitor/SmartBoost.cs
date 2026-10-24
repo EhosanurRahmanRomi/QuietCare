@@ -30,9 +30,9 @@ public sealed class BoostResult {
 }
 public static class BoostPolicy {
     public static readonly HashSet<string> Browsers=new HashSet<string>(new[]{"chrome","msedge","brave","vivaldi","opera","firefox"},StringComparer.OrdinalIgnoreCase);
-    static readonly HashSet<string> Protected=new HashSet<string>(new[]{"quietcare","codex","code","devenv","rider64","rider","idea64","pycharm64","webstorm64","node","python","pythonw","python3","dotnet","java","javaw","jupyter","git","msbuild","cl","clang","gcc","g++","rustc","cargo","go","r","rstudio","terminal","terminal64","metaeditor64","powershell","pwsh","cmd","windowsterminal","conhost","openconsole","bash","wsl","docker","com.docker.backend","vmware-vmx","virtualboxvm","qemu-system-x86_64","excel","winword","powerpnt","notepad","notepad++","photoshop","illustrator","blender","obs64","obs32","vlc","spotify","teams","ms-teams","zoom","discord","slack","msedgewebview2","explorer","searchhost","startmenuexperiencehost","applicationframehost"},StringComparer.OrdinalIgnoreCase);
+    static readonly HashSet<string> Protected=new HashSet<string>(new[]{"quietcare","quietcare.next","msmpeng","mssense","nissrv","securityhealthservice","avp","avpui","avguard","avgsvc","avastsvc","mbamservice","wrsa","bdservicehost","ekrn","mcshield","codex","code","devenv","rider64","rider","idea64","pycharm64","webstorm64","node","python","pythonw","python3","dotnet","java","javaw","jupyter","git","msbuild","cl","clang","gcc","g++","rustc","cargo","go","r","rstudio","terminal","terminal64","metaeditor64","powershell","pwsh","cmd","windowsterminal","conhost","openconsole","bash","wsl","docker","com.docker.backend","vmware-vmx","virtualboxvm","qemu-system-x86_64","excel","winword","powerpnt","notepad","notepad++","photoshop","illustrator","blender","obs64","obs32","vlc","spotify","teams","ms-teams","zoom","discord","slack","msedgewebview2","explorer","searchhost","startmenuexperiencehost","applicationframehost"},StringComparer.OrdinalIgnoreCase);
     internal static string Name(string value){string name=Path.GetFileName(value??"").Trim().ToLowerInvariant();return name.EndsWith(".exe",StringComparison.Ordinal)?name.Substring(0,name.Length-4):name;}
-    public static string Reason(BoostProcess first,BoostProcess second,ISet<int> activeIds,ISet<string> activeNames,AudioActivity audio,ISet<string> extra,int ownId,ISet<string> mediaNames=null,bool backgroundBrowsers=false) {
+    public static string Reason(BoostProcess first,BoostProcess second,ISet<int> activeIds,ISet<string> activeNames,AudioActivity audio,ISet<string> extra,int ownId,ISet<string> mediaNames=null,bool backgroundBrowsers=false,bool expandedIdleApps=false) {
         if(first==null||second==null||first.App==null||second.App==null)return "process unavailable";
         var p=second.App;string name=Name(p.Name);
         if(p.Id==ownId || Protected.Contains(name) || extra.Contains(name))return "protected app / project tool";
@@ -42,16 +42,16 @@ public static class BoostPolicy {
         if(browser&&mediaNames!=null&&mediaNames.Contains(name))return "browser family playing audio / call";
         if(String.IsNullOrWhiteSpace(p.Path))return "path unavailable";
         if(p.Path.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.Windows)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase))return "Windows process";
-        if((DateTime.UtcNow-p.Started).TotalSeconds<5)return "recently started";
-        if(p.Bytes<48L*1024*1024)return "small working set";
-        if(second.CpuMs<first.CpuMs || second.CpuMs-first.CpuMs>20)return "busy process";
+        if((DateTime.UtcNow-p.Started).TotalSeconds<(expandedIdleApps?60:5))return "recently started";
+        if(p.Bytes<(expandedIdleApps?32L:48L)*1024*1024)return "small working set";
+        if(second.CpuMs<first.CpuMs || second.CpuMs-first.CpuMs>(expandedIdleApps?10:20))return "busy process";
         if(!audio.Verified)return "media activity could not be verified";
         if(audio.ActiveProcesses.Contains(p.Id))return "active audio / call";
         if(Browsers.Contains(name)) {
             string command=second.CommandLine??"";
             if(name=="firefox"){if(command.IndexOf("-contentproc",StringComparison.OrdinalIgnoreCase)<0)return "browser controller";}
             else if(command.IndexOf("--type=renderer",StringComparison.OrdinalIgnoreCase)<0 || command.IndexOf("--extension-process",StringComparison.OrdinalIgnoreCase)>=0)return "browser controller / GPU / extension";
-        }else if(second.VisibleWindow || first.VisibleWindow)return "visible application";
+        }else if(!expandedIdleApps&&(second.VisibleWindow || first.VisibleWindow))return "visible application";
         return null;
     }
 }
@@ -78,10 +78,12 @@ public sealed class WindowsBoostRuntime : IBoostRuntime,IBoostMeasurements,IBoos
             using(var process=Process.GetProcessById(app.Id)){
                 if(process.StartTime.ToUniversalTime()!=app.Started)return "process identity changed";
                 if(requireBackgroundPriority&&process.PriorityClass!=ProcessPriorityClass.Idle&&process.PriorityClass!=ProcessPriorityClass.BelowNormal)return "browser priority changed";
+                if(process.TotalProcessorTime.TotalMilliseconds-candidate.CpuMs>25)return "became busy";
             }
             if(foreground>0)using(var active=Process.GetProcessById(foreground))if(String.Equals(active.ProcessName,name,StringComparison.OrdinalIgnoreCase)&&!requireBackgroundPriority)return "became active application family";
+            var audio=Audio();if(!audio.Verified)return "media activity could not be verified";
+            if(audio.ActiveProcesses.Contains(app.Id))return "active audio / call";
             if(BoostPolicy.Browsers.Contains(name)){
-                var audio=Audio();if(!audio.Verified)return "media activity could not be verified";
                 foreach(int pid in audio.ActiveProcesses)using(var media=Process.GetProcessById(pid))if(String.Equals(media.ProcessName,name,StringComparison.OrdinalIgnoreCase))return "browser family playing audio / call";
             }
             return null;
@@ -94,25 +96,27 @@ internal static class ForegroundHistory {
 }
 public sealed class SmartBoost {
     readonly IBoostRuntime runtime;readonly Func<Task> observe;readonly Func<CancellationToken,Task> settle;readonly Stopwatch cooldown=new Stopwatch();bool busy;
-    public SmartBoost(IBoostRuntime host=null,Func<Task> observation=null,Func<CancellationToken,Task> settling=null){runtime=host??new WindowsBoostRuntime();observe=observation??(()=>Task.Delay(750));settle=settling??(ct=>Task.Delay(3000,ct));}
+    public SmartBoost(IBoostRuntime host=null,Func<Task> observation=null,Func<CancellationToken,Task> settling=null){runtime=host??new WindowsBoostRuntime();observe=observation;settle=settling??(ct=>Task.Delay(3000,ct));}
     public bool Busy {get{return busy;}}
-    public async Task<BoostResult> Run(IEnumerable<string> exclusions,CancellationToken cancel,bool backgroundBrowsers=false,IProgress<string> progress=null){
+    public int ReadyInSeconds {get{return cooldown.IsRunning?Math.Max(0,(int)Math.Ceiling(30-cooldown.Elapsed.TotalSeconds)):0;}}
+    public async Task<BoostResult> Run(IEnumerable<string> exclusions,CancellationToken cancel,bool backgroundBrowsers=false,IProgress<string> progress=null,bool expandedIdleApps=false){
         if(busy)throw new InvalidOperationException("RAM Boost is already running.");
         if(cooldown.IsRunning&&cooldown.Elapsed.TotalSeconds<30)throw new InvalidOperationException("RAM Boost is cooling down. Ready in "+Math.Ceiling(30-cooldown.Elapsed.TotalSeconds)+" seconds.");
         busy=true;
         try{
-            progress?.Report("Checking idle background apps and protecting active work…");
-            int firstActive=runtime.Foreground();var first=await Task.Run(()=>runtime.Capture(),cancel);var audio=await Task.Run(()=>runtime.Audio(),cancel);await observe();cancel.ThrowIfCancellationRequested();
+            progress?.Report(expandedIdleApps?"Checking two seconds of idle activity across background apps; protecting active work…":"Checking idle background apps and protecting active work…");
+            int firstActive=runtime.Foreground();var first=await Task.Run(()=>runtime.Capture(),cancel);var audio=await Task.Run(()=>runtime.Audio(),cancel);await (observe?.Invoke()??Task.Delay(expandedIdleApps?2000:750,cancel));cancel.ThrowIfCancellationRequested();
             int secondActive=runtime.Foreground();var second=await Task.Run(()=>runtime.Capture(),cancel);var currentAudio=await Task.Run(()=>runtime.Audio(),cancel);audio.Verified&=currentAudio.Verified;audio.ActiveProcesses.UnionWith(currentAudio.ActiveProcesses);
             var activeIds=new HashSet<int>{firstActive,secondActive};var activeNames=new HashSet<string>(first.Concat(second).Where(x=>activeIds.Contains(x.App.Id)).Select(x=>BoostPolicy.Name(x.App.Name)),StringComparer.OrdinalIgnoreCase);var mediaNames=new HashSet<string>(first.Concat(second).Where(x=>audio.ActiveProcesses.Contains(x.App.Id)).Select(x=>BoostPolicy.Name(x.App.Name)),StringComparer.OrdinalIgnoreCase);
             var extra=new HashSet<string>((exclusions??new string[0]).Select(BoostPolicy.Name),StringComparer.OrdinalIgnoreCase);var before=first.ToDictionary(x=>x.App.Id);var result=new BoostResult{AvailableBefore=runtime.Available(),MediaVerified=audio.Verified,TotalMemory=(runtime as IBoostMemoryStatus)?.TotalMemory()??0};int ownId=Process.GetCurrentProcess().Id;
             var trimmedApps=new List<AppProcess>();
+            int limit=expandedIdleApps?(result.TotalMemory>0&&(double)result.AvailableBefore/result.TotalMemory<.20?32:24):12;
             var watch=Stopwatch.StartNew();var measurements=runtime as IBoostMeasurements;var readiness=runtime as IBoostReadiness;
             foreach(var candidate in second.OrderByDescending(x=>x.App.Bytes)){
-                cancel.ThrowIfCancellationRequested();if(result.Trimmed>=12 || watch.Elapsed.TotalSeconds>5)break;
+                cancel.ThrowIfCancellationRequested();if(result.Trimmed>=limit || watch.Elapsed.TotalSeconds>(expandedIdleApps?8:5)){result.Details.Add("Stopped at the bounded work limit ("+limit+" apps, "+(expandedIdleApps?8:5)+" seconds).");break;}
                 BoostProcess previous;before.TryGetValue(candidate.App.Id,out previous);
                 int current=runtime.Foreground();activeIds.Add(current);var active=second.FirstOrDefault(x=>x.App.Id==current);if(active!=null)activeNames.Add(BoostPolicy.Name(active.App.Name));
-                string reason=BoostPolicy.Reason(previous,candidate,activeIds,activeNames,audio,extra,ownId,mediaNames,backgroundBrowsers);
+                string reason=BoostPolicy.Reason(previous,candidate,activeIds,activeNames,audio,extra,ownId,mediaNames,backgroundBrowsers,expandedIdleApps);
                 bool activeBrowser=BoostPolicy.Browsers.Contains(BoostPolicy.Name(candidate.App.Name))&&activeNames.Contains(BoostPolicy.Name(candidate.App.Name));
                 if(reason==null){if(activeBrowser&&readiness==null)reason="background priority could not be rechecked";else if(readiness!=null)reason=await Task.Run(()=>readiness.Recheck(candidate,activeBrowser),cancel);}
                 if(reason!=null){result.Skipped++;if(!result.SkipReasons.ContainsKey(reason))result.SkipReasons[reason]=0;result.SkipReasons[reason]++;continue;}

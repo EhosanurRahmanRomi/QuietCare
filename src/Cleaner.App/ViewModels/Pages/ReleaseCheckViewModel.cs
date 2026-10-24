@@ -17,12 +17,12 @@ public sealed partial class ReleaseCheckViewModel : ObservableObject
         try
         {
             using var client=new HttpClient(new HttpClientHandler{AllowAutoRedirect=false}){Timeout=TimeSpan.FromSeconds(15),MaxResponseContentBufferSize=1024*1024};
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("QuietCare/0.5.0-preview.2");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("QuietCare/"+AppVersion.Current);
             using var response=await client.GetAsync(Api);
             response.EnsureSuccessStatusCode();
             using var document=JsonDocument.Parse(await response.Content.ReadAsStringAsync());
             var release=document.RootElement.EnumerateArray().FirstOrDefault(x=>!x.GetProperty("draft").GetBoolean());
-            Status=release.ValueKind==JsonValueKind.Undefined?"No published releases found.":"Latest published release: "+release.GetProperty("tag_name").GetString()+". This build is 0.5.0-preview.2. Read the release notes before downloading; no files have been downloaded.";
+            Status=release.ValueKind==JsonValueKind.Undefined?"No published releases found.":"Latest published release: "+release.GetProperty("tag_name").GetString()+". This build is "+AppVersion.Current+". Read the release notes before downloading; no files have been downloaded.";
         }
         catch(Exception ex){Status="Update check failed: "+ex.Message;}
         finally{Busy=false;}

@@ -1,0 +1,8 @@
+{
+  "utc": "2026-10-24T01:38:33.2568575+00:00",
+  "scope": "Production assessment adapter read actual memory, CPU, power and Defender status; no system actions started",
+  "memoryReadingValid": true,
+  "cpuReadingValid": true,
+  "powerReadingAvailable": true,
+  "defenderStatusReadCompleted": true
+}

@@ -1,20 +1,24 @@
 # QuietCare Next
 
-A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
+A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.5.0-preview.2 · Windows x64 · unsigned preview**
+**0.5.0-preview.3 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.2) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.5.0-preview.3) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
 The screenshot renders the production controls. The separate monitor preview uses demonstration readings.
 
+![Smart Care live-step layout, fixture outcomes](docs/images/smart-care-steps.png)
+
+The step screenshot shows labeled fixture outcomes; it does not represent a completed Windows scan or drive operation.
+
 ## Start using it
 
 1. Download **QuietCareNext-portable-win-x64.zip** and extract it. The folder contains **QuietCare.Next.exe** plus the licenses and guide from the preview release. It includes the .NET runtime; no separate runtime installation is needed.
 2. Put it in a permanent folder you control, then run it. This preview has separate settings and leaves QuietCare 0.3 installed.
-3. Use the home actions directly. Advanced tools are in the sidebar.
+3. Click **Run Smart Care** on Home, or **Smart Care** in the top bar from any tool. No category selection is needed. Expand **Steps and decisions** for live reasons and results. Manual actions and advanced tools remain available.
 4. To start the mini monitor when signing in, open **Monitor settings → Start QuietCare Next monitor when I sign in**. Startup is off until you enable it.
 
 Keep the executable at that location while startup is enabled. Closing the main window leaves the tray and monitor running. Use **Exit** in the tray menu to stop them.
@@ -30,7 +34,8 @@ The lightning button runs RAM Boost immediately. The chevron expands details. A 
 | Area | Behavior |
 | --- | --- |
 | Performance monitor | CPU, GPU and RAM readings; transparent native compact view, expanded detail view, adjustable speed, position and opacity |
-| RAM Boost | Selects eligible idle background processes; protects foreground work, audio, system and excluded processes; reports actual available-RAM change and per-process outcomes after a three-second follow-up |
+| Smart Care | One click checks live conditions, cleans old junk, trims idle memory when useful, reviews startup changes, runs a due Defender quick scan and performs due Windows drive optimization when on power and the PC is not busy; live steps, Stop, persisted results |
+| RAM Boost | Expanded idle-app check, up to 24 accepted trims (32 under high memory pressure); protects foreground work, audio, system and excluded processes; reports actual available-RAM change and per-process outcomes after a three-second follow-up |
 | Safe junk cleanup | One click scans, revalidates and permanently removes eligible old temporary files and closed-browser disposable caches; live status and result counts |
 | Advanced cleanup | Category previews with approved-file identity checks and recoverable quarantine; restore and explicit permanent deletion in Recovery |
 | Virus checking | Starts the installed Microsoft Defender quick or full scanner through Windows UAC; displays actual exit status and links to Protection history |
@@ -42,6 +47,8 @@ The lightning button runs RAM Boost immediately. The chevron expands details. A 
 | File tools | Disk tree/treemap, SHA-256 duplicates, large files, log finder and folder comparison |
 | Maintenance | Restricted DNS-cache flush and Windows component cleanup; registry inspection is read-only |
 | Updates | Manual GitHub release check and release notes; downloads and replacement remain manual |
+
+See [automatic-care rules](docs/SMART-CARE.md) for the exact thresholds, exclusions and per-tool behavior. Smart Care uses local decision rules, not an external AI model. It starts only when clicked.
 
 ## Limits that matter
 

@@ -5,7 +5,10 @@ using System.Security.Cryptography.X509Certificates;
 namespace Cleaner.Core.Services;
 
 public enum WindowsCareJob { DefenderQuickScan, DefenderFullScan, OptimizeSystemDrive }
-public sealed record DefenderStatus(bool Available,bool AntivirusEnabled,bool RealTimeEnabled,string SignatureUpdated,string LastQuickScan,string Detail);
+public sealed record DefenderStatus(bool Available,bool AntivirusEnabled,bool RealTimeEnabled,string SignatureUpdated,string LastQuickScan,string Detail)
+{
+    public DateTimeOffset? LastQuickScanUtc {get;init;}
+}
 public sealed record WindowsJobResult(int ExitCode,string Message);
 
 public static class WindowsCareTools
@@ -16,12 +19,13 @@ public static class WindowsCareTools
         {
             using var search=new ManagementObjectSearcher(@"root\Microsoft\Windows\Defender","SELECT AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureLastUpdated,QuickScanEndTime FROM MSFT_MpComputerStatus",new System.Management.EnumerationOptions{Timeout=TimeSpan.FromSeconds(3),ReturnImmediately=true});
             using var rows=search.Get();
-            foreach(ManagementObject row in rows)using(row)return new DefenderStatus(true,Convert.ToBoolean(row["AntivirusEnabled"]),Convert.ToBoolean(row["RealTimeProtectionEnabled"]),Date(row["AntivirusSignatureLastUpdated"]),Date(row["QuickScanEndTime"]),"Microsoft Defender status, read from Windows.");
+            foreach(ManagementObject row in rows)using(row)return new DefenderStatus(true,Convert.ToBoolean(row["AntivirusEnabled"]),Convert.ToBoolean(row["RealTimeProtectionEnabled"]),Date(row["AntivirusSignatureLastUpdated"]),Date(row["QuickScanEndTime"]),"Microsoft Defender status, read from Windows."){LastQuickScanUtc=UtcDate(row["QuickScanEndTime"])};
             return new(false,false,false,"Unknown","Unknown","Windows did not return Defender status. Open Windows Security to check your active antivirus.");
         }
         catch(Exception ex){return new(false,false,false,"Unknown","Unknown","Defender status unavailable: "+ex.Message);}
     });
     static string Date(object? value){try{return value is string s?ManagementDateTimeConverter.ToDateTime(s).ToString("g"):"Unknown";}catch{return "Unknown";}}
+    static DateTimeOffset? UtcDate(object? value){try{return value is string s?new DateTimeOffset(ManagementDateTimeConverter.ToDateTime(s)).ToUniversalTime():null;}catch{return null;}}
     public static (string File,string Arguments) Resolve(WindowsCareJob job)
     {
         if(job==WindowsCareJob.OptimizeSystemDrive)
@@ -40,18 +44,20 @@ public static class WindowsCareTools
         if(!File.Exists(fallback))throw new FileNotFoundException("Microsoft Defender command-line scanner is unavailable. Use your active antivirus from Windows Security.");
         return(fallback,"-Scan -ScanType "+(job==WindowsCareJob.DefenderQuickScan?"1":"2"));
     }
-    public static async Task<WindowsJobResult> RunAsync(WindowsCareJob job,IProgress<string>? progress=null)
+    public static async Task<WindowsJobResult> RunAsync(WindowsCareJob job,IProgress<string>? progress=null,CancellationToken ct=default)
     {
+        ct.ThrowIfCancellationRequested();
         progress?.Report("Checking the Windows tool and its Microsoft signature…");
         var command=await Task.Run(()=>Resolve(job));
         using var lockedFile=new FileStream(command.File,FileMode.Open,FileAccess.Read,FileShare.Read);
         if(!MicrosoftSignature.IsTrusted(command.File))throw new InvalidOperationException("The Windows tool signature could not be verified. Nothing was started.");
+        ct.ThrowIfCancellationRequested();
         progress?.Report("Requesting Windows permission. Approve the Windows UAC dialog to continue.");
-        using var process=Process.Start(new ProcessStartInfo(command.File,command.Arguments){UseShellExecute=true,Verb="runas",WindowStyle=ProcessWindowStyle.Hidden})??throw new InvalidOperationException("Windows did not start the requested tool.");
+        using var process=await Task.Run(()=>Process.Start(new ProcessStartInfo(command.File,command.Arguments){UseShellExecute=true,Verb="runas",WindowStyle=ProcessWindowStyle.Hidden}))??throw new InvalidOperationException("Windows did not start the requested tool.");
         var clock=Stopwatch.StartNew();
         while(!process.HasExited)
         {
-            progress?.Report((job==WindowsCareJob.OptimizeSystemDrive?"Windows is optimizing the system drive with the operation appropriate to its media type":"Microsoft Defender is scanning")+$" · {clock.Elapsed:mm\\:ss}. Waiting for the actual Windows result.");
+            progress?.Report((ct.IsCancellationRequested?"Stop requested. Waiting for the running Windows job to finish safely; remaining actions will not start. ":"")+(job==WindowsCareJob.OptimizeSystemDrive?"Windows is optimizing the system drive with the operation appropriate to its media type":"Microsoft Defender is scanning")+$" · {clock.Elapsed:mm\\:ss}. Waiting for the actual Windows result.");
             await Task.Delay(1500);process.Refresh();
         }
         int code=process.ExitCode;

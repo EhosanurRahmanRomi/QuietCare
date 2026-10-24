@@ -28,6 +28,8 @@ public sealed partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private bool _useDarkTheme = true;
+    [ObservableProperty]
+    private bool _enableAnimations = true;
 
     [ObservableProperty]
     private long _largeFileThresholdMb = 100;
@@ -91,6 +93,7 @@ public sealed partial class AppSettings : ObservableObject
     {
         UseRecycleBin = UseRecycleBin,
         UseDarkTheme = UseDarkTheme,
+        EnableAnimations = EnableAnimations,
         LargeFileThresholdMb = LargeFileThresholdMb,
         DuplicateMinSizeKb = DuplicateMinSizeKb,
         LogFinderPatterns = LogFinderPatterns,
@@ -105,6 +108,7 @@ public sealed partial class AppSettings : ObservableObject
     {
         UseRecycleBin = s.UseRecycleBin;
         UseDarkTheme = s.UseDarkTheme;
+        EnableAnimations = s.EnableAnimations;
         LargeFileThresholdMb = s.LargeFileThresholdMb;
         DuplicateMinSizeKb = s.DuplicateMinSizeKb;
         LogFinderPatterns = string.IsNullOrWhiteSpace(s.LogFinderPatterns) ? LogFinderPatterns : s.LogFinderPatterns;
@@ -122,6 +126,7 @@ public sealed class AppSettingsState
 {
     public bool UseRecycleBin { get; set; } = true;
     public bool UseDarkTheme { get; set; } = true;
+    public bool EnableAnimations { get; set; } = true;
     public long LargeFileThresholdMb { get; set; } = 100;
     public long DuplicateMinSizeKb { get; set; } = 100;
     public string LogFinderPatterns { get; set; } = string.Empty;

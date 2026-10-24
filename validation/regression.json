@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-24T00:31:25.1546817+00:00",
+  "utc": "2026-10-24T01:11:24.1221672+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 54,
+  "count": 74,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -217,6 +217,86 @@
     },
     {
       "name": "Concurrent disk scans keep independent counts",
+      "passed": true
+    },
+    {
+      "name": "Automatic memory care chooses a trim when RAM use is at least 65 percent",
+      "passed": true
+    },
+    {
+      "name": "Healthy memory readings do not trigger unnecessary automatic trimming",
+      "passed": true
+    },
+    {
+      "name": "Low available RAM triggers a memory check independently of percentage",
+      "passed": true
+    },
+    {
+      "name": "Invalid memory telemetry cannot authorize an automatic trim",
+      "passed": true
+    },
+    {
+      "name": "Defender quick scan is selected only when due or last completion is unknown",
+      "passed": true
+    },
+    {
+      "name": "Inactive Defender is not selected as the antivirus provider",
+      "passed": true
+    },
+    {
+      "name": "A future scan timestamp cannot suppress a needed check",
+      "passed": true
+    },
+    {
+      "name": "Drive care is deferred on battery",
+      "passed": true
+    },
+    {
+      "name": "Busy or unknown CPU load does not authorize drive optimization",
+      "passed": true
+    },
+    {
+      "name": "Recent successful optimization prevents repeated drive work",
+      "passed": true
+    },
+    {
+      "name": "One click runs the five real action interfaces sequentially with final outcomes",
+      "passed": true
+    },
+    {
+      "name": "Automatic care rechecks live conditions before memory, security and drive actions and reports step transitions",
+      "passed": true
+    },
+    {
+      "name": "Late progress cannot turn a completed action back into a running step",
+      "passed": true
+    },
+    {
+      "name": "Saved automatic care report retains all step results",
+      "passed": true
+    },
+    {
+      "name": "An action failure stays visible and does not prevent independent care checks",
+      "passed": true
+    },
+    {
+      "name": "A later rise in CPU load prevents drive work using fresh readings",
+      "passed": true
+    },
+    {
+      "name": "Unavailable antivirus status cannot become a false all-clear or launch a scanner",
+      "passed": true
+    },
+    {
+      "name": "Stop during a Windows job records its result and prevents the remaining drive action",
+      "passed": true
+    },
+    {
+      "name": "A pre-cancelled care request performs no assessment or action",
+      "passed": true
+    },
+    {
+      "name": "Concurrent automatic care requests cannot duplicate cleanup or Windows jobs",
       "passed": true
     }
   ]

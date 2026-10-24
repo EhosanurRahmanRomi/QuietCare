@@ -28,5 +28,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     public void ApplyTheme()
     {
         ApplicationThemeManager.Apply(_settings.UseDarkTheme ? ApplicationTheme.Dark : ApplicationTheme.Light);
+        PreviewTheme.Apply(_settings.UseDarkTheme);
     }
 }

@@ -33,7 +33,12 @@
                 <ui:ImageIcon Source="pack://application:,,,/Assets/PowerClean.ico" />
             </ui:TitleBar.Icon>
             <ui:TitleBar.Header>
-                <!-- Info-Button — überall oben rechts erreichbar, öffnet die About-Seite -->
+              <StackPanel x:Name="SmartCareActions" Orientation="Horizontal">
+                <ui:Button Content="Smart Care" Icon="{ui:SymbolIcon Flash24}" Appearance="Primary"
+                           Padding="12,4" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True"
+                           ToolTip="One-click automatic care, available from every tool. Click again to view live steps." Click="SmartCare_Click"/>
+                <ui:Button Content="Stop" Command="{Binding StopSmartCareCommand}" Margin="0,0,8,0" Padding="10,4"
+                           Visibility="{Binding SmartCareRunning,Converter={StaticResource BoolToVis}}" WindowChrome.IsHitTestVisibleInChrome="True"/>
                 <ui:Button Appearance="Transparent"
                            Icon="{ui:SymbolIcon Info24}"
                            ToolTip="{l:T Nav.About}"
@@ -41,6 +46,7 @@
                            Margin="0,0,4,0"
                            WindowChrome.IsHitTestVisibleInChrome="True"
                            Click="InfoButton_Click" />
+              </StackPanel>
             </ui:TitleBar.Header>
         </ui:TitleBar>
 

@@ -6,9 +6,16 @@
     <!-- Implizite Defaults — sorgen dafür, dass ALLE Standard-TextBlocks/Run/TextBoxes
          garantiert die Win11-Theme-Brushes kriegen, egal wann Apply() läuft. -->
     <Style TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+    </Style>
+
+    <Style TargetType="{x:Type ui:Button}" BasedOn="{StaticResource {x:Type ui:Button}}">
+        <Style.Triggers>
+            <Trigger Property="Appearance" Value="Primary">
+                <Setter Property="Foreground" Value="{DynamicResource CarePrimaryForeground}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Hyperlink">
@@ -20,7 +27,7 @@
         <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Padding" Value="20" />
     </Style>
 

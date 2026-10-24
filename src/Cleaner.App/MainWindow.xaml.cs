@@ -6,12 +6,15 @@ using Cleaner.App.Views.Pages;
 using Microsoft.Win32;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using Cleaner.App.ViewModels.Pages;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cleaner.App;
 
 public partial class MainWindow : FluentWindow
 {
     private readonly AppSettings _settings;
+    readonly CareHubViewModel careHub;
 
     public MainWindow(MainWindowViewModel viewModel, AppSettings settings, IServiceProvider services,
         RunningTaskRegistry taskRegistry)
@@ -19,6 +22,9 @@ public partial class MainWindow : FluentWindow
         _settings = settings;
         DataContext = viewModel;
         InitializeComponent();
+        careHub=services.GetRequiredService<CareHubViewModel>();SmartCareActions.DataContext=careHub;
+        CareMotion.Enabled=settings.EnableAnimations;
+        settings.PropertyChanged+=(_,args)=>{if(args.PropertyName==nameof(AppSettings.EnableAnimations))CareMotion.Enabled=settings.EnableAnimations;};
         Width=Math.Min(1280,SystemParameters.WorkArea.Width-40);
         Height=Math.Min(820,SystemParameters.WorkArea.Height-40);
         MinHeight=Math.Min(640,Height);MinWidth=Math.Min(980,Width);
@@ -37,6 +43,11 @@ public partial class MainWindow : FluentWindow
     private void InfoButton_Click(object sender, RoutedEventArgs e)
     {
         RootNavigation.Navigate(typeof(AboutPage));
+    }
+    private async void SmartCare_Click(object sender,RoutedEventArgs e)
+    {
+        RootNavigation.Navigate(typeof(DashboardPage));
+        if(!careHub.SmartCareRunning)await careHub.StartSmartCareAsync();
     }
     public void NavigateTo(Type page)=>RootNavigation.Navigate(page);
 
