@@ -50,6 +50,10 @@ internal static class FocusWorkerCheck
             var journal=FocusControlEntry.Read<FocusJournal>(FocusControlEntry.JournalPath);
             restored=runtime.ReadNotifications()==before&&journal is not null&&!journal.NotificationOwned&&journal.Priorities.Count==0;
             checks.Add(new{name="Production worker restores notifications and exits after Stop",passed=restored&&child.ExitCode==0});
+            var ended=FocusControlEntry.Read<FocusStatus>(FocusControlEntry.StatusPath);
+            bool endedLabels=ended?.Session==id&&!ended.Active&&ended.Awake.Contains("released")&&ended.Notifications.Contains("No owned notification change remains");
+            checks.Add(new{name="Ended session status reports released power and notification ownership",passed=endedLabels});
+            restored&=endedLabels;
             if(updateGuard)
             {
                 for(int i=0;i<50;i++)

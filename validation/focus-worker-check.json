@@ -1,0 +1,19 @@
+{
+  "scope": "Actual worker session with Do not disturb and keep awake; CPU priorities and update guard deselected. No Defender/update policies or user-app priorities changed.",
+  "workerCpuPercentOfMachine": 0.12991409306917584,
+  "sampleSeconds": 6,
+  "checks": [
+    {
+      "name": "Production Focus worker starts a bounded session",
+      "passed": true
+    },
+    {
+      "name": "Production worker restores notifications and exits after Stop",
+      "passed": true
+    },
+    {
+      "name": "Ended session status reports released power and notification ownership",
+      "passed": true
+    }
+  ]
+}

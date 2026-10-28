@@ -1,6 +1,6 @@
 # Defender controls and CPU use
 
-QuietCare 0.7.0 adds explicit controls on **Protection**. The tiny CPU / GPU / RAM monitor is unchanged. None of these protection preferences is applied at startup, by RAM Boost, by installation or by Smart Care.
+QuietCare 0.7.1 adds explicit controls on **Protection**. The tiny CPU / GPU / RAM monitor is unchanged. None of these protection preferences is applied at startup, by RAM Boost, by installation or by Smart Care.
 
 ## Keep real-time scanning off
 

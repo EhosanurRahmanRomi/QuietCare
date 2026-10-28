@@ -114,7 +114,9 @@ internal static class FocusControlEntry
             finally
             {
                 awake?.Dispose();awake=null;
+                power=options.KeepAwake?"Keep-awake request released. Normal sleep settings apply.":"Sleep settings unchanged.";
                 var errors=session.Restore();detail=errors.Count==0?"Focus ended. Owned process priorities and notification settings were restored.":string.Join(" ",errors);
+                notifications=journal.NotificationOwned?"Notification restore needs attention. Use Restore changes.":"Focus ended. No owned notification change remains.";
                 // The elevated guard notices this worker's exit and restores its own policy ledger.
                 if(options.GuardUpdates)updates="Ending update guard; its helper restores the saved policy when this worker exits.";
                 Status(false);

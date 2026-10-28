@@ -93,6 +93,11 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
             var backup=await Task.Run(WindowsFocusPolicyRuntime.Load);
             if(backup is not null&&(status is null||backup.Session==status.Session))UpdateStatus=backup.Status;
             var journal=await Task.Run(()=>FocusControlEntry.Read<FocusJournal>(FocusControlEntry.JournalPath));
+            if(!active&&status is not null)
+            {
+                AwakeStatus="Focus is inactive. No Focus keep-awake request is running.";
+                NotificationStatus=journal?.NotificationOwned==true?"Notification restore needs attention. Use Restore changes.":"Focus is inactive. No owned notification change remains.";
+            }
             NeedsRecovery=!active&&(journal is not null&&(journal.Priorities.Count>0||journal.NotificationOwned)||backup is not null&&backup.Values.Count>0&&!FocusControlEntry.Alive(backup.OwnerId,backup.OwnerStart));
             if(!active)lastWork=await Task.Run(()=>new WindowsFocusRuntime(FocusControlEntry.JournalPath).Foreground())??lastWork;
         }
