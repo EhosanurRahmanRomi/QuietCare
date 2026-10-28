@@ -30,8 +30,13 @@ public sealed class FocusUpdateGuard(IFocusPolicyRuntime runtime)
     public void Apply(FocusPolicyBackup backup,int startHour,int durationMinutes)
     {
         if(!runtime.Supported)throw new InvalidOperationException("Temporary update policies require an unmanaged Windows Pro, Enterprise or Education PC.");
-        if(startHour is <0 or >23||durationMinutes is <1 or >240||backup.Values.Count!=0||backup.Session==Guid.Empty)throw new ArgumentException("Invalid Focus update session.");
-        int end=(startHour+(int)Math.Ceiling(durationMinutes/60.0)+1)%24;
+        FocusDuration.Validate(durationMinutes);
+        if(startHour is <0 or >23||backup.Values.Count!=0||backup.Session==Guid.Empty)throw new ArgumentException("Invalid Focus update session.");
+        // Windows active hours cannot cover an unlimited session. Keep the policy
+        // window below its 18-hour maximum; the separate auto-update request stays
+        // owned by the helper until Stop, timeout or parent exit.
+        int hours=durationMinutes==0?18:Math.Min(18,(int)Math.Ceiling(durationMinutes/60.0)+1);
+        int end=(startHour+hours)%24;
         var values=new Dictionary<string,int>{{"automatic-updates",1},{"active-hours",1},{"active-start",startHour},{"active-end",end}};
         foreach(var entry in values)
         {

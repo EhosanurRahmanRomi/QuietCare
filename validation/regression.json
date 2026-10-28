@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-28T14:35:41.6962705+00:00",
+  "utc": "2026-10-28T15:03:25.0627491+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 132,
+  "count": 140,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -392,7 +392,31 @@
       "passed": true
     },
     {
-      "name": "Focus duration rejects unbounded or invalid sessions",
+      "name": "Focus duration rejects invalid timed values",
+      "passed": true
+    },
+    {
+      "name": "Focus converts minutes and hours exactly",
+      "passed": true
+    },
+    {
+      "name": "Until I end it has no timed deadline",
+      "passed": true
+    },
+    {
+      "name": "Focus rejects invalid duration amounts and unknown units",
+      "passed": true
+    },
+    {
+      "name": "Focus labels hours and untimed sessions without a false countdown",
+      "passed": true
+    },
+    {
+      "name": "Timed Focus expiry and expired countdown remain bounded",
+      "passed": true
+    },
+    {
+      "name": "Saved Focus preferences retain the selected hours and amount",
       "passed": true
     },
     {
@@ -477,6 +501,14 @@
     },
     {
       "name": "Update guard restores previously absent policy values",
+      "passed": true
+    },
+    {
+      "name": "Untimed Focus respects Windows active-hours length instead of claiming an unlimited restart block",
+      "passed": true
+    },
+    {
+      "name": "Untimed update guard restores every owned setting on Stop",
       "passed": true
     },
     {

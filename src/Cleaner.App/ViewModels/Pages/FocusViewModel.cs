@@ -21,6 +21,23 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
     [ObservableProperty] bool _busy;
     [ObservableProperty] bool _needsRecovery;
     [ObservableProperty] int _minutes=60;
+    [ObservableProperty] int _durationAmount=60;
+    [ObservableProperty] int _durationUnitIndex;
+    public IReadOnlyList<string> DurationUnits {get;}=new[]{"Minutes","Hours","Until I end it"};
+    public bool HasTimedDuration=>DurationUnitIndex!=2;
+    public int DurationMaximum=>DurationUnitIndex==1?168:FocusDuration.MaxMinutes;
+    public string DurationHint=>HasTimedDuration?"Up to 7 days. End earlier whenever you want.":"No timer. Ends when you stop Focus or exit QuietCare.";
+    partial void OnDurationUnitIndexChanged(int oldValue,int newValue)
+    {
+        int value=newValue;
+        if(value is <0 or >2){DurationUnitIndex=0;return;}
+        if(value!=2)
+        {
+            int converted=oldValue==0&&value==1?(int)Math.Ceiling(DurationAmount/60.0):oldValue==1&&value==0?Math.Min(FocusDuration.MaxMinutes,DurationAmount*60):DurationAmount;
+            DurationAmount=Math.Clamp(converted,1,DurationMaximum);
+        }
+        OnPropertyChanged(nameof(HasTimedDuration));OnPropertyChanged(nameof(DurationMaximum));OnPropertyChanged(nameof(DurationHint));
+    }
     [ObservableProperty] bool _prioritizeWork=true;
     [ObservableProperty] bool _lowerBackground=true;
     [ObservableProperty] bool _quietNotifications=true;
@@ -38,7 +55,7 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
     public bool CanConfigure=>!IsActive&&!Busy;
     public string SessionLabel=>IsActive?"IN SESSION":"READY TO FOCUS";
     public string SessionAction=>IsActive?"End focus session":"Start focus session";
-    public double SessionProgress=>IsActive?Math.Clamp(100*(1-RemainingMinutes/Math.Max(1,Minutes)),0,100):0;
+    public double SessionProgress=>IsActive&&Minutes>0?Math.Clamp(100*(1-RemainingMinutes/Math.Max(1,Minutes)),0,100):0;
     [ObservableProperty,NotifyPropertyChangedFor(nameof(SessionProgress))] double _remainingMinutes;
     public string PrioritySummary=>IsActive?"Work app prioritized":"Applies during your session";
     partial void OnIsActiveChanged(bool value)
@@ -55,7 +72,11 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
         try
         {
             var saved=FocusControlEntry.Read<FocusOptions>(Path.Combine(FocusControlEntry.DirectoryPath,"options.json"));
-            if(saved is not null){saved.Validate();Minutes=saved.Minutes;PrioritizeWork=saved.PrioritizeWork;LowerBackground=saved.LowerBackground;QuietNotifications=saved.QuietNotifications;KeepAwake=saved.KeepAwake;GuardUpdates=saved.GuardUpdates;}
+            if(saved is not null){saved.Validate();Minutes=saved.Minutes;
+                DurationUnitIndex=saved.Minutes==0?2:0;DurationAmount=saved.Minutes==0?60:saved.Minutes;
+                if(Enum.IsDefined(saved.DurationUnit)&&saved.DurationAmount>0&&FocusDuration.ToMinutes(saved.DurationAmount,saved.DurationUnit)==saved.Minutes)
+                {DurationUnitIndex=(int)saved.DurationUnit;DurationAmount=saved.DurationAmount;}
+                PrioritizeWork=saved.PrioritizeWork;LowerBackground=saved.LowerBackground;QuietNotifications=saved.QuietNotifications;KeepAwake=saved.KeepAwake;GuardUpdates=saved.GuardUpdates;}
         }
         catch{ } // A damaged optional preference file cannot authorize any system change.
         timer.Tick+=async(_,_)=>await PollAsync();
@@ -92,8 +113,9 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
             if(status is not null)
             {
                 IsActive=active;Headline=active?"Your focus session is active":"Ready for your next session";
-                Countdown=active?Math.Max(0,(int)Math.Ceiling((status.Expires-DateTimeOffset.UtcNow).TotalMinutes))+" min remaining":"Session ended";
-                RemainingMinutes=Math.Max(0,(status.Expires-DateTimeOffset.UtcNow).TotalMinutes);
+                Countdown=active?FocusDuration.Remaining(status.Expires,DateTimeOffset.UtcNow):"Session ended";
+                if(active&&status.Expires==DateTimeOffset.MaxValue){Minutes=0;DurationUnitIndex=2;}
+                RemainingMinutes=status.Expires==DateTimeOffset.MaxValue?0:Math.Max(0,(status.Expires-DateTimeOffset.UtcNow).TotalMinutes);
                 WorkApp=status.WorkApp;PriorityStatus=$"{status.Prioritized} work processes prioritized · {status.Background} background processes at lower priority";
                 NotificationStatus=status.Notifications;AwakeStatus=status.Awake;UpdateStatus=status.Updates;Detail=status.Detail;
                 if(status.Active&&!active)Detail="The Focus helper exited. Use Restore changes to check its recovery ledger.";
@@ -119,8 +141,10 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
         Busy=true;hub.FocusActive=true;
         try
         {
-            new FocusOptions(Minutes).Validate();
-            WindowsFocusRuntime.WriteJson(Path.Combine(FocusControlEntry.DirectoryPath,"options.json"),new FocusOptions(Minutes,PrioritizeWork,LowerBackground,QuietNotifications,KeepAwake,GuardUpdates));
+            Minutes=FocusDuration.ToMinutes(DurationAmount,(FocusDurationUnit)DurationUnitIndex);
+            var options=new FocusOptions(Minutes,PrioritizeWork,LowerBackground,QuietNotifications,KeepAwake,GuardUpdates){DurationUnit=(FocusDurationUnit)DurationUnitIndex,DurationAmount=DurationAmount};
+            options.Validate();
+            WindowsFocusRuntime.WriteJson(Path.Combine(FocusControlEntry.DirectoryPath,"options.json"),options);
             using var own=Process.GetCurrentProcess();Guid id=Guid.NewGuid();int flags=(PrioritizeWork?1:0)|(LowerBackground?2:0)|(QuietNotifications?4:0)|(KeepAwake?8:0)|(GuardUpdates?16:0);
             var info=new ProcessStartInfo(Environment.ProcessPath!){UseShellExecute=false,CreateNoWindow=true};
             foreach(string argument in new[]{"--focus-worker",id.ToString("N"),own.Id.ToString(),own.StartTime.ToUniversalTime().Ticks.ToString(),Minutes.ToString(),flags.ToString(),(lastWork?.Id??0).ToString()})info.ArgumentList.Add(argument);

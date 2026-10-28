@@ -2,9 +2,36 @@ using System.Diagnostics;
 
 namespace Cleaner.Core.Services;
 
+public enum FocusDurationUnit { Minutes,Hours,UntilStopped }
+public static class FocusDuration
+{
+    public const int MaxMinutes=10080;
+    public static int ToMinutes(int amount,FocusDurationUnit unit)
+    {
+        if(!Enum.IsDefined(unit))throw new ArgumentOutOfRangeException(nameof(unit));
+        if(unit==FocusDurationUnit.UntilStopped)return 0;
+        int maximum=unit==FocusDurationUnit.Hours?MaxMinutes/60:MaxMinutes;
+        if(amount<1||amount>maximum)throw new ArgumentOutOfRangeException(nameof(amount),"Choose a positive duration up to seven days, or Until I end it.");
+        return checked(amount*(unit==FocusDurationUnit.Hours?60:1));
+    }
+    public static DateTimeOffset ExpiresAt(DateTimeOffset now,int minutes)
+    {
+        Validate(minutes);return minutes==0?DateTimeOffset.MaxValue:now.AddMinutes(minutes);
+    }
+    public static void Validate(int minutes)
+    {if(minutes is <0 or >MaxMinutes)throw new ArgumentOutOfRangeException(nameof(minutes),"Use 1 to 10,080 minutes, or zero for Until I end it.");}
+    public static string Remaining(DateTimeOffset expires,DateTimeOffset now)
+    {
+        if(expires==DateTimeOffset.MaxValue)return "Until you end it";
+        int minutes=Math.Max(0,(int)Math.Ceiling((expires-now).TotalMinutes));
+        return minutes>=60?$"{minutes/60} hr{(minutes%60==0?"":" "+minutes%60+" min")} remaining":minutes+" min remaining";
+    }
+}
 public sealed record FocusOptions(int Minutes=60,bool PrioritizeWork=true,bool LowerBackground=true,bool QuietNotifications=true,bool KeepAwake=true,bool GuardUpdates=true)
 {
-    public void Validate(){if(Minutes is <1 or >240)throw new ArgumentOutOfRangeException(nameof(Minutes),"Focus sessions last from 1 to 240 minutes.");}
+    public FocusDurationUnit DurationUnit {get;init;}=FocusDurationUnit.Minutes;
+    public int DurationAmount {get;init;}
+    public void Validate()=>FocusDuration.Validate(Minutes);
 }
 public sealed record FocusProcess(int Id,long StartTicks,string Image,string Name,ProcessPriorityClass Priority);
 public sealed record FocusPriorityChange(FocusProcess Process,ProcessPriorityClass Applied);

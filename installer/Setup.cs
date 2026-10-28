@@ -13,8 +13,8 @@ using System.Windows.Forms;
 [assembly: AssemblyTitle("QuietCare Setup")]
 [assembly: AssemblyProduct("QuietCare")]
 [assembly: AssemblyCompany("QuietCare contributors")]
-[assembly: AssemblyVersion("0.8.0.1")]
-[assembly: AssemblyFileVersion("0.8.0.1")]
+[assembly: AssemblyVersion("0.8.1.1")]
+[assembly: AssemblyFileVersion("0.8.1.1")]
 
 namespace QuietCare.Installer
 {

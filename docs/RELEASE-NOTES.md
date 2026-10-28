@@ -1,7 +1,8 @@
-# QuietCare 0.8.0-preview.1
+# QuietCare 0.8.1-preview.1
 
-Adds a dedicated Focus mode and explicit Defender controls to reduce disruption on a lower-powered PC. The mini monitor, its refresh speeds and startup behavior are retained.
+Adds variable Focus duration: Minutes, Hours and Until I end it, with remembered selection and automatic restoration on Stop or app exit. The mini monitor, its refresh speeds and startup behavior are retained.
 
+- Minutes/hours convert to exact timed deadlines; untimed sessions show Until you end it and no fabricated countdown. Windows active-hours limits remain explicit for long sessions.
 - Reworks Focus, Overview, Memory, Protection and Storage around compact controls and semantic accents. Keeps the tiny monitor intact.
 - Stops idle progress animations, reduces inactive Focus polling and batches process/window inventory to reduce repeated work. [Research and scope](UI-PERFORMANCE-REVIEW.md).
 - Expands protected process rules to include Windows Security UI and trading/project hosts; background lowering leaves those tools alone.

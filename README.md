@@ -2,9 +2,9 @@
 
 A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, a dedicated Focus mode, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.8.0-preview.1 · Windows x64 · unsigned preview**
+**0.8.1-preview.1 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.8.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.8.1-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
@@ -62,7 +62,7 @@ The 0.8 workspace uses compact settings rows, a separate Focus timer/action pane
 
 ![QuietCare Focus mode](docs/images/focus-mode.png)
 
-A dedicated workspace with remembered options, a session timer, real status and recovery. It preserves open tabs/projects and keeps the mini monitor available. Windows still needs resources; Focus does not promise exclusive CPU/GPU/RAM. [Behavior](docs/FOCUS-MODE.md) · [GitHub source review](docs/FOCUS-SOURCE-REVIEW.md).
+A dedicated workspace with remembered options, minutes/hours or Until I end it, real status and recovery. It preserves open tabs/projects and keeps the mini monitor available. Windows still needs resources; Focus does not promise exclusive CPU/GPU/RAM. [Behavior](docs/FOCUS-MODE.md) · [GitHub source review](docs/FOCUS-SOURCE-REVIEW.md).
 
 ## Defender controls
 

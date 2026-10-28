@@ -111,6 +111,10 @@ internal static class PreviewValidation
         window.NavigateTo(typeof(FocusPage));await Task.Delay(250);window.UpdateLayout();
         var focusShell=(FrameworkElement)window.Content;
         Render(focusShell,Path.Combine(output,"FocusActiveFixture.png"),(int)Math.Ceiling(focusShell.ActualWidth),(int)Math.Ceiling(focusShell.ActualHeight));
+        focusDisplay.DurationUnitIndex=2;focusDisplay.Minutes=0;focusDisplay.Countdown="Until you end it";
+        await Task.Delay(150);window.UpdateLayout();
+        Render(focusShell,Path.Combine(output,"FocusUntimedFixture.png"),(int)Math.Ceiling(focusShell.ActualWidth),(int)Math.Ceiling(focusShell.ActualHeight));
+        focusDisplay.DurationUnitIndex=1;focusDisplay.DurationAmount=2;focusDisplay.Minutes=120;
         focusDisplay.IsActive=false;focusDisplay.Countdown="Ready when you are";focusDisplay.WorkApp="Automatic · follows the app you use";
         navigation.Navigate(typeof(DashboardPage));
         var liveAssessment=await new Services.SmartCareBackend(new Services.AppDataService(Path.Combine(output,"care-check-state")),new Cleaner.Core.Services.AutomaticCleanupService()).AssessAsync(default);

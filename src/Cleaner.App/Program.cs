@@ -4,6 +4,7 @@ internal static class Program
     [System.STAThread]
     private static int Main(string[] args)
     {
+        if(args.Length==2&&args[0]=="--focus-untimed-check")return Services.FocusWorkerCheck.Run(args[1],false,true);
         if(args.Length==2&&args[0]=="--focus-worker-update-check")return Services.FocusWorkerCheck.Run(args[1],true);
         if(args.Length==2&&args[0]=="--focus-worker-check")return Services.FocusWorkerCheck.Run(args[1]);
         if(args.Length==2&&args[0]=="--focus-native-check")return Services.FocusNativeCheck.Run(args[1]);

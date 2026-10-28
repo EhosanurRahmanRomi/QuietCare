@@ -5,14 +5,14 @@ using Cleaner.Core.Services;
 namespace Cleaner.App.Services;
 internal static class FocusWorkerCheck
 {
-    public static int Run(string output,bool updateGuard=false)
+    public static int Run(string output,bool updateGuard=false,bool untilStopped=false)
     {
         Directory.CreateDirectory(output);var checks=new List<object>();
         var runtime=new WindowsFocusRuntime(FocusControlEntry.JournalPath);string before=runtime.ReadNotifications();
         Dictionary<string,int?> Policies(){using var policy=new WindowsFocusPolicyRuntime(true);return FocusUpdateGuard.Settings.Keys.ToDictionary(x=>x,x=>policy.Read(x));}
         var beforePolicies=updateGuard?Policies():null;
         using var self=Process.GetCurrentProcess();Guid id=Guid.NewGuid();
-        var info=new ProcessStartInfo(Environment.ProcessPath!,$"--focus-worker {id:N} {self.Id} {self.StartTime.ToUniversalTime().Ticks} 1 {(updateGuard?28:12)} 0"){UseShellExecute=false,CreateNoWindow=true};
+        var info=new ProcessStartInfo(Environment.ProcessPath!,$"--focus-worker {id:N} {self.Id} {self.StartTime.ToUniversalTime().Ticks} {(untilStopped?0:1)} {(updateGuard?28:12)} 0"){UseShellExecute=false,CreateNoWindow=true};
         using var child=Process.Start(info)!;
         bool ready=false,restored=false,guardApplied=!updateGuard,guardRestored=!updateGuard;double cpu=0;
         try
@@ -23,7 +23,13 @@ internal static class FocusWorkerCheck
                 if(status?.Session==id&&status.Active){ready=true;break;}
                 if(child.HasExited)break;
             }
-            checks.Add(new{name="Production Focus worker starts a bounded session",passed=ready});
+            checks.Add(new{name="Production Focus worker starts the selected session",passed=ready});
+            if(untilStopped)
+            {
+                var running=FocusControlEntry.Read<FocusStatus>(FocusControlEntry.StatusPath);
+                checks.Add(new{name="Untimed worker has no countdown deadline",passed=running?.Expires==DateTimeOffset.MaxValue});
+                ready&=running?.Expires==DateTimeOffset.MaxValue;
+            }
             if(ready&&updateGuard)
             {
                 for(int i=0;i<180;i++)
@@ -65,7 +71,7 @@ internal static class FocusWorkerCheck
                 checks.Add(new{name="Elevated guard restores the exact original local policies after worker exit",passed=guardRestored});
             }
         }
-        File.WriteAllText(Path.Combine(output,"focus-worker-check.json"),JsonSerializer.Serialize(new{scope=updateGuard?"Actual production worker and elevated temporary update guard, including policy restoration after Stop. No Defender settings or user-app priorities changed.":"Actual worker session with Do not disturb and keep awake; CPU priorities and update guard deselected. No Defender/update policies or user-app priorities changed.",workerCpuPercentOfMachine=cpu,sampleSeconds=6,checks},new JsonSerializerOptions{WriteIndented=true}));
+        File.WriteAllText(Path.Combine(output,"focus-worker-check.json"),JsonSerializer.Serialize(new{scope=untilStopped?"Actual untimed Focus worker with no deadline: Do not disturb and keep awake requested, then Stop restores them. No update/Defender policies or user-app priorities changed.":updateGuard?"Actual production worker and elevated temporary update guard, including policy restoration after Stop. No Defender settings or user-app priorities changed.":"Actual worker session with Do not disturb and keep awake; CPU priorities and update guard deselected. No Defender/update policies or user-app priorities changed.",workerCpuPercentOfMachine=cpu,sampleSeconds=6,checks},new JsonSerializerOptions{WriteIndented=true}));
         return ready&&restored&&guardApplied&&guardRestored&&child.ExitCode==0?0:2;
     }
 }

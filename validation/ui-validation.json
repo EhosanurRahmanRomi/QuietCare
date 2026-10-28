@@ -1,12 +1,12 @@
 {
-  "utc": "2026-10-28T14:43:53.183284+00:00",
+  "utc": "2026-10-28T15:06:31.905495+00:00",
   "scope": "Production control renders, compact dark/light dashboard and monitor settings, reduced-motion override and dispatcher heartbeat; care/Boost displays use fixtures; no destructive actions invoked",
   "compactWidth": 980,
   "compactHeight": 640,
   "reducedMotionOverridePassed": true,
   "pageTransitionsStarted": 31,
-  "heartbeatTicks": 118,
-  "longestHeartbeatGapMs": 1214.7315000000003,
+  "heartbeatTicks": 109,
+  "longestHeartbeatGapMs": 1715.5112,
   "bindingErrors": [],
   "pages": [
     {

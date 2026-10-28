@@ -8,7 +8,16 @@ static class FocusChecks
     public static void Run(Action<bool,string> check)
     {
         var fake=new Runtime();var journal=new FocusJournal{Session=Guid.NewGuid()};var focus=new FocusSession(fake,journal);
-        check(Throws(()=>new FocusOptions(0).Validate())&&Throws(()=>new FocusOptions(241).Validate()),"Focus duration rejects unbounded or invalid sessions");
+        check(Throws(()=>new FocusOptions(-1).Validate())&&Throws(()=>new FocusOptions(10081).Validate()),"Focus duration rejects invalid timed values");
+        check(FocusDuration.ToMinutes(45,FocusDurationUnit.Minutes)==45&&FocusDuration.ToMinutes(2,FocusDurationUnit.Hours)==120,"Focus converts minutes and hours exactly");
+        check(FocusDuration.ToMinutes(60,FocusDurationUnit.UntilStopped)==0&&FocusDuration.ExpiresAt(DateTimeOffset.UtcNow,0)==DateTimeOffset.MaxValue,"Until I end it has no timed deadline");
+        check(Throws(()=>FocusDuration.ToMinutes(0,FocusDurationUnit.Minutes))&&Throws(()=>FocusDuration.ToMinutes(169,FocusDurationUnit.Hours))&&Throws(()=>FocusDuration.ToMinutes(1,(FocusDurationUnit)99)),"Focus rejects invalid duration amounts and unknown units");
+        var now=DateTimeOffset.UtcNow;
+        check(FocusDuration.Remaining(DateTimeOffset.MaxValue,now)=="Until you end it"&&FocusDuration.Remaining(now.AddMinutes(125),now)=="2 hr 5 min remaining","Focus labels hours and untimed sessions without a false countdown");
+        check(FocusDuration.ExpiresAt(now,120)==now.AddHours(2)&&FocusDuration.Remaining(now.AddMinutes(-1),now)=="0 min remaining","Timed Focus expiry and expired countdown remain bounded");
+        var savedHours=new FocusOptions(120){DurationUnit=FocusDurationUnit.Hours,DurationAmount=2};
+        var restoredHours=System.Text.Json.JsonSerializer.Deserialize<FocusOptions>(System.Text.Json.JsonSerializer.Serialize(savedHours))!;
+        check(restoredHours.Minutes==120&&restoredHours.DurationUnit==FocusDurationUnit.Hours&&restoredHours.DurationAmount==2,"Saved Focus preferences retain the selected hours and amount");
         focus.SetPriority(First,ProcessPriorityClass.AboveNormal);
         check(fake.Process?.Priority==ProcessPriorityClass.AboveNormal&&fake.SavedBeforeSet,"Focus journals original identity and priority before changing it");
         focus.SetPriority(First,ProcessPriorityClass.AboveNormal);check(fake.Writes==1&&journal.Priorities.Count==1,"Focus avoids repeated priority writes");
@@ -32,6 +41,8 @@ static class FocusChecks
         var policies=new PolicyRuntime();var backup=new FocusPolicyBackup{Session=Guid.NewGuid()};var guard=new FocusUpdateGuard(policies);
         guard.Apply(backup,23,120);check(policies.SavedBeforeSet&&policies.Values["active-end"]==2&&policies.Values["automatic-updates"]==1,"Focus update guard journals all policies before writing and crosses midnight safely");
         guard.Restore(backup);check(policies.Values.Values.All(x=>x is null)&&backup.Values.Count==0,"Update guard restores previously absent policy values");
+        policies=new();backup=new(){Session=Guid.NewGuid()};guard=new(policies);guard.Apply(backup,20,0);check(policies.Values["active-end"]==14,"Untimed Focus respects Windows active-hours length instead of claiming an unlimited restart block");
+        guard.Restore(backup);check(backup.Values.Count==0&&policies.Values.Values.All(x=>x is null),"Untimed update guard restores every owned setting on Stop");
         policies=new();policies.Values["automatic-updates"]=0;backup=new(){Session=Guid.NewGuid()};guard=new(policies);guard.Apply(backup,9,60);guard.Restore(backup);check(policies.Values["automatic-updates"]==0,"Update guard restores explicit original DWORD values");
         policies=new(){Supported=false};backup=new(){Session=Guid.NewGuid()};guard=new(policies);check(Throws(()=>guard.Apply(backup,9,60))&&policies.Writes==0,"Update guard refuses unsupported or managed PCs before writes");
         policies=new(){FailSave=true};backup=new(){Session=Guid.NewGuid()};guard=new(policies);check(Throws(()=>guard.Apply(backup,9,60))&&policies.Writes==0,"Update guard refuses changes without a durable recovery ledger");

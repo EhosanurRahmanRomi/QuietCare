@@ -1,0 +1,23 @@
+{
+  "scope": "Actual untimed Focus worker with no deadline: Do not disturb and keep awake requested, then Stop restores them. No update/Defender policies or user-app priorities changed.",
+  "workerCpuPercentOfMachine": 0.26002231249383334,
+  "sampleSeconds": 6,
+  "checks": [
+    {
+      "name": "Production Focus worker starts the selected session",
+      "passed": true
+    },
+    {
+      "name": "Untimed worker has no countdown deadline",
+      "passed": true
+    },
+    {
+      "name": "Production worker restores notifications and exits after Stop",
+      "passed": true
+    },
+    {
+      "name": "Ended session status reports released power and notification ownership",
+      "passed": true
+    }
+  ]
+}

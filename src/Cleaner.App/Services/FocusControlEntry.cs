@@ -32,7 +32,7 @@ internal static class FocusControlEntry
     internal static int Execute(string[] args)
     {
         if(args.Length==1&&args[0]=="--focus-recover-updates")return GuardRecovery();
-        if(args.Length!=7||!Guid.TryParseExact(args[1],"N",out var session)||!int.TryParse(args[2],out int parent)||!long.TryParse(args[3],out long parentStart)||!int.TryParse(args[4],out int minutes)||minutes is <1 or >240||!int.TryParse(args[5],out int flags)||flags is <0 or >63||!int.TryParse(args[6],out int seed)||!ValidOwner(parent,parentStart))return 64;
+        if(args.Length!=7||!Guid.TryParseExact(args[1],"N",out var session)||!int.TryParse(args[2],out int parent)||!long.TryParse(args[3],out long parentStart)||!int.TryParse(args[4],out int minutes)||minutes is <0 or >FocusDuration.MaxMinutes||!int.TryParse(args[5],out int flags)||flags is <0 or >63||!int.TryParse(args[6],out int seed)||!ValidOwner(parent,parentStart))return 64;
         try
         {
             if(args[0]=="--focus-worker")return Worker(session,parent,parentStart,minutes,flags,seed);
@@ -57,7 +57,7 @@ internal static class FocusControlEntry
                 if(new FocusSession(runtime,old).Restore().Count!=0)return 2;
             }
             using var self=Process.GetCurrentProcess();
-            var journal=new FocusJournal{Session=id,Expires=DateTimeOffset.UtcNow.AddMinutes(minutes),WorkerId=self.Id,WorkerStart=self.StartTime.ToUniversalTime().Ticks};runtime.Save(journal);
+            var journal=new FocusJournal{Session=id,Expires=FocusDuration.ExpiresAt(DateTimeOffset.UtcNow,minutes),WorkerId=self.Id,WorkerStart=self.StartTime.ToUniversalTime().Ticks};runtime.Save(journal);
             var session=new FocusSession(runtime,journal);
             string notifications="Notifications unchanged",power="Sleep settings unchanged",updates=options.GuardUpdates?"Waiting for update-guard approval…":"Update guard not selected",detail="Focus session running. Switch to your work app; its priority follows the active window.";
             FocusProcess? work=runtime.ReadProcess(seed);string? workImage=work?.Image;
@@ -145,7 +145,7 @@ internal static class FocusControlEntry
                 if(Alive(old.OwnerId,old.OwnerStart))return 170;
                 using var recovery=new WindowsFocusPolicyRuntime();if(new FocusUpdateGuard(recovery).Restore(old).Count>0)return 2;
             }
-            backup=new(){Session=session,OwnerId=owner,OwnerStart=start,Expires=DateTimeOffset.UtcNow.AddMinutes(minutes)};
+            backup=new(){Session=session,OwnerId=owner,OwnerStart=start,Expires=FocusDuration.ExpiresAt(DateTimeOffset.UtcNow,minutes)};
             try
             {
                 using(var runtime=new WindowsFocusPolicyRuntime())new FocusUpdateGuard(runtime).Apply(backup,DateTime.Now.Hour,minutes);
