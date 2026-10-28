@@ -13,3 +13,7 @@ Updates remain deliberate: **About → Check for updates** contacts the official
 Uninstall from Windows Installed apps. Windows Installer removes package-owned files, shortcuts and the owned startup registration. It preserves unowned files, local settings, Recovery, logs and startup backups. Recovery data is not part of the application package and is never recursively deleted by setup. Native install/uninstall and both startup choices are tested using a separate fixture product and isolated directories/registry locations.
 
 The release also contains **QuietCare.msi** for administrators who need the native package. Its default is current-user startup plus a desktop shortcut. Use `STARTUP=0 DESKTOP=0` to opt out during a quiet MSI installation. The EXE provides the friendly option screen. Neither artifact is a portable launcher.
+
+Defender preference backups and any explicitly chosen off policy are machine settings, outside the application package. Restore protection/scan settings from Protection before uninstall if you want to undo them. Installation itself does not apply any Defender preference. [Controls and limits](DEFENDER-CONTROLS.md).
+
+End any Focus session and check **Focus mode → Restore changes** before uninstalling. Normal session exit restores its owned priorities, notification profile and optional update policies; interrupted recovery may require administrator approval on the next launch. [Focus recovery](FOCUS-MODE.md).

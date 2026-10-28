@@ -6,7 +6,7 @@
   ],
   "projects": [
     {
-      "path": "repository/src/Cleaner.App/Cleaner.App.csproj"
+      "path": "src/Cleaner.App/Cleaner.App.csproj"
     }
   ]
 }

@@ -80,6 +80,7 @@ public partial class App : Application
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<DashboardViewModel>();
                 services.AddSingleton<CareHubViewModel>();
+                services.AddSingleton<FocusViewModel>();
                 services.AddSingleton<Cleaner.App.Services.StartupWatchService>();
                 services.AddSingleton<SystemCleanerViewModel>();
                 services.AddSingleton<DeveloperCleanerViewModel>();
@@ -102,6 +103,7 @@ public partial class App : Application
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<DashboardPage>();
                 services.AddSingleton<MemoryPage>();
+                services.AddSingleton<FocusPage>();
                 services.AddSingleton<ProtectionPage>();
                 services.AddSingleton<StoragePage>();
                 services.AddSingleton<ToolboxPage>();
@@ -176,10 +178,13 @@ public partial class App : Application
         revealRequested=RevealMain;
         if (!Environment.GetCommandLineArgs().Contains("--no-monitor")) Monitor.Start();
         StartupWatch=Services.GetRequiredService<Cleaner.App.Services.StartupWatchService>();
+        int deferredStartupChanges=0;
+        FocusViewModel.ActiveChanged+=active=>{if(!active&&deferredStartupChanges>0){Monitor?.ShowStartupNotice(deferredStartupChanges+" startup changes were detected during Focus. Click to review.",()=>Navigate(typeof(AutostartPage)));deferredStartupChanges=0;}};
         StartupWatch.Changed+=changes=>Dispatcher.BeginInvoke(new Action(()=>
         {
             Services.GetRequiredService<CareHubViewModel>().OnStartupChanges(changes);
-            Monitor?.ShowStartupNotice(changes.Count+" new or changed startup entries. Click to review.",()=>Navigate(typeof(AutostartPage)));
+            if(FocusViewModel.Active)deferredStartupChanges+=changes.Count;
+            else Monitor?.ShowStartupNotice(changes.Count+" new or changed startup entries. Click to review.",()=>Navigate(typeof(AutostartPage)));
         }));
         var hub=Services.GetRequiredService<CareHubViewModel>();
         hub.BoostStatus=Monitor.BoostStatus;
@@ -188,6 +193,7 @@ public partial class App : Application
         hub.StartupStatus="Startup watch active: registry/folders every 30 seconds; scheduled tasks/services every 5 minutes. First scan establishes a baseline.";
         if(StartupWatch.Recent.Count>0)hub.OnStartupChanges(StartupWatch.Recent.Take(10).ToArray());
         StartupWatch.Start();
+        Services.GetRequiredService<FocusViewModel>().StartWatching();
         if (revealPending || !Environment.GetCommandLineArgs().Contains("--tray")) RevealMain();
     }
 
@@ -201,6 +207,7 @@ public partial class App : Application
     protected override async void OnExit(ExitEventArgs e)
     {
         Exiting = true;
+        Services.GetService<FocusViewModel>()?.Dispose();
         Monitor?.Dispose();
         StartupWatch?.Dispose();
         await _host.StopAsync(TimeSpan.FromSeconds(2));

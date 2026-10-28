@@ -1,0 +1,20 @@
+{
+  "scope": "Explicit bounded native Do not disturb round trip and keep-awake handle. No update/Defender policy changes or user-app priority changes.",
+  "checks": [
+    {
+      "name": "Windows notification profile request and readback",
+      "passed": true,
+      "detail": "Windows Do not disturb requested and read back (priority notifications can still appear)."
+    },
+    {
+      "name": "Native display/system keep-awake handle acquired",
+      "passed": true,
+      "detail": "Request handles acquired successfully."
+    },
+    {
+      "name": "Previous Windows notification profile restored",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

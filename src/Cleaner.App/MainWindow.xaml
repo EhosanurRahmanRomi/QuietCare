@@ -36,6 +36,7 @@
               <StackPanel x:Name="SmartCareActions" Orientation="Horizontal">
                 <ui:Button x:Name="ShowMiniMonitor" Content="Mini monitor" Padding="12,4" Margin="0,0,8,0"
                            WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Show the tiny transparent CPU, GPU and RAM monitor" Click="MiniMonitor_Click"/>
+                <ui:Button Content="Focus mode" Padding="12,4" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True" Click="FocusMode_Click"/>
                 <ui:Button Content="Smart Care" Icon="{ui:SymbolIcon Flash24}" Appearance="Primary"
                            Padding="12,4" Margin="0,0,8,0" WindowChrome.IsHitTestVisibleInChrome="True"
                            ToolTip="One-click automatic care, available from every tool. Click again to view live steps." Click="SmartCare_Click"/>
@@ -59,6 +60,7 @@
                            OpenPaneLength="186" TransitionDuration="0">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Overview" TargetPageType="{x:Type pages:DashboardPage}" Icon="{ui:SymbolIcon Home24}"/>
+                <ui:NavigationViewItem Content="Focus mode" TargetPageType="{x:Type pages:FocusPage}" Icon="{ui:SymbolIcon WeatherMoon24}"/>
                 <ui:NavigationViewItem Content="Memory" TargetPageType="{x:Type pages:MemoryPage}" Icon="{ui:SymbolIcon Flash24}"/>
                 <ui:NavigationViewItem Content="Protection" TargetPageType="{x:Type pages:ProtectionPage}" Icon="{ui:SymbolIcon Shield24}"/>
                 <ui:NavigationViewItem Content="Storage" TargetPageType="{x:Type pages:StoragePage}" Icon="{ui:SymbolIcon Storage24}"/>

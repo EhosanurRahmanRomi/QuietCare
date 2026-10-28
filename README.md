@@ -1,10 +1,10 @@
 # QuietCare
 
-A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
+A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, a dedicated Focus mode, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.6.0-preview.1 · Windows x64 · unsigned preview**
+**0.7.0-preview.1 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.6.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.7.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
@@ -19,7 +19,8 @@ The step screenshot shows labeled fixture outcomes; it does not represent a comp
 1. Download **QuietCare-Setup.exe** from the release and open it. This is a real installer with an embedded native MSI package and the .NET runtime included.
 2. Leave **Start the mini monitor when I sign in to Windows** checked. Setup installs the permanent app, Start menu entries, optional desktop shortcut, app icon and Windows uninstaller for your account.
 3. The **tiny transparent CPU → GPU → RAM monitor is the priority**. Its lightning button runs RAM Boost directly. Use **Mini monitor** in the app header to show it again, or the Start menu's **QuietCare Performance Monitor** shortcut.
-4. Use **Overview → Start care** for automatic care with live stages, or Memory, Protection, Storage, Startup and Toolbox for individual tools. No categories need to be selected for Smart Care.
+4. Open **Focus mode** and click **Start Focus** to prioritize your active app, reduce background contention, request Do not disturb, keep the PC awake and optionally guard updates for a bounded session. [Exact behavior and restoration](docs/FOCUS-MODE.md).
+5. Use **Overview → Start care** for automatic care with live stages, or Memory, Protection, Storage, Startup and Toolbox for individual tools. No categories need to be selected for Smart Care.
 
 Closing the main window leaves the tray and monitor running. Use **Exit** in the tray menu to stop them. To change sign-in behavior, refresh speed or opacity, right-click the monitor and open its settings. Uninstall through **Windows Settings → Apps → Installed apps → QuietCare**. Settings, Recovery and startup backups are retained. [Installation details](docs/INSTALLATION.md).
 
@@ -35,6 +36,7 @@ The shell has been rebuilt around a central care action and live stages, with de
 
 | Area | Behavior |
 | --- | --- |
+| Focus mode | Timed foreground-app priority, eligible background priority reduction, optional Windows Do not disturb, keep awake and temporary update policies; owned changes restored at the end |
 | Performance monitor | CPU, GPU and RAM readings; transparent native compact view, expanded detail view, adjustable speed, position and opacity |
 | Smart Care | One click checks live conditions, cleans old junk, trims idle memory when useful, reviews startup changes, runs a due Defender quick scan and performs due Windows drive optimization when on power and the PC is not busy; live steps, Stop, persisted results |
 | RAM Boost | Expanded idle-app check, up to 24 accepted trims (32 under high memory pressure); protects foreground work, audio, system and excluded processes; reports actual available-RAM change and per-process outcomes after a three-second follow-up |
@@ -51,6 +53,16 @@ The shell has been rebuilt around a central care action and live stages, with de
 | Updates | Manual GitHub release check and release notes; downloads and replacement remain manual |
 
 See [automatic-care rules](docs/SMART-CARE.md) for the exact thresholds, exclusions and per-tool behavior. Smart Care uses local decision rules, not an external AI model. It starts only when clicked.
+
+## Focus mode
+
+![QuietCare Focus mode](docs/images/focus-mode.png)
+
+A dedicated workspace with remembered options, a session timer, real status and recovery. It preserves open tabs/projects and keeps the mini monitor available. Windows still needs resources; Focus does not promise exclusive CPU/GPU/RAM. [Behavior](docs/FOCUS-MODE.md) · [GitHub source review](docs/FOCUS-SOURCE-REVIEW.md).
+
+## Defender controls
+
+Protection now includes **Keep real-time scanning off**, **Restore protection**, **Lower scan CPU** and **Restore scan settings**. Changes require Windows administrator approval and a separate confirmation. The persistent local off policy is available on supported unmanaged Windows editions when Tamper Protection is already off. Actual Windows state is checked after each request; no tamper bypass or background enforcement is used. [Behavior and limitations](docs/DEFENDER-CONTROLS.md).
 
 ## Meter readings
 
@@ -81,6 +93,6 @@ dotnet run --project tests/QuietCare.BoostRegression -c Release -- ./work/boost-
 
 [`build.ps1`](build.ps1) publishes the self-contained application. [`installer/build-installer.ps1`](installer/build-installer.ps1) packages the MSI and setup EXE using Python 3.12 and the Windows .NET Framework compiler; neither is required on the user’s PC. Runtime extraction on first launch needs additional disk space; download size and runtime memory are different measurements. The payload includes .NET 10 and WPF. Download size is not a feature or quality score.
 
-The starting application is an attributed [PowerClean](https://github.com/fgilde/PowerClean) derivative. BCUninstaller startup-state handling is adapted with its Apache-2.0 notice. The other reviewed repositories informed design and policy choices; their engines were not combined or silently bundled. See the [seven-source comparison](docs/SOURCE-REVIEW.md).
+The starting application is an attributed [PowerClean](https://github.com/fgilde/PowerClean) derivative. BCUninstaller startup-state handling is adapted with its Apache-2.0 notice. The other reviewed repositories informed design and policy choices; their engines were not combined or silently bundled. See the [original source comparison](docs/SOURCE-REVIEW.md) and the [four-project Focus review](docs/FOCUS-SOURCE-REVIEW.md), including the attributed optional QuietHours interface.
 
 Application settings, local startup commands, logs and recovery metadata are stored under `%LOCALAPPDATA%\QuietCareNext`. They stay on the PC. The optional release check contacts GitHub only when clicked. [Privacy and security details](SECURITY.md).

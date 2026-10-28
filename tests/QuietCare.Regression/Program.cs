@@ -5,6 +5,12 @@ using Cleaner.Core.Utils;
 using System.Text.Json;
 using System.Diagnostics;
 
+if(args.Length==2&&args[0]=="--focus-helper")
+{
+    var deadline=DateTime.UtcNow.AddSeconds(45);
+    while(!File.Exists(args[1])&&DateTime.UtcNow<deadline)Thread.Sleep(100);
+    return;
+}
 var root = Path.GetFullPath(args[0]);
 Directory.CreateDirectory(root);
 if (Directory.EnumerateFileSystemEntries(root).Any()) throw new Exception("Fixture directory must be empty.");
@@ -64,6 +70,9 @@ var session=new DiskScanner().StartScan(duplicates);await session.Completion;
 Check(session.Root.FileCount==3&&session.Root.Size==new DirectoryInfo(duplicates).GetFiles().Sum(f=>f.Length),"Disk analysis reports fixture sizes and counts");
 await CareChecks.Run(root,Check);
 await SmartCareChecks.Run(Check);
+DefenderControlChecks.Run(Check);
+FocusChecks.Run(Check);
+await FocusChecks.Native(root,Check);
 var report=new { utc=DateTimeOffset.UtcNow, scope="Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed", count=checks.Count,checks };
 File.WriteAllText(Path.Combine(root,"regression.json"),JsonSerializer.Serialize(report,new JsonSerializerOptions{WriteIndented=true}));
 Console.WriteLine($"{checks.Count} checks passed.");

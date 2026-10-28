@@ -45,6 +45,7 @@ public partial class MainWindow : FluentWindow
     {
         RootNavigation.Navigate(typeof(AboutPage));
     }
+    private void FocusMode_Click(object sender,RoutedEventArgs e)=>RootNavigation.Navigate(typeof(FocusPage));
     private void MiniMonitor_Click(object sender,RoutedEventArgs e)=>App.Monitor?.ShowMonitor();
     private async void SmartCare_Click(object sender,RoutedEventArgs e)
     {

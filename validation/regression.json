@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-24T02:25:20.4486496+00:00",
+  "utc": "2026-10-28T13:47:44.348166+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 74,
+  "count": 130,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -120,7 +120,7 @@
       "passed": true
     },
     {
-      "name": "Automatic cleanup never purges another operation\u0027s recovery receipt",
+      "name": "Automatic cleanup never purges another operation's recovery receipt",
       "passed": true
     },
     {
@@ -244,6 +244,10 @@
       "passed": true
     },
     {
+      "name": "Smart Care respects an explicit local off policy and does not start an automatic Defender scan",
+      "passed": true
+    },
+    {
       "name": "A future scan timestamp cannot suppress a needed check",
       "passed": true
     },
@@ -297,6 +301,226 @@
     },
     {
       "name": "Concurrent automatic care requests cannot duplicate cleanup or Windows jobs",
+      "passed": true
+    },
+    {
+      "name": "Explicit off persists the local policy, backs up the previous value and verifies actual Windows state",
+      "passed": true
+    },
+    {
+      "name": "Repeated off does not overwrite the original policy backup",
+      "passed": true
+    },
+    {
+      "name": "Restore removes only the owned off policy and verifies protection on",
+      "passed": true
+    },
+    {
+      "name": "Restore preserves a previous explicit zero local-policy value",
+      "passed": true
+    },
+    {
+      "name": "Tamper Protection blocks off without bypasses or writes",
+      "passed": true
+    },
+    {
+      "name": "Unavailable protection telemetry cannot authorize off",
+      "passed": true
+    },
+    {
+      "name": "Managed PCs do not receive local protection overrides",
+      "passed": true
+    },
+    {
+      "name": "Unsupported Windows edition blocks persistent policy changes",
+      "passed": true
+    },
+    {
+      "name": "An existing external off policy is not claimed or changed",
+      "passed": true
+    },
+    {
+      "name": "A rejected off request stays visibly unverified and retains its restore backup",
+      "passed": true
+    },
+    {
+      "name": "Losing status after a request cannot become a false protection-off success",
+      "passed": true
+    },
+    {
+      "name": "Restore refuses to overwrite a conflicting newer local policy",
+      "passed": true
+    },
+    {
+      "name": "Restore does not remove an off policy owned outside QuietCare",
+      "passed": true
+    },
+    {
+      "name": "A failed backup prevents policy and preference changes",
+      "passed": true
+    },
+    {
+      "name": "Lower scan CPU sets bounded scan preferences without disabling real-time protection",
+      "passed": true
+    },
+    {
+      "name": "Repeated CPU mode preserves the original scan preference backup",
+      "passed": true
+    },
+    {
+      "name": "Previous scan preferences are restored exactly",
+      "passed": true
+    },
+    {
+      "name": "CPU restore preserves externally changed settings and retains the backup",
+      "passed": true
+    },
+    {
+      "name": "Ignored scan preferences cannot be reported as an applied CPU limit",
+      "passed": true
+    },
+    {
+      "name": "An unapplied scan request can restore its unchanged original preferences",
+      "passed": true
+    },
+    {
+      "name": "Unknown privileged actions are rejected before any mutation",
+      "passed": true
+    },
+    {
+      "name": "Restoring absent scan backup is a harmless no-op",
+      "passed": true
+    },
+    {
+      "name": "Focus duration rejects unbounded or invalid sessions",
+      "passed": true
+    },
+    {
+      "name": "Focus journals original identity and priority before changing it",
+      "passed": true
+    },
+    {
+      "name": "Focus avoids repeated priority writes",
+      "passed": true
+    },
+    {
+      "name": "Focus priority switches retain the original baseline",
+      "passed": true
+    },
+    {
+      "name": "Focus end restores original priority and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "Focus never applies High or Realtime priority",
+      "passed": true
+    },
+    {
+      "name": "Focus recovery refuses a reused PID",
+      "passed": true
+    },
+    {
+      "name": "Focus recovery verifies executable identity",
+      "passed": true
+    },
+    {
+      "name": "Focus preserves a priority changed by another tool",
+      "passed": true
+    },
+    {
+      "name": "Focus does not reclaim a process changed externally during the session",
+      "passed": true
+    },
+    {
+      "name": "Focus refuses mutation if the journal cannot be saved",
+      "passed": true
+    },
+    {
+      "name": "Focus retains recovery data after a failed priority request",
+      "passed": true
+    },
+    {
+      "name": "Focus records the previous Windows notification profile",
+      "passed": true
+    },
+    {
+      "name": "Focus restores its notification change",
+      "passed": true
+    },
+    {
+      "name": "Existing Do not disturb and alarms-only profiles are preserved",
+      "passed": true
+    },
+    {
+      "name": "Unknown notification profiles are never overwritten",
+      "passed": true
+    },
+    {
+      "name": "Focus does not undo notification changes made elsewhere",
+      "passed": true
+    },
+    {
+      "name": "Failed notification restore retains recoverable ownership",
+      "passed": true
+    },
+    {
+      "name": "Focus excludes Windows/antivirus and protects project/build background priorities",
+      "passed": true
+    },
+    {
+      "name": "Focus update guard journals all policies before writing and crosses midnight safely",
+      "passed": true
+    },
+    {
+      "name": "Update guard restores previously absent policy values",
+      "passed": true
+    },
+    {
+      "name": "Update guard restores explicit original DWORD values",
+      "passed": true
+    },
+    {
+      "name": "Update guard refuses unsupported or managed PCs before writes",
+      "passed": true
+    },
+    {
+      "name": "Update guard refuses changes without a durable recovery ledger",
+      "passed": true
+    },
+    {
+      "name": "Update recovery preserves externally changed policy and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "Update recovery rejects an unknown policy key",
+      "passed": true
+    },
+    {
+      "name": "Update recovery rejects malformed saved values",
+      "passed": true
+    },
+    {
+      "name": "Update guard does not report unconfirmed policy changes as applied",
+      "passed": true
+    },
+    {
+      "name": "Update guard preserves unsupported existing policy values",
+      "passed": true
+    },
+    {
+      "name": "Native Focus adapter resolves the dedicated same-user child",
+      "passed": true
+    },
+    {
+      "name": "Native Focus priority change is read back from Windows",
+      "passed": true
+    },
+    {
+      "name": "Native Focus restores the dedicated child's exact original priority",
+      "passed": true
+    },
+    {
+      "name": "Dedicated Focus helper exits normally without forced termination",
       "passed": true
     }
   ]

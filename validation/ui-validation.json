@@ -1,16 +1,24 @@
 {
-  "utc": "2026-10-24T02:56:43.4123399+00:00",
+  "utc": "2026-10-28T13:48:30.4544464+00:00",
   "scope": "Production control renders, compact dark/light dashboard and monitor settings, reduced-motion override and dispatcher heartbeat; care/Boost displays use fixtures; no destructive actions invoked",
   "compactWidth": 980,
   "compactHeight": 640,
   "reducedMotionOverridePassed": true,
-  "pageTransitionsStarted": 28,
-  "heartbeatTicks": 100,
-  "longestHeartbeatGapMs": 1738.9033999999997,
+  "pageTransitionsStarted": 30,
+  "heartbeatTicks": 112,
+  "longestHeartbeatGapMs": 944.7995999999994,
   "bindingErrors": [],
   "pages": [
     {
       "page": "DashboardPage",
+      "navigated": true,
+      "loaded": true,
+      "visible": true,
+      "width": 985,
+      "height": 679
+    },
+    {
+      "page": "FocusPage",
       "navigated": true,
       "loaded": true,
       "visible": true,

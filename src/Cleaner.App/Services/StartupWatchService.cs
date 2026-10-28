@@ -50,7 +50,10 @@ public sealed class StartupWatchService : IDisposable
         {
             try
             {
-                bool extended=cycle++%10==0;
+                // Keep the lightweight persistence watch; defer the expensive service/task
+                // inventory until Focus ends. Changes remain discoverable on the next pass.
+                bool extended=cycle%10==0&&!ViewModels.Pages.FocusViewModel.Active;
+                if(extended||cycle%10!=0)cycle++;
                 await Refresh(extended,stop.Token);
             }
             catch(OperationCanceledException){break;}

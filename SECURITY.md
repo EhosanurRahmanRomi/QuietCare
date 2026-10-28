@@ -4,7 +4,7 @@ This preview is unsigned. Do not interpret source review, package-signature veri
 
 ## Trust boundaries
 
-- The app normally runs as the signed-in user. Only Defender/drive operations requested directly or by a clicked Smart Care run invoke Windows UAC for a fixed Microsoft-signed tool and allowlisted arguments. No general privileged command runner is exposed.
+- The app normally runs as the signed-in user. Defender/drive operations requested directly or by a clicked Smart Care run invoke Windows UAC for a fixed Microsoft-signed tool and allowlisted arguments. Explicit Defender preference controls use an elevated one-shot copy of the installed app, a four-action allowlist, fixed native policy/WMI APIs and a separate confirmation. No general privileged command runner is exposed.
 - Tool paths are resolved from Windows system/Defender locations and verified through Windows embedded/catalog signature trust. Trust checks use cached certificate information; they do not provide a malware verdict or fresh online revocation assurance.
 - Cleanup refuses reparse/junction traversal and multiply-linked approved files. Scan approvals bind a specific result and target instance to file identities, sizes and write times and expire after ten minutes. File changes are rechecked using handles before quarantine.
 - Automatic cleanup permanently deletes only its own approved old-junk receipts. Advanced cleanup keeps recoverable items until the user explicitly restores or permanently deletes them. Recovery is not a backup of all PC files.
@@ -30,3 +30,11 @@ Report suspected vulnerabilities through [GitHub private reporting](https://gith
 ## Installer
 
 Setup contains a local MSI and verifies its embedded SHA-256 before using the Windows engine. It creates a private staging directory for the current user and SYSTEM and removes only its own temporary file and empty directory. Startup and shortcuts are explicit setup choices, enabled initially. The package has no arbitrary custom-action script, service or driver. Uninstall removes registered resources and preserves user state. The EXE/MSI are unsigned: the embedded hash detects payload corruption, not a maliciously replaced whole installer. Check the release SHA-256 and source.
+
+## Explicit Defender preferences
+
+Protection can now change one persistent local real-time policy or three scan CPU preferences when the user clicks and confirms. These changes are not automatic. Tamper Protection and managed-device restrictions are honored; no service/driver/permission bypass or global exclusions are used. Previous values are backed up in administrator-writable machine registry and retained after uninstall. Restore before uninstall to undo changes. See [Defender controls](docs/DEFENDER-CONTROLS.md) for exact scope and the distinction between real-time policy and a nonbinding scan CPU target. Native write/restore acceptance on the user’s actual policy remains unexecuted; tests use fixtures and a read-only provider/COM probe.
+
+## Focus sessions
+
+Focus changes are opt-in, timed and journaled before mutation. CPU priority changes apply only to eligible same-user/session processes; recovery verifies PID, creation time and executable. No process termination/suspension, High/Realtime priority, GPU driver changes or forced RAM limits are used. The optional elevated update helper accepts a fixed command/setting allowlist, validates its owning executable/user/session, serializes local-GPO editing, preserves original values, and attempts restore on owner exit or expiry. Power loss or simultaneous helper termination can require explicit recovery on next launch. Focus does not disable Defender. The optional undocumented QuietHours COM bridge fails visibly and does not use CloudStore patches or notification-service restarts. [Exact behavior](docs/FOCUS-MODE.md).

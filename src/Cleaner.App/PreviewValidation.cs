@@ -49,7 +49,7 @@ internal static class PreviewValidation
         System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level=System.Diagnostics.SourceLevels.Error;
         ApplicationThemeManager.Apply(ApplicationTheme.Dark);
         Localization.L.Current.Language = "en";
-        var pages = new Type[] {typeof(DashboardPage),typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
+        var pages = new Type[] {typeof(DashboardPage),typeof(FocusPage),typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(SystemCleanerPage),typeof(DeveloperCleanerPage),typeof(DiskAnalyzerPage),typeof(DuplicatesPage),typeof(LargeFilesPage),typeof(LogFinderPage),typeof(FolderComparePage),typeof(OrphanUserDataPage),typeof(CleanupHistoryPage),typeof(AutostartPage),typeof(InstalledProgramsPage),typeof(ServicesPage),typeof(RegistryCleanerPage),typeof(SystemMaintenancePage),typeof(SettingsPage),typeof(AboutPage)};
         var report = new List<object>();
         var window = services.GetRequiredService<MainWindow>();
         window.ShowActivated = false;
@@ -62,6 +62,7 @@ internal static class PreviewValidation
         var heartbeat=new DispatcherTimer(DispatcherPriority.Background){Interval=TimeSpan.FromMilliseconds(100)};
         heartbeat.Tick+=(_,_)=>{double now=heartbeatClock.Elapsed.TotalMilliseconds;longestHeartbeatGap=Math.Max(longestHeartbeatGap,now-lastHeartbeat);lastHeartbeat=now;heartbeatTicks++;};
         heartbeat.Start();
+        await services.GetRequiredService<CareHubViewModel>().RefreshProtectionAsync();
         var displayHub=services.GetRequiredService<CareHubViewModel>();
         displayHub.OnSnapshot(new QuietCare.Snapshot{Cpu=24,Gpu=7,Ram=65,Total=16UL*1024*1024*1024,Available=6UL*1024*1024*1024,Time=DateTime.Now});
         displayHub.ReadingTime="Display fixture · CPU 24% / GPU 7% / RAM 65%";
@@ -115,7 +116,7 @@ internal static class PreviewValidation
         ApplicationThemeManager.Apply(ApplicationTheme.Light);PreviewTheme.Apply(false);
         await Task.Delay(280);window.UpdateLayout();
         Render(previewShell,Path.Combine(output,"DashboardCompactLight.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
-        foreach(var type in new[]{typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(AutostartPage)})
+        foreach(var type in new[]{typeof(FocusPage),typeof(MemoryPage),typeof(ProtectionPage),typeof(StoragePage),typeof(ToolboxPage),typeof(AutostartPage)})
         {
             window.NavigateTo(type);await Task.Delay(280);window.UpdateLayout();Render(previewShell,Path.Combine(output,type.Name+"CompactLight.png"),(int)Math.Ceiling(previewShell.ActualWidth),(int)Math.Ceiling(previewShell.ActualHeight));
         }

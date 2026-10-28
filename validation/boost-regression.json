@@ -1,8 +1,8 @@
 {
-  "utc": "2026-10-24T02:30:20.8500231+00:00",
+  "utc": "2026-10-28T13:38:46.1039823+00:00",
   "count": 27,
   "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
-  "beforeBytes": 132747264,
+  "beforeBytes": 132706304,
   "afterBytes": 0,
   "tests": [
     {

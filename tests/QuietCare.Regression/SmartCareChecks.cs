@@ -14,6 +14,7 @@ static class SmartCareChecks
         check(SmartCarePolicy.Memory(pc with{MemoryUsedPercent=double.NaN}).NeedsReview,"Invalid memory telemetry cannot authorize an automatic trim");
         check(SmartCarePolicy.Security(pc).Run&&!SmartCarePolicy.Security(pc with{Defender=defender with{LastQuickScanUtc=now.AddHours(-2)}}).Run,"Defender quick scan is selected only when due or last completion is unknown");
         check(!SmartCarePolicy.Security(pc with{Defender=defender with{AntivirusEnabled=false}}).Run,"Inactive Defender is not selected as the antivirus provider");
+        check(!SmartCarePolicy.Security(pc with{Defender=defender with{RealtimeOffByLocalPolicy=true}}).Run,"Smart Care respects an explicit local off policy and does not start an automatic Defender scan");
         check(SmartCarePolicy.Security(pc with{Defender=defender with{LastQuickScanUtc=now.AddDays(1)}}).Run,"A future scan timestamp cannot suppress a needed check");
         check(SmartCarePolicy.Drive(pc).Run&&!SmartCarePolicy.Drive(pc with{OnBattery=true}).Run,"Drive care is deferred on battery");
         check(!SmartCarePolicy.Drive(pc with{CpuPercent=60}).Run&&SmartCarePolicy.Drive(pc with{CpuPercent=null}).NeedsReview,"Busy or unknown CPU load does not authorize drive optimization");

@@ -26,6 +26,7 @@ public static class SmartCarePolicy
     public static CareDecision Security(CareAssessment pc)
     {
         if(!pc.Defender.Available)return new(false,pc.Defender.Detail,true);
+        if(pc.Defender.RealtimeOffByLocalPolicy)return new(false,"Your local policy requests real-time protection off. Smart Care respects that choice and skips its automatic Defender scan; manual scans remain available.");
         if(!pc.Defender.AntivirusEnabled)return new(false,"Defender is not the enabled antivirus. Review your active provider in Windows Security.",true);
         var last=pc.Defender.LastQuickScanUtc;
         if(last.HasValue&&last<=pc.CheckedUtc&&pc.CheckedUtc-last<TimeSpan.FromDays(1))

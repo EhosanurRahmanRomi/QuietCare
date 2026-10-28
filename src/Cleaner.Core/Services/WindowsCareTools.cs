@@ -8,6 +8,7 @@ public enum WindowsCareJob { DefenderQuickScan, DefenderFullScan, OptimizeSystem
 public sealed record DefenderStatus(bool Available,bool AntivirusEnabled,bool RealTimeEnabled,string SignatureUpdated,string LastQuickScan,string Detail)
 {
     public DateTimeOffset? LastQuickScanUtc {get;init;}
+    public bool RealtimeOffByLocalPolicy {get;init;}
 }
 public sealed record WindowsJobResult(int ExitCode,string Message);
 
@@ -19,7 +20,11 @@ public static class WindowsCareTools
         {
             using var search=new ManagementObjectSearcher(@"root\Microsoft\Windows\Defender","SELECT AntivirusEnabled,RealTimeProtectionEnabled,AntivirusSignatureLastUpdated,QuickScanEndTime FROM MSFT_MpComputerStatus",new System.Management.EnumerationOptions{Timeout=TimeSpan.FromSeconds(3),ReturnImmediately=true});
             using var rows=search.Get();
-            foreach(ManagementObject row in rows)using(row)return new DefenderStatus(true,Convert.ToBoolean(row["AntivirusEnabled"]),Convert.ToBoolean(row["RealTimeProtectionEnabled"]),Date(row["AntivirusSignatureLastUpdated"]),Date(row["QuickScanEndTime"]),"Microsoft Defender status, read from Windows."){LastQuickScanUtc=UtcDate(row["QuickScanEndTime"])};
+            foreach(ManagementObject row in rows)using(row)
+            {
+                using var policy=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection");
+                return new DefenderStatus(true,Convert.ToBoolean(row["AntivirusEnabled"]),Convert.ToBoolean(row["RealTimeProtectionEnabled"]),Date(row["AntivirusSignatureLastUpdated"]),Date(row["QuickScanEndTime"]),"Microsoft Defender status, read from Windows."){LastQuickScanUtc=UtcDate(row["QuickScanEndTime"]),RealtimeOffByLocalPolicy=policy?.GetValue("DisableRealtimeMonitoring") is int off&&off==1};
+            }
             return new(false,false,false,"Unknown","Unknown","Windows did not return Defender status. Open Windows Security to check your active antivirus.");
         }
         catch(Exception ex){return new(false,false,false,"Unknown","Unknown","Defender status unavailable: "+ex.Message);}

@@ -24,6 +24,12 @@ public sealed partial class CareHubViewModel : ObservableObject
     [ObservableProperty] string _readingTime="Waiting for a live reading…";
     [ObservableProperty] string _protectionBadge="Not checked";
     [ObservableProperty] string _protectionDetail="Check your Windows antivirus status.";
+    [ObservableProperty] string _defenderControlStatus="Refresh status to read Windows policy and scan CPU settings.";
+    [ObservableProperty] string _scanCpuSettings="Reading scan preferences…";
+    [ObservableProperty] string _realtimePolicyInfo="Local policy has not been checked.";
+    [ObservableProperty] bool _canChangeDefender;
+    [ObservableProperty] bool _canKeepRealtimeOff;
+    [ObservableProperty] bool _hasScanCpuBackup;
     [ObservableProperty] string _diskAvailable="—";
     [ObservableProperty] string _diskDetail="System drive";
     [ObservableProperty] double _diskUsed;
@@ -38,7 +44,8 @@ public sealed partial class CareHubViewModel : ObservableObject
     [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _cleaning;
     [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _windowsJobRunning;
     [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _boostRunning;
-    public bool CareControlsReady=>!SmartCareRunning&&!Cleaning&&!WindowsJobRunning&&!BoostRunning;
+    [ObservableProperty,NotifyPropertyChangedFor(nameof(CareControlsReady))] bool _focusActive;
+    public bool CareControlsReady=>!FocusActive&&!SmartCareRunning&&!Cleaning&&!WindowsJobRunning&&!BoostRunning;
     [ObservableProperty] string _boostStatus="Expanded idle-app check: up to 24 apps, or 32 under high memory pressure. Protects active work and measures again after three seconds.";
     [ObservableProperty] string _cleanupStatus="Ready. Deletes old .tmp/.temp files and caches of closed browsers. Documents and projects are excluded.";
     [ObservableProperty] string _securityStatus="Open Windows Security to check your antivirus status.";
@@ -60,6 +67,7 @@ public sealed partial class CareHubViewModel : ObservableObject
     }
     [RelayCommand] public async Task StartSmartCareAsync()
     {
+        if(FocusActive){SmartCareStatus="Focus mode is active. End the focus session before starting maintenance.";return;}
         if(!CareControlsReady){SmartCareStatus="Another care action is running. Wait for its result before starting Smart Care.";return;}
         if(tasks.Count>0){SmartCareStatus="Wait for the current file/system task to finish before starting Smart Care.";return;}
         SmartCareRunning=true;careStop=new();
@@ -140,6 +148,35 @@ public sealed partial class CareHubViewModel : ObservableObject
         ProtectionBadge=!status.Available?"Status unavailable":!status.AntivirusEnabled?"Check antivirus provider":!status.RealTimeEnabled?"Protection needs review":"Protection on";
         ProtectionDetail=status.Available?"Microsoft Defender · real-time protection "+(status.RealTimeEnabled?"on":"off"):status.Detail;
         SecurityStatus=status.Available?$"Microsoft Defender: antivirus {(status.AntivirusEnabled?"enabled":"disabled")}; real-time protection {(status.RealTimeEnabled?"on":"off")}. Signatures: {status.SignatureUpdated}. Last quick scan: {status.LastQuickScan}.":status.Detail;
+        var control=await Task.Run(()=>new WindowsDefenderControlRuntime().Read());
+        CanChangeDefender=control.Available&&!control.ManagedDevice;
+        CanKeepRealtimeOff=CanChangeDefender&&control.PolicySupported&&!control.TamperProtected;
+        HasScanCpuBackup=control.OwnScanSettings;
+        ScanCpuSettings=control.Available?$"Scan CPU target: {control.ScanCpuTarget}% average · Low priority: {(control.LowCpuPriority?"on":"off")} · Idle-scan throttling: {(control.UnthrottledIdleScans?"off":"on")}":control.Detail;
+        RealtimePolicyInfo=control.Available?$"Real-time protection: {(control.RealTimeEnabled?"ON":"OFF")} · Local off policy: {(control.RealtimePolicy==1?"requested":"not requested")} · Tamper Protection: {(control.TamperProtected?"on":"off")} · {control.Detail}":control.Detail;
+        if(control.Available&&!control.RealTimeEnabled)ProtectionBadge="Real-time scanning off";
+        if(control.ManagedDevice&&control.Available)DefenderControlStatus="This device is managed. Protection changes must use your administrator's management policy.";
+        else if(control.TamperProtected)DefenderControlStatus="Tamper Protection is on. The off-policy action is unavailable; QuietCare will not bypass it.";
+        else DefenderControlStatus="Changes run only when you click, approve Windows and confirm the action. Restore is available for settings saved by QuietCare.";
+    }
+    [RelayCommand] public Task KeepRealtimeOffAsync()=>ChangeDefender("keep-off");
+    [RelayCommand] public Task RestoreRealtimeAsync()=>ChangeDefender("restore-on");
+    [RelayCommand] public Task LowerScanCpuAsync()=>ChangeDefender("scan-low");
+    [RelayCommand] public Task RestoreScanCpuAsync()=>ChangeDefender("scan-restore");
+    async Task ChangeDefender(string action)
+    {
+        if(!CareControlsReady||tasks.Count>0){DefenderControlStatus="Wait for the current care/file task to finish before changing protection preferences.";return;}
+        WindowsJobRunning=true;DefenderControlStatus="Waiting for Windows administrator approval and your confirmation…";
+        try
+        {
+            int code=await DefenderControlEntry.RequestAsync(action);
+            await RefreshProtectionAsync();
+            DefenderControlStatus=code==0?"Windows verified the requested change. Current settings are shown above.":code==1223?"The request was cancelled. No new action was started.":"Windows did not verify this request (code "+code+"). Review the current state and Windows result.";
+            Add(DefenderControlStatus);
+        }
+        catch(System.ComponentModel.Win32Exception ex) when(ex.NativeErrorCode==1223){DefenderControlStatus="Windows administrator approval was cancelled. No settings were changed.";}
+        catch(Exception ex){DefenderControlStatus="Protection change did not finish: "+ex.Message;}
+        finally{WindowsJobRunning=false;}
     }
     [RelayCommand] public Task QuickVirusScanAsync()=>RunWindows(WindowsCareJob.DefenderQuickScan);
     [RelayCommand] public Task FullVirusScanAsync()=>RunWindows(WindowsCareJob.DefenderFullScan);
