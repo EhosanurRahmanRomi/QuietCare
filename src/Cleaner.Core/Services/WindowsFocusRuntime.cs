@@ -16,7 +16,7 @@ public sealed class WindowsFocusRuntime(string journalPath) : IFocusRuntime
     {
         "explorer","SystemSettings","Taskmgr","ApplicationFrameHost","SearchHost","StartMenuExperienceHost",
         "MsMpEng","MpDefenderCoreService","NisSrv","SecurityHealthService","SecurityHealthSystray","Sense",
-        "MsSense","MsSenseS","smartscreen","dwm","audiodg","fontdrvhost","RuntimeBroker","ctfmon",
+        "MsSense","MsSenseS","SecHealthUI","MpCmdRun","MpUXSrv","MsMpEngCP","smartscreen","dwm","audiodg","fontdrvhost","RuntimeBroker","ctfmon",
         "csrss","lsass","winlogon","wininit","services","svchost","sihost","ShellExperienceHost",
         "avp","avpui","avgui","avgsvc","avastui","avastsvc","bdagent","bdservicehost","ekrn","egui",
         "ProtonVPN","ProtonVPNService","mbamservice","mbamtray","mcshield","mfemms","nortonsecurity","sophoshealth","sophosui"
@@ -25,6 +25,7 @@ public sealed class WindowsFocusRuntime(string journalPath) : IFocusRuntime
     {
         "devenv","MSBuild","dotnet","node","python","pythonw","git","Code","powershell","pwsh",
         "cmd","WindowsTerminal","conhost","wsl","wslhost","vmwp","vmware-vmx","VirtualBoxVM",
+        "terminal64","terminal","MarketLink","MarketLink.Chart","NinjaTrader","tws","ibgateway",
         "obs64","obs32","Teams","ms-teams","Zoom","WebexHost",
     };
     public static bool CanLower(string name)=>!BackgroundProtected.Contains(name);

@@ -7,7 +7,7 @@ from pathlib import Path
 import argparse,gc,hashlib,json,msilib,uuid,xml.etree.ElementTree as ET
 from msilib import schema,sequence
 
-parser=argparse.ArgumentParser();parser.add_argument('--payload',required=True);parser.add_argument('--output',required=True);parser.add_argument('--fixture',action='store_true');parser.add_argument('--version',default='0.7.1');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--payload',required=True);parser.add_argument('--output',required=True);parser.add_argument('--fixture',action='store_true');parser.add_argument('--version',default='0.7.2');args=parser.parse_args()
 payload=Path(args.payload).resolve();out=Path(args.output).resolve();out.parent.mkdir(parents=True,exist_ok=True)
 assert payload.is_dir() and (payload/'QuietCare.Next.exe').is_file()
 version=args.version;family='QuietCare.FixtureV2' if args.fixture else 'QuietCare.Desktop'

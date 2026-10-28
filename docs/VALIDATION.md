@@ -1,16 +1,16 @@
-# Validation of 0.7.1-preview.1
+# Validation of 0.7.2-preview.1
 
 Validated locally on Windows 11 x64 on 2026-10-28. Fixture coverage, production-control renders, native Windows calls and installed-app acceptance are distinguished below. Passing these checks does not establish bug-free behavior or every hardware configuration.
 
 | Evidence | Result | Scope |
 | --- | --- | --- |
 | Release compile/publish | Successful; warnings treated as errors | .NET SDK 10.0.402; self-contained compressed Windows x64 executable; no new NuGet dependencies |
-| Core regressions | **130 passed** | Guarded cleanup/recovery, startup mappings/diffs, Windows-tool trust, care decisions, explicit Defender settings, Focus journals, PID reuse, external changes, unsupported/managed devices, failure/rollback and a dedicated native process-priority child |
+| Core regressions | **131 passed** | Guarded cleanup/recovery, startup mappings/diffs, Windows-tool trust, care decisions, explicit Defender settings, Focus journals, PID reuse, external changes, unsupported/managed devices, failure/rollback and a dedicated native process-priority child |
 | RAM fixtures/helper | **27 passed** | Protected work/media/security, selection bounds, cooldown, refill/negative-delta reporting, and allocated-data preservation in a dedicated 96 MiB helper |
 | Production controls | **22 pages + monitor; zero binding errors** | Real WPF controls, compact light layout including Focus, dark/light dashboard and monitor settings, reduced-motion override. Care/Boost results use labeled fixtures. No destructive actions invoked by the UI harness. |
 | Native Focus priorities | Passed | Dedicated child at Above normal, read back from Windows, then exact original priority restored; no user app used |
 | Native notifications and awake | **3 passed** | Actual Do not disturb request/readback, display/system power request, and previous notification profile restored. A failed early restore check led to bounded setter retries; the corrected round trip passed. |
-| Corrected worker end-state | **3 passed** | Production session start/stop, notification restore and released power/notification labels verified in 0.7.1; no user-app priority or update policy change in this patch check |
+| Corrected worker end-state | **3 passed** | Production session start/stop, notification restore and released power/notification labels verified in 0.7.1 (unchanged in 0.7.2); no user-app priority or update policy change in this patch check |
 | Native production worker and update guard | **4 passed** | Feature acceptance in 0.7.0 (unchanged guard implementation): actual session, UAC-elevated temporary local-GPO writes, Stop, worker exit and exact original policy restoration. No Defender settings or user-app priorities changed in this check. |
 | Defender provider and local-GPO probe | Passed, read-only | Actual WMI status, required Set-parameter types and COM policy access. Persistent protection-off and scan-CPU preference writes were not executed on the user PC. |
 | Dependency advisories | No known vulnerable dependencies returned | Fresh NuGet.org advisory query; signatures/provenance are not a guarantee of harmless behavior |

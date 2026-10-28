@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-28T13:47:44.348166+00:00",
+  "utc": "2026-10-28T14:15:59.24589+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 130,
+  "count": 131,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -465,6 +465,10 @@
     },
     {
       "name": "Focus excludes Windows/antivirus and protects project/build background priorities",
+      "passed": true
+    },
+    {
+      "name": "Focus leaves Windows Security and background trading/project hosts alone",
       "passed": true
     },
     {
