@@ -1,0 +1,68 @@
+{
+  "utc": "2026-10-28T13:49:56.8805914+00:00",
+  "scope": "Live compact monitor plus startup watch, main UI unopened, no Boost invoked; short local sample, not a benchmark",
+  "startupWatchStatus": "Watching startup entries. Registry/folder checks every 30 seconds; tasks/services every 5 minutes.",
+  "measurements": [
+    {
+      "phase": "First 20 seconds including startup initialization",
+      "seconds": 20.7228429,
+      "cpuPercentOfMachine": 4.637089565969768,
+      "workingSetBytes": 235163648,
+      "privateBytes": 107429888
+    },
+    {
+      "refreshMs": 1000,
+      "seconds": 12.0125472,
+      "samples": 12,
+      "cpuPercentOfMachine": 0.24388542126281207,
+      "samplingCpuMs": 46.875,
+      "samplingWallMs": 252.96569999999997,
+      "workingSetBytes": 234745856,
+      "privateBytes": 106164224,
+      "latest": {
+        "Time": "2026-10-28T19:49:36.6123328+06:00",
+        "Cpu": 73.8703339882122,
+        "Gpu": 26.67138366930409,
+        "DiskRead": null,
+        "DiskWrite": null,
+        "Ram": 56,
+        "Total": 17006391296,
+        "Available": 7368552448,
+        "Download": null,
+        "Upload": null,
+        "GpuStatus": "Busiest GPU engine across adapters"
+      },
+      "mainWindowCreated": false
+    },
+    {
+      "refreshMs": 250,
+      "seconds": 12.0154268,
+      "samples": 48,
+      "cpuPercentOfMachine": 0.6014398544499011,
+      "samplingCpuMs": 140.625,
+      "samplingWallMs": 1077.0001000000009,
+      "workingSetBytes": 238702592,
+      "privateBytes": 109625344,
+      "latest": {
+        "Time": "2026-10-28T19:49:49.4475451+06:00",
+        "Cpu": 100,
+        "Gpu": 16.44235836801135,
+        "DiskRead": null,
+        "DiskWrite": null,
+        "Ram": 57,
+        "Total": 17006391296,
+        "Available": 7306178560,
+        "Download": null,
+        "Upload": null,
+        "GpuStatus": "Busiest GPU engine across adapters"
+      },
+      "mainWindowCreated": false
+    },
+    {
+      "phase": "Monitor hidden",
+      "seconds": 6.0332631,
+      "cpuPercentOfMachine": 0,
+      "workingSetBytes": 238858240
+    }
+  ]
+}

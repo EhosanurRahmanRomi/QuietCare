@@ -1,0 +1,117 @@
+{
+  "utc": "2026-10-28T13:38:46.1039823+00:00",
+  "count": 27,
+  "scope": "Synthetic policy checks and one dedicated memory helper; no user application trimmed",
+  "beforeBytes": 132706304,
+  "afterBytes": 0,
+  "tests": [
+    {
+      "name": "GPU sums matching engines and chooses the busiest engine",
+      "passed": true
+    },
+    {
+      "name": "Missing GPU readings remain unavailable",
+      "passed": true
+    },
+    {
+      "name": "Only idle fixture qualifies; editor protected",
+      "passed": true
+    },
+    {
+      "name": "Unknown audio state prevents all trimming",
+      "passed": true
+    },
+    {
+      "name": "Foreground app is protected",
+      "passed": true
+    },
+    {
+      "name": "User exclusion prevents trimming",
+      "passed": true
+    },
+    {
+      "name": "Foreground browser renderer without idle priority protected",
+      "passed": true
+    },
+    {
+      "name": "Immediate working-set drop is rechecked after settling",
+      "passed": true
+    },
+    {
+      "name": "Refilled pages are not reported as a lasting RAM reduction",
+      "passed": true
+    },
+    {
+      "name": "Small actual available-RAM changes are shown in bytes instead of whole percentages",
+      "passed": true
+    },
+    {
+      "name": "Process working-set sums are distinguished from total RAM reclaimed",
+      "passed": true
+    },
+    {
+      "name": "An overall available-RAM decrease cannot be displayed as a gain",
+      "passed": true
+    },
+    {
+      "name": "Cancelled Boost makes no trim requests",
+      "passed": true
+    },
+    {
+      "name": "Conservative policy continues to exclude visible background windows",
+      "passed": true
+    },
+    {
+      "name": "Expanded idle policy includes an inactive visible app without closing its window",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy still protects the foreground app",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy applies a stricter observed CPU-idle requirement",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy protects media-playing background apps",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy cannot bypass unavailable media verification",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy preserves project tools, antivirus and QuietCare itself",
+      "passed": true
+    },
+    {
+      "name": "Expanded high-pressure run is bounded at 32 accepted trims",
+      "passed": true
+    },
+    {
+      "name": "Expanded run with lower memory pressure is bounded at 24 accepted trims",
+      "passed": true
+    },
+    {
+      "name": "Expanded policy leaves newly started apps time to initialize",
+      "passed": true
+    },
+    {
+      "name": "RAM cooldown prevents repeated trimming and exposes the remaining wait",
+      "passed": true
+    },
+    {
+      "name": "96 MB memory helper initialized",
+      "passed": true
+    },
+    {
+      "name": "Live working-set reduction measured in dedicated helper",
+      "passed": true
+    },
+    {
+      "name": "All 96 MB of allocated helper data preserved",
+      "passed": true
+    }
+  ]
+}

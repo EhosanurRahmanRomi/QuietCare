@@ -1,0 +1,23 @@
+{
+  "scope": "Actual production worker and elevated temporary update guard, including policy restoration after Stop. No Defender settings or user-app priorities changed.",
+  "workerCpuPercentOfMachine": 0.7803470734071452,
+  "sampleSeconds": 6,
+  "checks": [
+    {
+      "name": "Production Focus worker starts a bounded session",
+      "passed": true
+    },
+    {
+      "name": "Elevated production update guard saves temporary local policies",
+      "passed": true
+    },
+    {
+      "name": "Production worker restores notifications and exits after Stop",
+      "passed": true
+    },
+    {
+      "name": "Elevated guard restores the exact original local policies after worker exit",
+      "passed": true
+    }
+  ]
+}

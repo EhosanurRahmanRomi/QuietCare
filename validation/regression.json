@@ -1,0 +1,527 @@
+{
+  "utc": "2026-10-28T13:47:44.348166+00:00",
+  "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
+  "count": 130,
+  "checks": [
+    {
+      "name": "Age and exclusion policy bound preview",
+      "passed": true
+    },
+    {
+      "name": "Scan did not mutate content",
+      "passed": true
+    },
+    {
+      "name": "Changed file rejected after preview",
+      "passed": true
+    },
+    {
+      "name": "Quarantine moves approved file without claiming freed space",
+      "passed": true
+    },
+    {
+      "name": "Recent and excluded files preserved",
+      "passed": true
+    },
+    {
+      "name": "Scan authorization consumed once",
+      "passed": true
+    },
+    {
+      "name": "Recovery metadata survives enumeration",
+      "passed": true
+    },
+    {
+      "name": "Restore refuses to overwrite existing file",
+      "passed": true
+    },
+    {
+      "name": "Restore preserves content and removes completed record",
+      "passed": true
+    },
+    {
+      "name": "Forged scan cannot authorize cleanup",
+      "passed": true
+    },
+    {
+      "name": "New exclusions rechecked before mutation",
+      "passed": true
+    },
+    {
+      "name": "Cancelled cleanup leaves input untouched",
+      "passed": true
+    },
+    {
+      "name": "A different target instance cannot consume an approval",
+      "passed": true
+    },
+    {
+      "name": "Junction fixture created",
+      "passed": true
+    },
+    {
+      "name": "Enumerator refuses junction traversal",
+      "passed": true
+    },
+    {
+      "name": "Linked scan root rejected",
+      "passed": true
+    },
+    {
+      "name": "Hardlink fixture created",
+      "passed": true
+    },
+    {
+      "name": "Multiply linked files excluded from approved preview",
+      "passed": true
+    },
+    {
+      "name": "A second quarantine records recovery data",
+      "passed": true
+    },
+    {
+      "name": "Permanent deletion removes only selected quarantined file",
+      "passed": true
+    },
+    {
+      "name": "Outside sentinel remains intact",
+      "passed": true
+    },
+    {
+      "name": "Maintenance rejects arbitrary shell commands",
+      "passed": true
+    },
+    {
+      "name": "Restore-point destruction blocked before execution",
+      "passed": true
+    },
+    {
+      "name": "Generic recursive directory deletion unavailable",
+      "passed": true
+    },
+    {
+      "name": "Empty duplicate-search roots return no results",
+      "passed": true
+    },
+    {
+      "name": "Duplicate finder compares SHA-256 content",
+      "passed": true
+    },
+    {
+      "name": "Disk analysis reports fixture sizes and counts",
+      "passed": true
+    },
+    {
+      "name": "One-click cleanup actually deletes its eligible fixture and reports bytes",
+      "passed": true
+    },
+    {
+      "name": "Automatic cleanup preserves recent, non-temp, project and recovery fixtures",
+      "passed": true
+    },
+    {
+      "name": "Automatic cleanup never purges another operation's recovery receipt",
+      "passed": true
+    },
+    {
+      "name": "Automatic browser plan enforces seven-day floor independently of advanced settings",
+      "passed": true
+    },
+    {
+      "name": "Browser plan excludes sessions, offline storage and recent cache",
+      "passed": true
+    },
+    {
+      "name": "Browser becoming active after scan blocks its cache cleanup",
+      "passed": true
+    },
+    {
+      "name": "Running browsers are unavailable to automatic cleanup",
+      "passed": true
+    },
+    {
+      "name": "Closed-browser fixture cleanup removes only old disposable cache",
+      "passed": true
+    },
+    {
+      "name": "Cancelled automatic cleanup never starts a scan",
+      "passed": true
+    },
+    {
+      "name": "32-bit machine startup uses Run32 approval mapping",
+      "passed": true
+    },
+    {
+      "name": "Startup-folder toggles use Windows approval state",
+      "passed": true
+    },
+    {
+      "name": "Startup approval encoding is exactly twelve bytes",
+      "passed": true
+    },
+    {
+      "name": "Startup approval enable/disable round trip",
+      "passed": true
+    },
+    {
+      "name": "Unknown approval state is conservatively treated as enabled",
+      "passed": true
+    },
+    {
+      "name": "First startup scan establishes a quiet baseline",
+      "passed": true
+    },
+    {
+      "name": "Unchanged startup entries generate no alerts",
+      "passed": true
+    },
+    {
+      "name": "A new startup item generates an alert",
+      "passed": true
+    },
+    {
+      "name": "Changed startup commands generate an alert",
+      "passed": true
+    },
+    {
+      "name": "Re-enabled startup entries generate an alert",
+      "passed": true
+    },
+    {
+      "name": "Startup baseline remains case-insensitive after JSON reload",
+      "passed": true
+    },
+    {
+      "name": "An inaccessible or empty source does not erase the last-seen baseline",
+      "passed": true
+    },
+    {
+      "name": "Unsigned executable fixtures fail Windows-tool trust verification",
+      "passed": true
+    },
+    {
+      "name": "Optimization uses the fixed Windows tool and media-appropriate operation",
+      "passed": true
+    },
+    {
+      "name": "Installed Windows optimization tool has a trusted Microsoft signature",
+      "passed": true
+    },
+    {
+      "name": "Defender scan modes resolve to a trusted Microsoft scanner",
+      "passed": true
+    },
+    {
+      "name": "Unknown Windows job is rejected before launch",
+      "passed": true
+    },
+    {
+      "name": "Concurrent disk scans keep independent counts",
+      "passed": true
+    },
+    {
+      "name": "Automatic memory care chooses a trim when RAM use is at least 65 percent",
+      "passed": true
+    },
+    {
+      "name": "Healthy memory readings do not trigger unnecessary automatic trimming",
+      "passed": true
+    },
+    {
+      "name": "Low available RAM triggers a memory check independently of percentage",
+      "passed": true
+    },
+    {
+      "name": "Invalid memory telemetry cannot authorize an automatic trim",
+      "passed": true
+    },
+    {
+      "name": "Defender quick scan is selected only when due or last completion is unknown",
+      "passed": true
+    },
+    {
+      "name": "Inactive Defender is not selected as the antivirus provider",
+      "passed": true
+    },
+    {
+      "name": "Smart Care respects an explicit local off policy and does not start an automatic Defender scan",
+      "passed": true
+    },
+    {
+      "name": "A future scan timestamp cannot suppress a needed check",
+      "passed": true
+    },
+    {
+      "name": "Drive care is deferred on battery",
+      "passed": true
+    },
+    {
+      "name": "Busy or unknown CPU load does not authorize drive optimization",
+      "passed": true
+    },
+    {
+      "name": "Recent successful optimization prevents repeated drive work",
+      "passed": true
+    },
+    {
+      "name": "One click runs the five real action interfaces sequentially with final outcomes",
+      "passed": true
+    },
+    {
+      "name": "Automatic care rechecks live conditions before memory, security and drive actions and reports step transitions",
+      "passed": true
+    },
+    {
+      "name": "Late progress cannot turn a completed action back into a running step",
+      "passed": true
+    },
+    {
+      "name": "Saved automatic care report retains all step results",
+      "passed": true
+    },
+    {
+      "name": "An action failure stays visible and does not prevent independent care checks",
+      "passed": true
+    },
+    {
+      "name": "A later rise in CPU load prevents drive work using fresh readings",
+      "passed": true
+    },
+    {
+      "name": "Unavailable antivirus status cannot become a false all-clear or launch a scanner",
+      "passed": true
+    },
+    {
+      "name": "Stop during a Windows job records its result and prevents the remaining drive action",
+      "passed": true
+    },
+    {
+      "name": "A pre-cancelled care request performs no assessment or action",
+      "passed": true
+    },
+    {
+      "name": "Concurrent automatic care requests cannot duplicate cleanup or Windows jobs",
+      "passed": true
+    },
+    {
+      "name": "Explicit off persists the local policy, backs up the previous value and verifies actual Windows state",
+      "passed": true
+    },
+    {
+      "name": "Repeated off does not overwrite the original policy backup",
+      "passed": true
+    },
+    {
+      "name": "Restore removes only the owned off policy and verifies protection on",
+      "passed": true
+    },
+    {
+      "name": "Restore preserves a previous explicit zero local-policy value",
+      "passed": true
+    },
+    {
+      "name": "Tamper Protection blocks off without bypasses or writes",
+      "passed": true
+    },
+    {
+      "name": "Unavailable protection telemetry cannot authorize off",
+      "passed": true
+    },
+    {
+      "name": "Managed PCs do not receive local protection overrides",
+      "passed": true
+    },
+    {
+      "name": "Unsupported Windows edition blocks persistent policy changes",
+      "passed": true
+    },
+    {
+      "name": "An existing external off policy is not claimed or changed",
+      "passed": true
+    },
+    {
+      "name": "A rejected off request stays visibly unverified and retains its restore backup",
+      "passed": true
+    },
+    {
+      "name": "Losing status after a request cannot become a false protection-off success",
+      "passed": true
+    },
+    {
+      "name": "Restore refuses to overwrite a conflicting newer local policy",
+      "passed": true
+    },
+    {
+      "name": "Restore does not remove an off policy owned outside QuietCare",
+      "passed": true
+    },
+    {
+      "name": "A failed backup prevents policy and preference changes",
+      "passed": true
+    },
+    {
+      "name": "Lower scan CPU sets bounded scan preferences without disabling real-time protection",
+      "passed": true
+    },
+    {
+      "name": "Repeated CPU mode preserves the original scan preference backup",
+      "passed": true
+    },
+    {
+      "name": "Previous scan preferences are restored exactly",
+      "passed": true
+    },
+    {
+      "name": "CPU restore preserves externally changed settings and retains the backup",
+      "passed": true
+    },
+    {
+      "name": "Ignored scan preferences cannot be reported as an applied CPU limit",
+      "passed": true
+    },
+    {
+      "name": "An unapplied scan request can restore its unchanged original preferences",
+      "passed": true
+    },
+    {
+      "name": "Unknown privileged actions are rejected before any mutation",
+      "passed": true
+    },
+    {
+      "name": "Restoring absent scan backup is a harmless no-op",
+      "passed": true
+    },
+    {
+      "name": "Focus duration rejects unbounded or invalid sessions",
+      "passed": true
+    },
+    {
+      "name": "Focus journals original identity and priority before changing it",
+      "passed": true
+    },
+    {
+      "name": "Focus avoids repeated priority writes",
+      "passed": true
+    },
+    {
+      "name": "Focus priority switches retain the original baseline",
+      "passed": true
+    },
+    {
+      "name": "Focus end restores original priority and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "Focus never applies High or Realtime priority",
+      "passed": true
+    },
+    {
+      "name": "Focus recovery refuses a reused PID",
+      "passed": true
+    },
+    {
+      "name": "Focus recovery verifies executable identity",
+      "passed": true
+    },
+    {
+      "name": "Focus preserves a priority changed by another tool",
+      "passed": true
+    },
+    {
+      "name": "Focus does not reclaim a process changed externally during the session",
+      "passed": true
+    },
+    {
+      "name": "Focus refuses mutation if the journal cannot be saved",
+      "passed": true
+    },
+    {
+      "name": "Focus retains recovery data after a failed priority request",
+      "passed": true
+    },
+    {
+      "name": "Focus records the previous Windows notification profile",
+      "passed": true
+    },
+    {
+      "name": "Focus restores its notification change",
+      "passed": true
+    },
+    {
+      "name": "Existing Do not disturb and alarms-only profiles are preserved",
+      "passed": true
+    },
+    {
+      "name": "Unknown notification profiles are never overwritten",
+      "passed": true
+    },
+    {
+      "name": "Focus does not undo notification changes made elsewhere",
+      "passed": true
+    },
+    {
+      "name": "Failed notification restore retains recoverable ownership",
+      "passed": true
+    },
+    {
+      "name": "Focus excludes Windows/antivirus and protects project/build background priorities",
+      "passed": true
+    },
+    {
+      "name": "Focus update guard journals all policies before writing and crosses midnight safely",
+      "passed": true
+    },
+    {
+      "name": "Update guard restores previously absent policy values",
+      "passed": true
+    },
+    {
+      "name": "Update guard restores explicit original DWORD values",
+      "passed": true
+    },
+    {
+      "name": "Update guard refuses unsupported or managed PCs before writes",
+      "passed": true
+    },
+    {
+      "name": "Update guard refuses changes without a durable recovery ledger",
+      "passed": true
+    },
+    {
+      "name": "Update recovery preserves externally changed policy and releases ownership",
+      "passed": true
+    },
+    {
+      "name": "Update recovery rejects an unknown policy key",
+      "passed": true
+    },
+    {
+      "name": "Update recovery rejects malformed saved values",
+      "passed": true
+    },
+    {
+      "name": "Update guard does not report unconfirmed policy changes as applied",
+      "passed": true
+    },
+    {
+      "name": "Update guard preserves unsupported existing policy values",
+      "passed": true
+    },
+    {
+      "name": "Native Focus adapter resolves the dedicated same-user child",
+      "passed": true
+    },
+    {
+      "name": "Native Focus priority change is read back from Windows",
+      "passed": true
+    },
+    {
+      "name": "Native Focus restores the dedicated child's exact original priority",
+      "passed": true
+    },
+    {
+      "name": "Dedicated Focus helper exits normally without forced termination",
+      "passed": true
+    }
+  ]
+}

@@ -1,33 +1,42 @@
-# Validation and evidence
+# Validation of 0.7.0-preview.1
 
-## Local 0.3.0 results - 23 October 2026
+Validated locally on Windows 11 x64 on 2026-10-28. Fixture coverage, production-control renders, native Windows calls and installed-app acceptance are distinguished below. Passing these checks does not establish bug-free behavior or every hardware configuration.
 
-**45 core + 27 WPF UI + 17 updater + 9 Care (including one live read-only scan) + 4 isolated installer checks passed.** Optimized x64 app/installer compile with warnings treated as errors. These are scoped checks, not a no-bug, security or performance guarantee.
+| Evidence | Result | Scope |
+| --- | --- | --- |
+| Release compile/publish | Successful; warnings treated as errors | .NET SDK 10.0.402; self-contained compressed Windows x64 executable; no new NuGet dependencies |
+| Core regressions | **130 passed** | Guarded cleanup/recovery, startup mappings/diffs, Windows-tool trust, care decisions, explicit Defender settings, Focus journals, PID reuse, external changes, unsupported/managed devices, failure/rollback and a dedicated native process-priority child |
+| RAM fixtures/helper | **27 passed** | Protected work/media/security, selection bounds, cooldown, refill/negative-delta reporting, and allocated-data preservation in a dedicated 96 MiB helper |
+| Production controls | **22 pages + monitor; zero binding errors** | Real WPF controls, compact light layout including Focus, dark/light dashboard and monitor settings, reduced-motion override. Care/Boost results use labeled fixtures. No destructive actions invoked by the UI harness. |
+| Native Focus priorities | Passed | Dedicated child at Above normal, read back from Windows, then exact original priority restored; no user app used |
+| Native notifications and awake | **3 passed** | Actual Do not disturb request/readback, display/system power request, and previous notification profile restored. A failed early restore check led to bounded setter retries; the corrected round trip passed. |
+| Native production worker and update guard | **4 passed** | Actual session, UAC-elevated temporary local-GPO writes, Stop, worker exit and exact original policy restoration. No Defender settings or user-app priorities changed in this check. |
+| Defender provider and local-GPO probe | Passed, read-only | Actual WMI status, required Set-parameter types and COM policy access. Persistent protection-off and scan-CPU preference writes were not executed on the user PC. |
+| Dependency advisories | No known vulnerable dependencies returned | Fresh NuGet.org advisory query; signatures/provenance are not a guarantee of harmless behavior |
 
-| Evidence | Scope |
-| --- | --- |
-| [Core](evidence/v0.3.0/test-results.txt) | File/identity/recovery boundaries, telemetry, startup fixtures, protection policy, accepted-versus-observed outcomes, cooldown/caps and isolated live memory helper. |
-| [WPF UI](evidence/v0.3.0/ui-test-results.txt) | 15 production routes, minimum width, transparency, direct floating-button event, scan steps/results, manual update host, settings and table sorting. Scan/update/Boost hosts here are fixtures. |
-| [Updater](evidence/v0.3.0/update-test-results.txt) | Fake HTTP with real hash/file/cache/Internet-zone guards, channel/version parsing, tamper/redirect/size/cancel failures and launch callback locking. No installer is executed. |
-| [Care](evidence/v0.3.0/care-live-results.txt) | Eight fixture/orchestration checks and a real six-category read-only Windows scan. Temp scan reached its bound and correctly reported Partial. |
-| [Installer](evidence/v0.3.0/installer-test-results.txt) | Isolated install/hash/registration/shortcuts, reinstall, unrelated-shortcut preservation, uninstall with data retention. |
-| [Boost eligibility audit](evidence/v0.3.0/boost-audit-results.txt) | Read-only current-PC selection/rechecks with aggregate reasons, no saved process names/paths and no user-app trim. |
-| [Benchmark](evidence/v0.3.0/benchmark-results.json) | Four short local runs; cold monitor-only construction and hidden polling flags included. |
+The final UI harness recorded 112 dispatcher heartbeats, a longest observed gap of 945 ms during rendering/navigation, 30 page transitions and a successful no-animation override. This is not frame-perfect interactive acceptance.
 
-## What the live memory test proves
+## Native installer
 
-The test filters native trimming to a dedicated helper PID, observes its working-set decrease, then checks every byte of its 96 MB allocation. User applications are not trimmed by the test. Accepted API requests and lower resident memory do not establish a responsiveness improvement or lasting overall RAM reduction. The current-PC selection audit observed two eligible candidates at that moment; eligibility changes with activity and exclusions.
+**55 checks passed** with the full release payload in isolated native MSI fixtures: installation, SHA-256 payload checks, both startup/desktop choices, registration, uninstall preservation, newer-version upgrade and downgrade rejection. Exact results are in [installer-validation.json](../validation/installer-validation.json). Test startup entries/directories were isolated and unowned sentinel files survived. The real production package is distinct from these fixture products.
 
-## Visual and runtime scope
+The previous installed acceptance report in `validation/installed-validation.json` identifies version 0.6.0 explicitly; it is historical until replaced by the new install receipt. Reboot/sign-in acceptance has not been performed. Startup registration checks alone do not prove a reboot test.
 
-The current Care, live-scan, Boost-results and Updates images are renders of production WPF controls made by the UI harness. The live-scan/Boost examples use explicitly labeled synthetic fixtures; they are not physical-PC scan/optimization evidence. Native automation of the 0.3.0 window could not complete because the computer-use helper reported `foreground window did not report a process id`, including after recovery. Interactive click/scroll/DPI acceptance therefore remains pending. Older 0.2.0 native monitor/window captures and maximize/restore evidence are historical, not current proof.
+## Short monitor resource sample
 
-Core tests exercise live Windows telemetry/audio and native memory trimming; Care live checks read Windows state. WPF control tests and rendered review are separate from these runtime checks. Offline updater tests do not prove live GitHub retrieval; post-publication live download verification is reported separately with release verification evidence. It never executes the downloaded installer.
+With the final 0.7 executable, the monitor/startup-watch harness kept the main window unopened. The first 20 seconds including initialization averaged **4.64%** of total-machine CPU. Warmed 12-second samples averaged **0.24% at 1,000 ms** and **0.60% at 250 ms**; 12 and 48 samples completed. The hidden-monitor sample measured **0.00%** over six seconds. Working sets were roughly **224-228 MiB**. This is a short local sample under concurrent workload, not a sustained benchmark. A separate six-second worker sample including the update guard measured about 0.78% for the worker alone; it does not include every helper's CPU cost.
 
-## CI and remaining gaps
+## RAM and meter limits
 
-CI builds/packages and runs WPF, offline updater/Care and isolated installer checks. It does not run the local hardware/audio core suite. A passing hosted build is not physical-device proof.
+The last explicitly requested user-app Boost pass, from the earlier 0.5 build, observed **+294.1 MiB** available RAM after three seconds across ten eligible processes. It is historical, not a new 0.7 measurement or a 1 GiB guarantee. Current tests use isolated fixtures and a dedicated allocation helper. Working-set reductions can refill and shared pages overlap; they are not freed application allocations.
 
-Remaining: independent security audit, Authenticode/update signatures, wider browser/application compatibility, interactive native UI/scrolling, Windows/GPU/DPI/multi-monitor/high-contrast/accessibility coverage, prolonged resource/battery tests, wider upgrade testing and deterministic builds. The app is not a complete Advanced SystemCare suite or an antivirus.
+The meter reads Windows processor busy time, approximate physical-memory load and the busiest GPU engine across adapters. Sampling windows, rounding and driver support can differ from Task Manager. No exact Task Manager parity or universal GPU/greater-than-64-CPU coverage is claimed.
 
-Historical [0.2.0 evidence](VALIDATION-v0.2.0.txt) remains dated and separate.
+## Not established
+
+- Every interactive button/keyboard/UAC outcome, broad hardware/language coverage or long-duration testing.
+- End-to-end Defender scan/remediation, real drive optimization, or persistent protection-off/scan-CPU writes on this PC. Signature resolution, allowlists, fixture policies and the live read-only provider were tested.
+- Restart behavior through every enforced deadline, updates already in progress, notification popups from every app, simultaneous helper termination/power loss, or full CPU/GPU/RAM reservation. Focus documents those limits and retains failed recovery data.
+- Authenticode signing, independent security audit, bug-free behavior or fixed performance/RAM gains.
+
+[Focus mode](FOCUS-MODE.md) · [Source review](FOCUS-SOURCE-REVIEW.md) · [Defender controls](DEFENDER-CONTROLS.md) · [Machine-readable evidence](../validation/)

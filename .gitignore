@@ -1,32 +1,44 @@
-# Generated binaries and isolated test data
-/build/
-/test-runs/
-/dist/
-/release-assets/
-*.exe
-*.dll
-*.pdb
-*.zip
-*.log
-
-# Local app state must never be published
-settings.xml
-activity.log
-Recovery/
-StartupBackups/
-.env
-.env.*
-*.pfx
-*.p12
-*.pem
-*.key
-.private/
-
-# Editor/OS state
-.vs/
-.vscode/
+# .NET
+bin/
+obj/
+out/
 *.user
 *.suo
+.vs/
+.vscode/
+*.userprefs
+
+# Rider
+.idea/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Pp]ublish/
+publish/
+publish-test/
+releases/
+TestResults/
+
+# NuGet
+*.nupkg
+project.lock.json
+packages/
+
+# Logs
+*.log
+crash.log
+cleaner.log
+powerclean.log
+
+# Claude Code workspace
+.claude/
+
+# OS
 Thumbs.db
-Desktop.ini
+.DS_Store
+
+artifacts/
+work/
 __pycache__/
+*.pyc

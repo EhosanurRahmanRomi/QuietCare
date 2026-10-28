@@ -1,5 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: Private security report
-    url: https://github.com/EhosanurRahmanRomi/QuietCare/security/advisories/new
-    about: Report exploitable security details privately.

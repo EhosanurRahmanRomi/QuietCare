@@ -1,0 +1,51 @@
+[
+  {
+    "name": "PowerClean",
+    "repository": "fgilde/PowerClean",
+    "commit": "82798038a8969465c8ef300c00f8d96a0dad4903",
+    "license": "MIT",
+    "decision": "Attributed application foundation; unsafe inherited actions removed or restricted."
+  },
+  {
+    "name": "BCUninstaller",
+    "repository": "BCUninstaller/Bulk-Crap-Uninstaller",
+    "commit": "30da609384c98ba6e35c6530129541ea4ff3970a",
+    "license": "Apache-2.0",
+    "decision": "Startup approval mapping/state encoding adapted with copyright and license; backups added independently."
+  },
+  {
+    "name": "TrafficMonitor",
+    "repository": "zhongyang219/TrafficMonitor",
+    "commit": "930f17533d6098989ebad62f210aa97d75ef174b",
+    "license": "Anti-996",
+    "decision": "Compact-monitor presentation reference. Own native layered renderer; no code copied."
+  },
+  {
+    "name": "Mem Reduct",
+    "repository": "henrypp/memreduct",
+    "commit": "04402de8b6a8ff9d1c5517c675d87c346655323c",
+    "license": "GPL-3.0",
+    "decision": "Memory-purge behavior reviewed. Global memory-list purges rejected; guarded per-process trimming retained."
+  },
+  {
+    "name": "BleachBit",
+    "repository": "bleachbit/bleachbit",
+    "commit": "e071627a34973ba996c0c3b54a12c6dff98bab17",
+    "license": "GPL-3.0",
+    "decision": "Cleanup actions/browser definitions reviewed. Own closed-browser disposable-cache plan; cookie/session/offline cleanup excluded."
+  },
+  {
+    "name": "WinDirStat",
+    "repository": "windirstat/windirstat",
+    "commit": "243e0609cc7b7cfca5a895e63907fae8724d8ce6",
+    "license": "GPL-3.0",
+    "decision": "Disk-tree work reviewed. Own iterative scan with session-local counters and bounded memory; no code copied."
+  },
+  {
+    "name": "WinUtil",
+    "repository": "ChrisTitusTech/winutil",
+    "commit": "2f0bdc8fca52e1ebe31a8d98216428061d3f8956",
+    "license": "MIT",
+    "decision": "Maintenance/startup practices reviewed. No remote bootstrap scripts or blanket service disabling adopted."
+  }
+]

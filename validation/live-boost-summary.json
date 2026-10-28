@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-24T01:18:38.5275186+00:00",
+  "scope": "One live guarded Boost pass on eligible idle user-session apps; active work, media, project tools and exclusions protected; no app termination, tab discard or file cleanup",
+  "Trimmed": 10,
+  "Skipped": 216,
+  "Failed": 0,
+  "Eligible": 10,
+  "MediaVerified": true,
+  "TotalMemory": 17006391296,
+  "AvailableBefore": 5410693120,
+  "AvailableAfter": 5719031808,
+  "AvailableDelta": 308338688,
+  "ObservedReductions": 10,
+  "ResidentReduction": 891125760,
+  "Summary": "RAM checked after 3 seconds: available +294.1 MB; 10/10 processes still have a lower resident footprint. RAM used: 68.2% \u2192 66.4%. Other running apps also affect available RAM.",
+  "skipReasons": {
+    "busy process": 5,
+    "protected app / project tool": 121,
+    "active application family": 7,
+    "browser family playing audio / call": 5,
+    "foreground process": 1,
+    "Windows process": 37,
+    "small working set": 40
+  }
+}

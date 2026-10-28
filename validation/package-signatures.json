@@ -1,0 +1,171 @@
+{
+  "count": 41,
+  "successful": true,
+  "scope": "All 41 downloaded package archives for application dependencies, SDK publishing tools and runtime packs. Some SDK/runtime packs are not shipped. Valid signatures establish integrity/provenance, not harmless behavior.",
+  "packages": [
+    {
+      "path": "communitytoolkit.mvvm/8.4.0/communitytoolkit.mvvm.8.4.0.nupkg",
+      "sha256": "6b40f9e74abe7dfade53d67e9103ddcc960f35a8f55238323e87cbcd4834d992"
+    },
+    {
+      "path": "microsoft.aspnetcore.app.runtime.win-x64/10.0.13/microsoft.aspnetcore.app.runtime.win-x64.10.0.13.nupkg",
+      "sha256": "a0dba5ee37a07a173bc2739f01fee4c530c686e00bf3a3f7508972d6592511f3"
+    },
+    {
+      "path": "microsoft.extensions.configuration/10.0.0/microsoft.extensions.configuration.10.0.0.nupkg",
+      "sha256": "32c2ec9153e9902be8bf9f835886802c2b75a9f4515f8bb6dbc787c6fa44d1d8"
+    },
+    {
+      "path": "microsoft.extensions.configuration.abstractions/10.0.0/microsoft.extensions.configuration.abstractions.10.0.0.nupkg",
+      "sha256": "19c82b9d302278257b0154f5df3c8e8dfc302fce9ef7d8a23bf32230ec4f186d"
+    },
+    {
+      "path": "microsoft.extensions.configuration.binder/10.0.0/microsoft.extensions.configuration.binder.10.0.0.nupkg",
+      "sha256": "612896a00dd5411db693af9b484014a9e1bb503cd99497c75834ee6d43b957c5"
+    },
+    {
+      "path": "microsoft.extensions.configuration.commandline/10.0.0/microsoft.extensions.configuration.commandline.10.0.0.nupkg",
+      "sha256": "95d4e2445aa7bfcfe9034825e9447ee030c600864e7fdf8c85a2d63ae28e5ce2"
+    },
+    {
+      "path": "microsoft.extensions.configuration.environmentvariables/10.0.0/microsoft.extensions.configuration.environmentvariables.10.0.0.nupkg",
+      "sha256": "51ac9f7aaac098dc9f3a4ba170129f8fc5298d0a95fd932a5ab0f2c42486d4c0"
+    },
+    {
+      "path": "microsoft.extensions.configuration.fileextensions/10.0.0/microsoft.extensions.configuration.fileextensions.10.0.0.nupkg",
+      "sha256": "acdfb7aeaac78936817c780ff84e1d03c426d9c1493df6c471df77c8a2ecaa54"
+    },
+    {
+      "path": "microsoft.extensions.configuration.json/10.0.0/microsoft.extensions.configuration.json.10.0.0.nupkg",
+      "sha256": "54216e920b31890d8c14613a4433054c6a290476dc64bdadd0447b10d6855d16"
+    },
+    {
+      "path": "microsoft.extensions.configuration.usersecrets/10.0.0/microsoft.extensions.configuration.usersecrets.10.0.0.nupkg",
+      "sha256": "b88a08a5b0cf44c7c5a93f18ea3ff01db142025cba1f537daa9c67a2645b1c8a"
+    },
+    {
+      "path": "microsoft.extensions.dependencyinjection/10.0.0/microsoft.extensions.dependencyinjection.10.0.0.nupkg",
+      "sha256": "2d89bd855968fd1f5cd9a00a1ec0d8279bd8f54d3edc9bdc9667b7a2edc1b6f4"
+    },
+    {
+      "path": "microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg",
+      "sha256": "f62a1d5cfdfd62a831a269ce3cec5dfe6cdb1b425f3925f3168354de8993d8fb"
+    },
+    {
+      "path": "microsoft.extensions.diagnostics/10.0.0/microsoft.extensions.diagnostics.10.0.0.nupkg",
+      "sha256": "a3b4240a2b04705221db6eea0547d615c8b69ece1c804a4baa95fb62f1c64e84"
+    },
+    {
+      "path": "microsoft.extensions.diagnostics.abstractions/10.0.0/microsoft.extensions.diagnostics.abstractions.10.0.0.nupkg",
+      "sha256": "722c7b43143f837b23eab797bb78e7d1c46fd918a3cdc79a2cb91c844193b791"
+    },
+    {
+      "path": "microsoft.extensions.fileproviders.abstractions/10.0.0/microsoft.extensions.fileproviders.abstractions.10.0.0.nupkg",
+      "sha256": "0870ecd8708df1071fb9842980d56ccd9e5d7d715ee324bd2b61a841779c736d"
+    },
+    {
+      "path": "microsoft.extensions.fileproviders.physical/10.0.0/microsoft.extensions.fileproviders.physical.10.0.0.nupkg",
+      "sha256": "d91c3f73004efbf037418d888cdfdcf18d0b86d0b5a9304bed5749883d49d944"
+    },
+    {
+      "path": "microsoft.extensions.filesystemglobbing/10.0.0/microsoft.extensions.filesystemglobbing.10.0.0.nupkg",
+      "sha256": "1137d54ddb1d06da7af448202e0fc00114d05b894b41855d565757210aec8d90"
+    },
+    {
+      "path": "microsoft.extensions.hosting/10.0.0/microsoft.extensions.hosting.10.0.0.nupkg",
+      "sha256": "b58d20ea50b2db2169ac4f8d9ab8a253a1469b0a73c55f0ba84d1914d288c2e3"
+    },
+    {
+      "path": "microsoft.extensions.hosting.abstractions/10.0.0/microsoft.extensions.hosting.abstractions.10.0.0.nupkg",
+      "sha256": "4ae6f74e16b2ffe791f3870438393f9cf875a18218b5ac2f0d7eabd1db917aaa"
+    },
+    {
+      "path": "microsoft.extensions.logging/10.0.0/microsoft.extensions.logging.10.0.0.nupkg",
+      "sha256": "3feccf01a74b2fade4fc6a8adf8fea0a1a908d8f5a211c597f1941f65aac4abb"
+    },
+    {
+      "path": "microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg",
+      "sha256": "067860199734d47c134b1a206afabb51eab857b88c037c0f9db7d1c10e118469"
+    },
+    {
+      "path": "microsoft.extensions.logging.configuration/10.0.0/microsoft.extensions.logging.configuration.10.0.0.nupkg",
+      "sha256": "eff4d63b56aaf217606dc4c42830562238120bd2a914dde4467317fb5d9b3a45"
+    },
+    {
+      "path": "microsoft.extensions.logging.console/10.0.0/microsoft.extensions.logging.console.10.0.0.nupkg",
+      "sha256": "46c6e5a3b1923133abe37f3be8a91dbea4bac14f53ca9d72a052b7b4be740819"
+    },
+    {
+      "path": "microsoft.extensions.logging.debug/10.0.0/microsoft.extensions.logging.debug.10.0.0.nupkg",
+      "sha256": "9fff8a45596c80a9b5edc24899aa003c700e6c7a40a56fe17fa98cb10146aef6"
+    },
+    {
+      "path": "microsoft.extensions.logging.eventlog/10.0.0/microsoft.extensions.logging.eventlog.10.0.0.nupkg",
+      "sha256": "e11276afcd11b48dd05008420186c69c0d187139a8baab59bd053da370ab077f"
+    },
+    {
+      "path": "microsoft.extensions.logging.eventsource/10.0.0/microsoft.extensions.logging.eventsource.10.0.0.nupkg",
+      "sha256": "b6a0b5dd0c247f8c75e221b13989574f27a837c28f557fa6ba9bf62dda73187a"
+    },
+    {
+      "path": "microsoft.extensions.options/10.0.0/microsoft.extensions.options.10.0.0.nupkg",
+      "sha256": "8f930ea9948a794b71c739998f364c1b2d2f10b1ddbcfadaab04d0410355b180"
+    },
+    {
+      "path": "microsoft.extensions.options.configurationextensions/10.0.0/microsoft.extensions.options.configurationextensions.10.0.0.nupkg",
+      "sha256": "5c602ce43c4cbd69e68d7f1da91c0a634becb92e34487bec7c9a81d6b3b82fb9"
+    },
+    {
+      "path": "microsoft.extensions.primitives/10.0.0/microsoft.extensions.primitives.10.0.0.nupkg",
+      "sha256": "0eea74f0a729b4b8e59e9379b79ffffa9e27f0551381102ae27ff0d6ceaeb3e2"
+    },
+    {
+      "path": "microsoft.net.illink.tasks/10.0.13/microsoft.net.illink.tasks.10.0.13.nupkg",
+      "sha256": "6e342eacd8c44c89a073ad3fa5e706381d8511d214cb2a9a694572f82dfbdfae"
+    },
+    {
+      "path": "microsoft.netcore.app.runtime.win-x64/10.0.13/microsoft.netcore.app.runtime.win-x64.10.0.13.nupkg",
+      "sha256": "c66885d464697be75676b4d1fbca38b8806f3af01d65d27205b3f06add094444"
+    },
+    {
+      "path": "microsoft.windows.sdk.net.ref/10.0.19041.57/microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg",
+      "sha256": "90b18f2cf7d7a23f5b0bfe2b86d8dda45881481f677ce36eccaf6e9ab50b6b4b"
+    },
+    {
+      "path": "microsoft.windowsdesktop.app.runtime.win-x64/10.0.13/microsoft.windowsdesktop.app.runtime.win-x64.10.0.13.nupkg",
+      "sha256": "af044758d6bc23eca96b60c9ce13b38f211c3e736eef9458de3cadbbd3e20ff2"
+    },
+    {
+      "path": "system.codedom/10.0.0/system.codedom.10.0.0.nupkg",
+      "sha256": "7df3177b7e57544e3d19de9b6f3d904664e4083793b929c661f29367afccb52f"
+    },
+    {
+      "path": "system.configuration.configurationmanager/10.0.0/system.configuration.configurationmanager.10.0.0.nupkg",
+      "sha256": "c22283729cd844cd90b1bf4413996e258a63788b505c94fc2ef76bbaa7aa66d8"
+    },
+    {
+      "path": "system.diagnostics.eventlog/10.0.0/system.diagnostics.eventlog.10.0.0.nupkg",
+      "sha256": "a4dded95df76e85a749f964d8e3cc826f89442bca794e001d2f85cd5aa2ca3a1"
+    },
+    {
+      "path": "system.diagnostics.performancecounter/10.0.0/system.diagnostics.performancecounter.10.0.0.nupkg",
+      "sha256": "acffa107256ad372967a004d6afd05df36a2b55a3d8e59fe4d947a4b0f95d748"
+    },
+    {
+      "path": "system.management/10.0.0/system.management.10.0.0.nupkg",
+      "sha256": "361dca3a5b2fe80c4692b5a21e1bae4db46e222dada75dcdadb07081080ab928"
+    },
+    {
+      "path": "system.security.cryptography.protecteddata/10.0.0/system.security.cryptography.protecteddata.10.0.0.nupkg",
+      "sha256": "8684759555d51145df22d373276dff491c9b2c1a9a7f8658cc9063956807a523"
+    },
+    {
+      "path": "system.serviceprocess.servicecontroller/10.0.0/system.serviceprocess.servicecontroller.10.0.0.nupkg",
+      "sha256": "f784a75a6046e73720d899b315be87dca2819f28bb3ad621458ee29b18eedddf"
+    },
+    {
+      "path": "wpf-ui/3.0.5/wpf-ui.3.0.5.nupkg",
+      "sha256": "7ed904f4d64d6762bd0d12cd54c6e0293f9b1bfc4a468a6c8388d920626c94d7"
+    }
+  ]
+}

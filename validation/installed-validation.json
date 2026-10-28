@@ -1,0 +1,14 @@
+{
+  "installedHash": "8B361849BA24597C1FD6E7872395BC4982E7F9D47D51461310819295A81D2070",
+  "publishedHash": "8B361849BA24597C1FD6E7872395BC4982E7F9D47D51461310819295A81D2070",
+  "startupTargetsInstalledExe": true,
+  "startupApproved": true,
+  "registeredName": "QuietCare",
+  "registeredVersion": "0.6.0-preview.1",
+  "nativeUninstaller": 1,
+  "iconExists": true,
+  "desktopShortcut": true,
+  "startShortcut": true,
+  "monitorShortcut": true,
+  "rebootTested": false
+}
