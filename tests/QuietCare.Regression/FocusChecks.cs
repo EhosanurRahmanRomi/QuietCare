@@ -54,6 +54,8 @@ static class FocusChecks
             var runtime=new WindowsFocusRuntime(Path.Combine(root,"native-focus-journal.json"));FocusProcess? item=null;
             for(int i=0;i<20&&item is null;i++){await Task.Delay(100);item=runtime.ReadProcess(child.Id);}
             check(item is not null,"Native Focus adapter resolves the dedicated same-user child");
+            var inventory=runtime.Capture();
+            check(inventory.Processes.Any(x=>x.Id==child.Id)&&!inventory.WindowImages.Contains(item!.Image),"Batched Focus inventory finds the dedicated child without classifying its hidden helper as a background window");
             var journal=new FocusJournal{Session=Guid.NewGuid()};var session=new FocusSession(runtime,journal);
             try
             {

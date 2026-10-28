@@ -280,7 +280,7 @@
         <!-- Status -->
         <StackPanel Grid.Row="4" Margin="0,16,0,0">
             <TextBlock Text="{Binding ViewModel.StatusText}" Opacity="0.8" TextTrimming="CharacterEllipsis" />
-            <ProgressBar Height="4" Margin="0,8,0,0" IsIndeterminate="True"
+            <ProgressBar Height="4" Margin="0,8,0,0" IsIndeterminate="{Binding ViewModel.IsComparing}"
                          Visibility="{Binding ViewModel.IsComparing, Converter={StaticResource BoolToVis}}" />
         </StackPanel>
     </Grid>

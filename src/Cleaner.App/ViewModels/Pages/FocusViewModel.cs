@@ -36,10 +36,16 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
     [ObservableProperty] string _detail="Switch to your work app after starting. Nothing is closed or suspended. Changes are restored when you stop, time runs out, or QuietCare exits.";
     public bool CanStart=>!IsActive&&!Busy&&!NeedsRecovery;
     public bool CanConfigure=>!IsActive&&!Busy;
+    public string SessionLabel=>IsActive?"IN SESSION":"READY TO FOCUS";
+    public string SessionAction=>IsActive?"End focus session":"Start focus session";
+    public double SessionProgress=>IsActive?Math.Clamp(100*(1-RemainingMinutes/Math.Max(1,Minutes)),0,100):0;
+    [ObservableProperty,NotifyPropertyChangedFor(nameof(SessionProgress))] double _remainingMinutes;
+    public string PrioritySummary=>IsActive?"Work app prioritized":"Applies during your session";
     partial void OnIsActiveChanged(bool value)
     {
         Active=value;hub.FocusActive=value;ActiveChanged?.Invoke(value);
         OnPropertyChanged(nameof(CanStart));OnPropertyChanged(nameof(CanConfigure));
+        OnPropertyChanged(nameof(SessionLabel));OnPropertyChanged(nameof(SessionAction));OnPropertyChanged(nameof(PrioritySummary));OnPropertyChanged(nameof(SessionProgress));
     }
     partial void OnBusyChanged(bool value){OnPropertyChanged(nameof(CanStart));OnPropertyChanged(nameof(CanConfigure));}
     partial void OnNeedsRecoveryChanged(bool value)=>OnPropertyChanged(nameof(CanStart));
@@ -54,7 +60,7 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
         catch{ } // A damaged optional preference file cannot authorize any system change.
         timer.Tick+=async(_,_)=>await PollAsync();
     }
-    public void StartWatching(){timer.Start();_=RecoverUserAsync();}
+    public void StartWatching(bool recover=true){timer.Start();if(recover)_=RecoverUserAsync();else _=PollAsync();}
     async Task RecoverUserAsync()
     {
         try
@@ -82,10 +88,12 @@ public sealed partial class FocusViewModel : ObservableObject,IDisposable
         {
             var status=await Task.Run(()=>FocusControlEntry.Read<FocusStatus>(FocusControlEntry.StatusPath));
             bool active=status?.Active==true&&FocusControlEntry.Alive(status.WorkerId,status.WorkerStart);
+            timer.Interval=TimeSpan.FromSeconds(active?3:15);
             if(status is not null)
             {
                 IsActive=active;Headline=active?"Your focus session is active":"Ready for your next session";
                 Countdown=active?Math.Max(0,(int)Math.Ceiling((status.Expires-DateTimeOffset.UtcNow).TotalMinutes))+" min remaining":"Session ended";
+                RemainingMinutes=Math.Max(0,(status.Expires-DateTimeOffset.UtcNow).TotalMinutes);
                 WorkApp=status.WorkApp;PriorityStatus=$"{status.Prioritized} work processes prioritized · {status.Background} background processes at lower priority";
                 NotificationStatus=status.Notifications;AwakeStatus=status.Awake;UpdateStatus=status.Updates;Detail=status.Detail;
                 if(status.Active&&!active)Detail="The Focus helper exited. Use Restore changes to check its recovery ledger.";

@@ -70,17 +70,38 @@ public sealed class WindowsFocusRuntime(string journalPath) : IFocusRuntime
     }
     public List<FocusProcess> Snapshot(bool windowsOnly=false)
     {
+        var visible=windowsOnly?WindowProcesses():null;
         var list=new List<FocusProcess>();
         foreach(var process in Process.GetProcesses())using(process)
         {
             try
             {
-                if(windowsOnly&&process.MainWindowHandle==IntPtr.Zero)continue;
+                if(visible is not null&&!visible.Contains(process.Id))continue;
                 var item=ReadProcess(process.Id);if(item is not null)list.Add(item);
             }
             catch{ }
         }
         return list;
+    }
+    public (List<FocusProcess> Processes,HashSet<string> WindowImages) Capture()
+    {
+        var visible=WindowProcesses();var list=new List<FocusProcess>();var images=new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach(var process in Process.GetProcesses())using(process)
+        {
+            try
+            {
+                var item=ReadProcess(process.Id);if(item is null)continue;
+                list.Add(item);if(visible.Contains(item.Id)&&CanLower(item.Name))images.Add(item.Image);
+            }
+            catch{ }
+        }
+        return(list,images);
+    }
+    static HashSet<int> WindowProcesses()
+    {
+        var ids=new HashSet<int>();
+        EnumWindows((window,_)=>{if(IsWindowVisible(window)){GetWindowThreadProcessId(window,out uint id);if(id<=int.MaxValue)ids.Add((int)id);}return true;},IntPtr.Zero);
+        return ids;
     }
     public string ReadNotifications(){using var bridge=new QuietHours();return bridge.Read();}
     public void SetNotifications(string profile)
@@ -127,6 +148,9 @@ public sealed class WindowsFocusRuntime(string journalPath) : IFocusRuntime
     [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)][return:MarshalAs(UnmanagedType.Bool)]static extern bool QueryFullProcessImageName(SafeProcessHandle handle,uint flags,System.Text.StringBuilder value,ref int size);
     [DllImport("user32.dll")]static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll")]static extern uint GetWindowThreadProcessId(IntPtr window,out uint id);
+    delegate bool EnumWindowProc(IntPtr window,IntPtr parameter);
+    [DllImport("user32.dll")][return:MarshalAs(UnmanagedType.Bool)]static extern bool EnumWindows(EnumWindowProc callback,IntPtr parameter);
+    [DllImport("user32.dll")][return:MarshalAs(UnmanagedType.Bool)]static extern bool IsWindowVisible(IntPtr window);
 
     // Optional compatibility bridge based on Rafael Rivera's MIT QuietHours IDL.
     // This Windows interface is undocumented: failures are reported, never replaced with

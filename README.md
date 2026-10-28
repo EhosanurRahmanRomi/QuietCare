@@ -2,9 +2,9 @@
 
 A Windows PC-care workspace with a tiny transparent CPU / GPU / RAM monitor, a dedicated Focus mode, automatic Smart Care, guarded RAM Boost, one-click junk cleanup, Microsoft Defender scan controls, disk tools, and startup-change notifications.
 
-**0.7.2-preview.1 · Windows x64 · unsigned preview**
+**0.8.0-preview.1 · Windows x64 · unsigned preview**
 
-[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.7.2-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[Download the preview](https://github.com/EhosanurRahmanRomi/QuietCare/releases/tag/v0.8.0-preview.1) · [Source and licenses](THIRD-PARTY-NOTICES.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
 ![QuietCare care hub](docs/images/care-hub.png)
 
@@ -53,6 +53,10 @@ The shell has been rebuilt around a central care action and live stages, with de
 | Updates | Manual GitHub release check and release notes; downloads and replacement remain manual |
 
 See [automatic-care rules](docs/SMART-CARE.md) for the exact thresholds, exclusions and per-tool behavior. Smart Care uses local decision rules, not an external AI model. It starts only when clicked.
+
+## UI and resource use
+
+The 0.8 workspace uses compact settings rows, a separate Focus timer/action panel, and clearer Overview, Memory, Protection and Storage pages. Idle progress animation is stopped, inactive Focus checks back off, and session inventory is batched. [GitHub references and implementation decisions](docs/UI-PERFORMANCE-REVIEW.md) · [Measured scope](docs/VALIDATION.md).
 
 ## Focus mode
 

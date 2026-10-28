@@ -357,7 +357,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
                 <TextBlock Text="{Binding ViewModel.StatusText}" Opacity="0.8" />
-                <ProgressBar Height="4" Margin="0,8,0,0" IsIndeterminate="True"
+                <ProgressBar Height="4" Margin="0,8,0,0" IsIndeterminate="{Binding ViewModel.IsScanning}"
                              Visibility="{Binding ViewModel.IsScanning, Converter={StaticResource BoolToVis}}" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

@@ -85,11 +85,13 @@ internal static class FocusControlEntry
                 while(DateTimeOffset.UtcNow<journal.Expires&&Alive(parent,parentStart)&&!File.Exists(Path.Combine(DirectoryPath,id.ToString("N")+".stop")))
                 {
                     var foreground=options.PrioritizeWork||options.LowerBackground?runtime.Foreground():null;
+                    bool workChanged=foreground is not null&&!string.Equals(foreground.Image,workImage,StringComparison.OrdinalIgnoreCase);
                     if(foreground is not null){work=foreground;workImage=work.Image;}
-                    if((options.PrioritizeWork||options.LowerBackground)&&iteration++%5==0)
+                    bool inventoryDue=(options.PrioritizeWork||options.LowerBackground)&&iteration++%5==0;
+                    if(inventoryDue)
                     {
-                        candidates=runtime.Snapshot();
-                        if(options.LowerBackground)openImages=runtime.Snapshot(true).Where(x=>WindowsFocusRuntime.CanLower(x.Name)).Select(x=>x.Image).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                        var inventory=runtime.Capture();candidates=inventory.Processes;
+                        if(options.LowerBackground)openImages=inventory.WindowImages;
                     }
                     if(foreground is not null&&!candidates.Any(x=>x.Id==foreground.Id))candidates.Add(foreground);
                     foreach(var change in journal.Priorities.ToArray())
@@ -102,6 +104,9 @@ internal static class FocusControlEntry
                     {
                         try
                         {
+                            // Recheck owned identities at inventory boundaries or an app switch;
+                            // unchanged foreground ticks do not repeatedly reopen every process.
+                            if(!inventoryDue&&!workChanged&&journal.Priorities.Any(x=>FocusSession.SameProcess(x.Process,process)))continue;
                             if(options.PrioritizeWork&&workImage is not null&&string.Equals(process.Image,workImage,StringComparison.OrdinalIgnoreCase))session.SetPriority(process,ProcessPriorityClass.AboveNormal);
                             else if(options.LowerBackground&&openImages.Contains(process.Image)&&!string.Equals(process.Image,workImage,StringComparison.OrdinalIgnoreCase)&&process.Priority==ProcessPriorityClass.Normal)session.SetPriority(process,ProcessPriorityClass.BelowNormal);
                         }

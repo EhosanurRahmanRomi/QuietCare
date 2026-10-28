@@ -1,0 +1,41 @@
+{
+  "scope": "Production window, monitor telemetry, inactive Focus watcher and isolated startup watch; no care, priority, notification or policy changes. Short samples, not a benchmark.",
+  "phases": [
+    {
+      "phase": "Focus page visible; inactive session, after page initialization",
+      "refreshMs": 500,
+      "seconds": 8.0052179,
+      "cpuPercentOfMachine": 0.6343486121517291,
+      "workingSetBytes": 338714624,
+      "privateBytes": 172490752,
+      "samples": 15
+    },
+    {
+      "phase": "Full window hidden; mini monitor and status watcher",
+      "refreshMs": 500,
+      "seconds": 8.0046535,
+      "cpuPercentOfMachine": 0.48799665644991663,
+      "workingSetBytes": 332836864,
+      "privateBytes": 167170048,
+      "samples": 16
+    },
+    {
+      "phase": "Full window hidden; mini monitor and status watcher",
+      "refreshMs": 1000,
+      "seconds": 8.0048243,
+      "cpuPercentOfMachine": 0.04879863232658762,
+      "workingSetBytes": 332079104,
+      "privateBytes": 164917248,
+      "samples": 8
+    },
+    {
+      "phase": "Overview visible; no care job",
+      "refreshMs": 500,
+      "seconds": 8.0015726,
+      "cpuPercentOfMachine": 0.732276829267043,
+      "workingSetBytes": 338083840,
+      "privateBytes": 170983424,
+      "samples": 16
+    }
+  ]
+}

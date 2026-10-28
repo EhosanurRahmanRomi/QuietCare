@@ -7,25 +7,25 @@ internal static class PreviewTheme
 {
     public static void Apply(bool dark)
     {
-        ApplicationAccentColorManager.Apply(Color.FromRgb(32, 105, 196),dark ? ApplicationTheme.Dark : ApplicationTheme.Light);
+        ApplicationAccentColorManager.Apply(Color.FromRgb(21, 151, 122),dark ? ApplicationTheme.Dark : ApplicationTheme.Light);
         var colors=new Dictionary<string,string>
         {
-            ["ApplicationBackgroundBrush"]=dark?"#111722":"#F4F6FA",
-            ["NavigationViewContentBackground"]=dark?"#151D2B":"#F7FAFF",
-            ["CardBackgroundFillColorDefaultBrush"]=dark?"#1C2535":"#FFFFFF",
-            ["CardStrokeColorDefaultBrush"]=dark?"#2C384B":"#D7E2F0",
+            ["ApplicationBackgroundBrush"]=dark?"#10151D":"#F4F6FA",
+            ["NavigationViewContentBackground"]=dark?"#121923":"#F7FAFF",
+            ["CardBackgroundFillColorDefaultBrush"]=dark?"#1A222E":"#FFFFFF",
+            ["CardStrokeColorDefaultBrush"]=dark?"#2D3746":"#D7E2F0",
             ["TextFillColorPrimaryBrush"]=dark?"#EDF2FA":"#15243B",
             ["TextFillColorSecondaryBrush"]=dark?"#ADBED8":"#4E6380",
             ["NavigationViewItemForeground"]=dark?"#C9D8ED":"#253C59",
             ["NavigationViewItemForegroundPointerOver"]=dark?"#FFFFFF":"#15243B",
-            ["NavigationViewItemBackgroundSelected"]=dark?"#224564":"#D8EEFF",
-            ["NavigationViewItemBackgroundSelectedLeftFluent"]=dark?"#224564":"#D8EEFF",
+            ["NavigationViewItemBackgroundSelected"]=dark?"#173E39":"#D7F4E9",
+            ["NavigationViewItemBackgroundSelectedLeftFluent"]=dark?"#173E39":"#D7F4E9",
             ["NavigationViewItemBackgroundPointerOver"]=dark?"#1C304B":"#E2EEFA",
             ["NavigationViewItemBorderBrush"]= "#00224564",
             ["CleanerAccentBrush"]="#4EC2F4",
-            ["AccentFillColorDefaultBrush"]="#126A99",
-            ["AccentFillColorSecondaryBrush"]="#167EAC",
-            ["AccentFillColorTertiaryBrush"]="#155B81",
+            ["AccentFillColorDefaultBrush"]="#11856B",
+            ["AccentFillColorSecondaryBrush"]="#159779",
+            ["AccentFillColorTertiaryBrush"]="#0D715C",
             ["SafeBrush"] = dark?"#61DDB1":"#137654",
             ["CareMemorySurface"]=dark?"#112F32":"#EBFAF5",
             ["CareMemoryStroke"]=dark?"#27625D":"#A3D9C9",
@@ -43,10 +43,10 @@ internal static class PreviewTheme
             ["CareFailureBrush"]=dark?"#FF9EA8":"#B42337",
             ["CareRunningBrush"]=dark?"#85C8FF":"#216AAC",
             ["CarePrimaryForeground"]="#FFFFFF",
-            ["CareAccentSurface"]=dark?"#172D4B":"#EAF2FF",
-            ["CareAccentBrush"]=dark?"#70B4FF":"#1769D2",
-            ["CareSurfaceBrush"]=dark?"#192231":"#FFFFFF",
-            ["CareDividerBrush"]=dark?"#2C384B":"#E2E7EF",
+            ["CareAccentSurface"]=dark?"#173A35":"#E4F7F0",
+            ["CareAccentBrush"]=dark?"#62DFBB":"#087C61",
+            ["CareSurfaceBrush"]=dark?"#19212C":"#FFFFFF",
+            ["CareDividerBrush"]=dark?"#2D3746":"#E2E7EF",
             ["CareMutedBrush"]=dark?"#9BAEC8":"#66758D",
         };
         foreach(var item in colors)

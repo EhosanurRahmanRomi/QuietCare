@@ -1,6 +1,6 @@
 {
   "scope": "Actual worker session with Do not disturb and keep awake; CPU priorities and update guard deselected. No Defender/update policies or user-app priorities changed.",
-  "workerCpuPercentOfMachine": 0.12991409306917584,
+  "workerCpuPercentOfMachine": 0.2273126795131095,
   "sampleSeconds": 6,
   "checks": [
     {

@@ -13,6 +13,31 @@ using Wpf.Ui.Controls;
 namespace Cleaner.App;
 internal static class PreviewValidation
 {
+    public static async Task ResourceCheck(IServiceProvider services,string output)
+    {
+        Directory.CreateDirectory(output);var window=services.GetRequiredService<MainWindow>();window.ShowActivated=false;window.Show();
+        ApplicationThemeManager.Apply(ApplicationTheme.Dark);PreviewTheme.Apply(true);
+        var focus=services.GetRequiredService<FocusViewModel>();focus.StartWatching(false);
+        using var watch=new Services.StartupWatchService(new Services.AppDataService(Path.Combine(output,"watch-state")));watch.Start();
+        using var monitor=new QuietCare.MonitorController(()=>{},()=>{},Path.Combine(output,"monitor-state"));
+        var hub=services.GetRequiredService<CareHubViewModel>();monitor.SnapshotUpdated+=snapshot=>{if(window.IsVisible)hub.OnSnapshot(snapshot);};
+        using var process=System.Diagnostics.Process.GetCurrentProcess();
+        monitor.SetRefresh(500);monitor.Start();await Task.Delay(18000);
+        var phases=new List<object>();
+        async Task Measure(string phase,int refresh,bool visible)
+        {
+            monitor.SetRefresh(refresh);monitor.SetDashboardVisible(visible);await Task.Delay(1000);process.Refresh();
+            var cpu=process.TotalProcessorTime;var clock=System.Diagnostics.Stopwatch.StartNew();int samples=monitor.SamplesCompleted;
+            await Task.Delay(8000);process.Refresh();
+            phases.Add(new{phase,refreshMs=refresh,seconds=clock.Elapsed.TotalSeconds,cpuPercentOfMachine=(process.TotalProcessorTime-cpu).TotalSeconds/clock.Elapsed.TotalSeconds/Environment.ProcessorCount*100,workingSetBytes=process.WorkingSet64,privateBytes=process.PrivateMemorySize64,samples=monitor.SamplesCompleted-samples});
+        }
+        window.NavigateTo(typeof(FocusPage));await Task.Delay(10000);await Measure("Focus page visible; inactive session, after page initialization",500,true);
+        window.Hide();await Measure("Full window hidden; mini monitor and status watcher",500,false);
+        await Measure("Full window hidden; mini monitor and status watcher",1000,false);
+        window.Show();window.NavigateTo(typeof(DashboardPage));await Task.Delay(2000);await Measure("Overview visible; no care job",500,true);
+        window.Hide();
+        File.WriteAllText(Path.Combine(output,"resource-check.json"),JsonSerializer.Serialize(new{scope="Production window, monitor telemetry, inactive Focus watcher and isolated startup watch; no care, priority, notification or policy changes. Short samples, not a benchmark.",phases},new JsonSerializerOptions{WriteIndented=true}));
+    }
     public static async Task MonitorSmoke(string output)
     {
         output=Path.GetFullPath(output);Directory.CreateDirectory(output);
@@ -80,6 +105,13 @@ internal static class PreviewValidation
             if(!page.IsLoaded || !page.IsVisible || page.ActualWidth<100)throw new InvalidOperationException("Page did not load: "+type.Name);
             if(window.FindName("SmartCareActions") is not FrameworkElement{IsVisible:true})throw new InvalidOperationException("Smart Care is not accessible from "+type.Name);
         }
+        // Active Focus is a display fixture: no worker, priority or Windows-setting action.
+        var focusDisplay=services.GetRequiredService<FocusViewModel>();
+        focusDisplay.IsActive=true;focusDisplay.Countdown="Display fixture · 59 min remaining";focusDisplay.WorkApp="Your work app · display fixture";focusDisplay.RemainingMinutes=59;
+        window.NavigateTo(typeof(FocusPage));await Task.Delay(250);window.UpdateLayout();
+        var focusShell=(FrameworkElement)window.Content;
+        Render(focusShell,Path.Combine(output,"FocusActiveFixture.png"),(int)Math.Ceiling(focusShell.ActualWidth),(int)Math.Ceiling(focusShell.ActualHeight));
+        focusDisplay.IsActive=false;focusDisplay.Countdown="Ready when you are";focusDisplay.WorkApp="Automatic · follows the app you use";
         navigation.Navigate(typeof(DashboardPage));
         var liveAssessment=await new Services.SmartCareBackend(new Services.AppDataService(Path.Combine(output,"care-check-state")),new Cleaner.Core.Services.AutomaticCleanupService()).AssessAsync(default);
         if(liveAssessment.MemoryUsedPercent is not >=0 or >100||liveAssessment.AvailableBytes is null||liveAssessment.CpuPercent is not >=0 or >100)

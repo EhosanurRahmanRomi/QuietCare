@@ -189,7 +189,7 @@
                 </ScrollViewer>
             </Border>
 
-            <ProgressBar Height="4" Margin="0,16,0,0" IsIndeterminate="True"
+            <ProgressBar Height="4" Margin="0,16,0,0" IsIndeterminate="{Binding ViewModel.IsBusy}"
                          Visibility="{Binding ViewModel.IsBusy, Converter={StaticResource BoolToVis}}" />
         </StackPanel>
     </ScrollViewer>

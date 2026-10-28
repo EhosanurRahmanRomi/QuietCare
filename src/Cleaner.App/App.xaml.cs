@@ -146,6 +146,13 @@ public partial class App : Application
         };
 
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        if(Environment.GetCommandLineArgs().Contains("--resource-check"))
+        {
+            var arguments=Environment.GetCommandLineArgs();
+            try{await PreviewValidation.ResourceCheck(Services,arguments[Array.IndexOf(arguments,"--resource-check")+1]);}
+            catch(Exception ex){LogException("Resource check",ex);Exiting=true;Shutdown(1);return;}
+            Exiting=true;Shutdown();return;
+        }
         if (Environment.GetCommandLineArgs().Contains("--monitor-smoke"))
         {
             var arguments = Environment.GetCommandLineArgs();

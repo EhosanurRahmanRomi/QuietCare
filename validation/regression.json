@@ -1,7 +1,7 @@
 {
-  "utc": "2026-10-28T14:15:59.24589+00:00",
+  "utc": "2026-10-28T14:35:41.6962705+00:00",
   "scope": "Isolated fixtures and read-only Windows-tool signature/resolution checks; no user cleanup, startup changes, antivirus scan or optimization executed",
-  "count": 131,
+  "count": 132,
   "checks": [
     {
       "name": "Age and exclusion policy bound preview",
@@ -513,6 +513,10 @@
     },
     {
       "name": "Native Focus adapter resolves the dedicated same-user child",
+      "passed": true
+    },
+    {
+      "name": "Batched Focus inventory finds the dedicated child without classifying its hidden helper as a background window",
       "passed": true
     },
     {
